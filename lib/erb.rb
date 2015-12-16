@@ -464,7 +464,7 @@ class ERB
       end
 
       def explicit_trim_line(line)
-        line.scan(/(.*?)(^[ \t]*<%\-|<%\-|<%%|%%>|<%=|<%#|<%|-%>\n|-%>|%>|\z)/m) do |tokens|
+        line.scan(/(.*?)(^[ \t]*<%\-|<%\-|<%%|%%>|<%=?|<%#|<%|-%>\n|-%>|%>|\z)/m) do |tokens|
           tokens.each do |token|
             next if token.empty?
             if @stag.nil? && /[ \t]*<%-/ =~ token
@@ -520,7 +520,7 @@ class ERB
 
       class ExplicitScanner < Scanner # :nodoc:
         def scan
-          stag_reg = /(.*?)(^[ \t]*<%-|<%%|<%=|<%#|<%-|<%|\z)/m
+          stag_reg = /(.*?)(^[ \t]*<%-|<%%|<%==?|<%#|<%-|<%|\z)/m
           etag_reg = /(.*?)(%%>|-%>|%>|\z)/m
           scanner = StringScanner.new(@src)
           while ! scanner.eos?
@@ -615,7 +615,7 @@ class ERB
             out.cr
           when :cr
             out.cr
-          when '<%', '<%=', '<%#'
+          when '<%', '<%=', '<%==', '<%#'
             scanner.stag = token
             add_put_cmd(out, content) if content.size > 0
             content = ''
