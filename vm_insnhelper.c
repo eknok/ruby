@@ -3724,6 +3724,29 @@ vm_opt_not(CALL_INFO ci, CALL_CACHE cc, VALUE recv)
 }
 
 static VALUE
+vm_opt_tos(CALL_INFO ci, CALL_CACHE cc, VALUE recv)
+{
+    if (SPECIAL_CONST_P(recv)) {
+	return Qundef;
+    }
+    else if (RBASIC_CLASS(recv) == rb_cString &&
+	     BASIC_OP_UNREDEFINED_P(BOP_TOS, STRING_REDEFINED_OP_FLAG)) {
+	return recv;
+    }
+    else if (RBASIC_CLASS(recv) == rb_cSymbol &&
+	     BASIC_OP_UNREDEFINED_P(BOP_TOS, SYMBOL_REDEFINED_OP_FLAG)) {
+	return rb_sym_to_s(recv);
+    }
+    else if (RBASIC_CLASS(recv) == rb_cInteger &&
+	     BASIC_OP_UNREDEFINED_P(BOP_TOS, INTEGER_REDEFINED_OP_FLAG)) {
+	return rb_int2str(recv, 10);
+    }
+    else {
+	return Qundef;
+    }
+}
+
+static VALUE
 vm_opt_regexpmatch1(VALUE recv, VALUE obj)
 {
     if (BASIC_OP_UNREDEFINED_P(BOP_MATCH, REGEXP_REDEFINED_OP_FLAG)) {

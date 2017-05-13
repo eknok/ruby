@@ -2454,6 +2454,7 @@ iseq_specialized_instruction(rb_iseq_t *iseq, INSN *iobj)
 		  case idEmptyP: SP_INSN(empty_p);return COMPILE_OK;
 		  case idSucc:	 SP_INSN(succ);	  return COMPILE_OK;
 		  case idNot:	 SP_INSN(not);	  return COMPILE_OK;
+		  case idTo_s:	 SP_INSN(tos);	  return COMPILE_OK;
 		}
 		break;
 	      case 1:

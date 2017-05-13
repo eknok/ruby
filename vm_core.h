@@ -482,6 +482,7 @@ enum ruby_basic_operators {
     BOP_UMINUS,
     BOP_MAX,
     BOP_MIN,
+    BOP_TOS,
 
     BOP_LAST_
 };

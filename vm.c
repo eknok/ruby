@@ -1596,6 +1596,7 @@ vm_init_redefined_flag(void)
     OP(UMinus, UMINUS), (C(String));
     OP(Max, MAX), (C(Array));
     OP(Min, MIN), (C(Array));
+    OP(To_s, TOS), (C(String), C(Symbol), C(Integer));
 #undef C
 #undef OP
 }

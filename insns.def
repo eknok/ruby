@@ -1535,6 +1535,25 @@ opt_not
     }
 }
 
+/**
+  @c optimize
+  @e optimized to_s
+  @j 最適化された recv.to_s。
+ */
+DEFINE_INSN
+opt_tos
+(CALL_INFO ci, CALL_CACHE cc)
+(VALUE recv)
+(VALUE val)
+{
+    val = vm_opt_tos(ci, cc, recv);
+
+    if (val == Qundef) {
+	/* other */
+	PUSH(recv);
+	CALL_SIMPLE_METHOD(recv);
+    }
+}
 
 /**
   @c optimize
