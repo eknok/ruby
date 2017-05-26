@@ -49,26 +49,6 @@ preserve_original_state(VALUE orig, VALUE dest)
     RB_OBJ_INFECT_RAW(dest, orig);
 }
 
-#ifdef __SSE4_2__
-static const char*
-find_char_fast(const char *buf, const char *buf_end, __m128i range, size_t range_size, int *found)
-{
-    size_t left = (buf_end - buf) & ~15;
-    do {
-	__m128i b16 = _mm_loadu_si128((const __m128i *)buf);
-	int index = _mm_cmpestri(range, range_size, b16, 16, _SIDD_CMP_EQUAL_ANY);
-	if (index != 16) {
-	    buf += index;
-	    *found = 1;
-	    break;
-	}
-	buf += 16;
-	left -= 16;
-    } while (left != 0);
-    return buf;
-}
-#endif
-
 static VALUE
 optimized_escape_html(VALUE str)
 {
@@ -82,17 +62,22 @@ optimized_escape_html(VALUE str)
 #ifdef __SSE4_2__
     __m128i escapes5 = _mm_loadu_si128((const __m128i *)"\"&'<>");
     while (buf_end - buf >= 16) {
-	int found = 0;
-	buf = find_char_fast(buf, buf_end, escapes5, 5, &found);
-	if (!found) break;
+	__m128i b16 = _mm_loadu_si128((const __m128i *)buf);
+	__m128i result = _mm_cmpestrm(escapes5, 5, b16, 16, _SIDD_CMP_EQUAL_ANY);
 
-	if (!dest) {
-	    dest = rb_str_buf_new(RSTRING_LEN(str));
+	int found_mask = _mm_cvtsi128_si32(result);
+	for (int i = 0; i < 16 && found_mask; i++) {
+	    if (found_mask & 1) {
+		if (!dest) {
+		    dest = rb_str_buf_new(RSTRING_LEN(str));
+		}
+		rb_str_cat(dest, beg, buf + i - beg);
+		html_escaped_cat(dest, *(buf + i));
+		beg = (buf + i) + 1;
+	    }
+	    found_mask = found_mask >> 1;
 	}
-	rb_str_cat(dest, beg, buf - beg);
-	html_escaped_cat(dest, *buf);
-	buf++;
-	beg = buf;
+	buf += 16;
     }
 #endif
 
