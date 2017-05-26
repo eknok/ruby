@@ -1,6 +1,14 @@
 #include "ruby.h"
 #include "ruby/encoding.h"
 
+#ifdef __SSE4_2__
+# ifdef _MSC_VER
+#  include <nmmintrin.h>
+# else
+#  include <x86intrin.h>
+# endif
+#endif
+
 RUBY_EXTERN unsigned long ruby_scan_digits(const char *str, ssize_t len, int base, size_t *retlen, int *overflow);
 RUBY_EXTERN const char ruby_hexdigits[];
 RUBY_EXTERN const signed char ruby_digit36_to_number_table[];
@@ -41,6 +49,26 @@ preserve_original_state(VALUE orig, VALUE dest)
     RB_OBJ_INFECT_RAW(dest, orig);
 }
 
+#ifdef __SSE4_2__
+static const char*
+find_char_fast(const char *buf, const char *buf_end, __m128i range, size_t range_size, int *found)
+{
+    size_t left = (buf_end - buf) & ~15;
+    do {
+	__m128i b16 = _mm_loadu_si128((const __m128i *)buf);
+	int index = _mm_cmpestri(range, range_size, b16, 16, _SIDD_CMP_EQUAL_ANY);
+	if (index != 16) {
+	    buf += index;
+	    *found = 1;
+	    break;
+	}
+	buf += 16;
+	left -= 16;
+    } while (left != 0);
+    return buf;
+}
+#endif
+
 static VALUE
 optimized_escape_html(VALUE str)
 {
@@ -50,6 +78,23 @@ optimized_escape_html(VALUE str)
     buf = RSTRING_PTR(str);
     beg = buf;
     buf_end = buf + RSTRING_LEN(str);
+
+#ifdef __SSE4_2__
+    __m128i escapes5 = _mm_loadu_si128((const __m128i *)"\"&'<>");
+    while (buf_end - buf >= 16) {
+	int found = 0;
+	buf = find_char_fast(buf, buf_end, escapes5, 5, &found);
+	if (!found) break;
+
+	if (!dest) {
+	    dest = rb_str_buf_new(RSTRING_LEN(str));
+	}
+	rb_str_cat(dest, beg, buf - beg);
+	html_escaped_cat(dest, *buf);
+	buf++;
+	beg = buf;
+    }
+#endif
 
     while (buf < buf_end) {
 	switch (*buf) {
