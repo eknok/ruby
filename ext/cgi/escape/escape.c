@@ -44,34 +44,35 @@ preserve_original_state(VALUE orig, VALUE dest)
 static VALUE
 optimized_escape_html(VALUE str)
 {
-    long i, len, beg = 0;
     VALUE dest = 0;
-    const char *cstr;
+    const char *beg, *buf, *buf_end;
 
-    len  = RSTRING_LEN(str);
-    cstr = RSTRING_PTR(str);
+    buf = RSTRING_PTR(str);
+    beg = buf;
+    buf_end = buf + RSTRING_LEN(str);
 
-    for (i = 0; i < len; i++) {
-	switch (cstr[i]) {
+    while (buf < buf_end) {
+	switch (*buf) {
 	  case '\'':
 	  case '&':
 	  case '"':
 	  case '<':
 	  case '>':
 	    if (!dest) {
-		dest = rb_str_buf_new(len);
+		dest = rb_str_buf_new(RSTRING_LEN(str));
 	    }
 
-	    rb_str_cat(dest, cstr + beg, i - beg);
-	    beg = i + 1;
+	    rb_str_cat(dest, beg, buf - beg);
+	    beg = buf + 1;
 
-	    html_escaped_cat(dest, cstr[i]);
+	    html_escaped_cat(dest, *buf);
 	    break;
 	}
+	buf++;
     }
 
     if (dest) {
-	rb_str_cat(dest, cstr + beg, len - beg);
+	rb_str_cat(dest, beg, buf - beg);
 	preserve_original_state(str, dest);
 	return dest;
     }
