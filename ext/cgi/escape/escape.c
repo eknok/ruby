@@ -82,6 +82,46 @@ optimized_escape_html(VALUE str)
 }
 
 static VALUE
+optimized_escape_html_old(VALUE str)
+{
+    VALUE dest = 0;
+    const char *beg, *buf, *buf_end;
+
+    buf = RSTRING_PTR(str);
+    beg = buf;
+    buf_end = buf + RSTRING_LEN(str);
+
+    while (buf < buf_end) {
+	switch (*buf) {
+	  case '\'':
+	  case '&':
+	  case '"':
+	  case '<':
+	  case '>':
+	    if (!dest) {
+		dest = rb_str_buf_new(RSTRING_LEN(str));
+	    }
+
+	    rb_str_cat(dest, beg, buf - beg);
+	    beg = buf + 1;
+
+	    html_escaped_cat(dest, *buf);
+	    break;
+	}
+	buf++;
+    }
+
+    if (dest) {
+	rb_str_cat(dest, beg, buf - beg);
+	preserve_original_state(str, dest);
+	return dest;
+    }
+    else {
+	return rb_str_dup(str);
+    }
+}
+
+static VALUE
 optimized_unescape_html(VALUE str)
 {
     enum {UNICODE_MAX = 0x10ffff};
@@ -330,6 +370,19 @@ cgiesc_escape_html(VALUE self, VALUE str)
     }
 }
 
+static VALUE
+cgiesc_escape_html_old(VALUE self, VALUE str)
+{
+    StringValue(str);
+
+    if (rb_enc_str_asciicompat_p(str)) {
+	return optimized_escape_html_old(str);
+    }
+    else {
+	return rb_call_super(1, &str);
+    }
+}
+
 /*
  *  call-seq:
  *     CGI.unescapeHTML(string) -> string
@@ -415,6 +468,7 @@ InitVM_escape(void)
     rb_mEscape = rb_define_module_under(rb_cCGI, "Escape");
     rb_mUtil   = rb_define_module_under(rb_cCGI, "Util");
     rb_define_method(rb_mEscape, "escapeHTML", cgiesc_escape_html, 1);
+    rb_define_method(rb_mEscape, "escapeHTMLold", cgiesc_escape_html_old, 1);
     rb_define_method(rb_mEscape, "unescapeHTML", cgiesc_unescape_html, 1);
     rb_define_method(rb_mEscape, "escape", cgiesc_escape, 1);
     rb_define_method(rb_mEscape, "unescape", cgiesc_unescape, -1);
