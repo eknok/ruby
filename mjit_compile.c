@@ -20,6 +20,8 @@
 struct compile_status {
     int success; /* has TRUE if compilation has had no issue */
     int *compiled_for_pos; /* compiled_for_pos[pos] has TRUE if the pos is compiled */
+    /* If `iseq_for_pos[pos]` is not NULL, `mjit_compile_body` tries to inline ISeq there. */
+    const struct rb_iseq_constant_body **iseq_for_pos;
 };
 
 /* Storage to keep data which is consistent in each conditional branch.
@@ -151,18 +153,15 @@ compile_insns(FILE *f, const struct rb_iseq_constant_body *body, unsigned int st
     }
 }
 
-/* Compile ISeq to C code in F.  It returns 1 if it succeeds to compile. */
-int
-mjit_compile(FILE *f, const struct rb_iseq_constant_body *body, const char *funcname)
+/* If iseq_for_pos is not NULL, it tries to inline ISeq. */
+static int
+mjit_compile_body(FILE *f, const struct rb_iseq_constant_body *body, const struct rb_iseq_constant_body **iseq_for_pos)
 {
     struct compile_status status;
     status.success = TRUE;
     status.compiled_for_pos = ZALLOC_N(int, body->iseq_size);
+    status.iseq_for_pos = iseq_for_pos;
 
-#ifdef _WIN32
-    fprintf(f, "__declspec(dllexport)\n");
-#endif
-    fprintf(f, "VALUE\n%s(rb_execution_context_t *ec, rb_control_frame_t *reg_cfp)\n{\n", funcname);
     fprintf(f, "    VALUE *stack = reg_cfp->sp;\n");
     fprintf(f, "    static const VALUE *const original_body_iseq = (VALUE *)0x%"PRIxVALUE";\n",
             (VALUE)body->iseq_encoded);
@@ -186,8 +185,52 @@ mjit_compile(FILE *f, const struct rb_iseq_constant_body *body, const char *func
     fprintf(f, "    }\n");
 
     compile_insns(f, body, 0, 0, &status);
+    xfree(status.compiled_for_pos);
+
+    return status.success;
+}
+
+/* Compile ISeq to C code in F.  It returns 1 if it succeeds to compile. */
+int
+mjit_compile(FILE *f, const struct rb_iseq_constant_body *body, const char *funcname)
+{
+    int result = TRUE;
+    const struct rb_iseq_constant_body **iseq_for_pos = ZALLOC_N(const struct rb_iseq_constant_body *, body->iseq_size);
+
+    /* Precompile inlinable ISeqs */
+    {
+        unsigned int pos = 0;
+        int insn;
+        while (pos < body->iseq_size) {
+#if OPT_DIRECT_THREADED_CODE || OPT_CALL_THREADED_CODE
+            insn = rb_vm_insn_addr2insn((void *)body->iseq_encoded[pos]);
+#else
+            insn = (int)body->iseq_encoded[pos];
+#endif
+
+            if (insn == BIN(opt_send_without_block) || insn == BIN(send)) {
+                const rb_iseq_t *iseq;
+                CALL_INFO ci = (CALL_INFO)body->iseq_encoded[pos + 1];
+                CALL_CACHE cc = (CALL_CACHE)body->iseq_encoded[pos + 2];
+                if (inlinable_iseq_p(ci, cc, iseq = get_iseq_if_available(cc))) {
+                    iseq_for_pos[pos] = iseq->body;
+
+                    fprintf(f, "static inline VALUE\n_mjit_inlined_%d(rb_execution_context_t *ec, rb_control_frame_t *reg_cfp)\n{", pos);
+                    result &= mjit_compile_body(f, iseq->body, NULL);
+                    fprintf(f, "\n} /* end of _mjit_inlined_%d */\n\n", pos);
+                }
+            }
+            pos += insn_len(insn);
+        }
+    }
+
+    /* Compile main function */
+#ifdef _WIN32
+    fprintf(f, "__declspec(dllexport)\n");
+#endif
+    fprintf(f, "VALUE\n%s(rb_execution_context_t *ec, rb_control_frame_t *reg_cfp)\n{\n", funcname);
+    result = mjit_compile_body(f, body, iseq_for_pos);
     fprintf(f, "\n} /* end of %s */\n", funcname);
 
-    xfree(status.compiled_for_pos);
-    return status.success;
+    return result;
 }
