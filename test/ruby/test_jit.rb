@@ -27,6 +27,7 @@ class TestJIT < Test::Unit::TestCase
   end
 
   def test_compile_insn_blockparam
+    skip "support this in mjit_compile again"
     assert_eval_with_jit("#{<<~"begin;"}\n#{<<~"end;"}", stdout: '3', success_count: 2)
     begin;
       def foo(&b)

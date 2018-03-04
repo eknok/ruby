@@ -1,0 +1,50 @@
+% # -*- mode:c; style:ruby; coding: utf-8; indent-tabs-mode: nil -*-
+% # Copyright (c) 2018 Takashi Kokubun.  All rights reserved.
+% #
+% # This file is a part of  the programming language Ruby.  Permission is hereby
+% # granted, to either  redistribute and/or modify this file,  provided that the
+% # conditions mentioned  in the  file COPYING  are met.   Consult the  file for
+% # details.
+%
+% # Optimized case of getlocal_WC_0 / setlocal_WC_0 instructions.
+    if (status->local_lvar_p) {
+% # compiler: Prepare operands which may be used by `insn.call_attribute`
+% insn.opes.each_with_index do |ope, i|
+        MAYBE_UNUSED(<%= ope.fetch(:decl) %>) = (<%= ope.fetch(:type) %>)operands[<%= i %>];
+% end
+        fprintf(f, "{\n");
+%
+% # JIT: Declare variables for operands, popped values and return values
+% insn.declarations.each do |decl|
+        fprintf(f, "    <%= decl %>;\n");
+% end
+%
+% # JIT: Initialize popped values
+% insn.pops.reverse_each.with_index.reverse_each do |pop, i|
+        fprintf(f, "    <%= pop.fetch(:name) %> = stack[%d];\n", b->stack_size - <%= i + 1 %>);
+% end
+%
+% # If local_lvar_p is TRUE, local_stack_p is TRUE too. So we don't need to move sp here.
+% # As this insn won't raise an exception, moving pc wouldn't be needed too.
+%
+% # JIT: Optimized code for getlocal_WC_0 / setlocal_WC_0
+% case insn.name
+% when 'getlocal_WC_0'
+        fprintf(f, "    val = lvar%ld;\n", idx);
+% when 'setlocal_WC_0'
+        fprintf(f, "    lvar%ld = val;\n", idx);
+% else
+%   raise "unexpected insn name: #{insn.name}"
+% end
+%
+% # JIT: Set return values
+% insn.rets.reverse_each.with_index do |ret, i|
+%     # TOPN(n) = ...
+        fprintf(f, "    stack[%d] = <%= ret.fetch(:name) %>;\n", b->stack_size + (int)<%= insn.call_attribute('sp_inc') %> - <%= i + 1 %>);
+% end
+%
+% # compiler: Move JIT compiler's internal stack pointer
+        b->stack_size += <%= insn.call_attribute('sp_inc') %>;
+        fprintf(f, "}\n");
+        break;
+    }
