@@ -23,6 +23,8 @@ struct compile_status {
     /* If TRUE, JIT-ed code will use local variables to store pushed values instead of
        using VM's stack and moving stack pointer. */
     int local_stack_p;
+    /* If TRUE, JIT compiler uses real local variables in C for Ruby's local variables. */
+    int local_lvar_p;
 };
 
 /* Storage to keep data which is consistent in each conditional branch.
@@ -154,6 +156,27 @@ compile_insns(FILE *f, const struct rb_iseq_constant_body *body, unsigned int st
     }
 }
 
+/* If ISeq has insn that takes blockiseq, this returns TRUE. */
+static int
+create_block_p(const struct rb_iseq_constant_body *body)
+{
+    int insn;
+    unsigned int pos = 0;
+
+    while (pos < body->iseq_size) {
+#if OPT_DIRECT_THREADED_CODE || OPT_CALL_THREADED_CODE
+        insn = rb_vm_insn_addr2insn((void *)body->iseq_encoded[pos]);
+#else
+        insn = (int)body->iseq_encoded[pos];
+#endif
+        if (insn == BIN(send) || insn == BIN(invokesuper)) {
+            return TRUE;
+        }
+        pos += insn_len(insn);
+    }
+    return FALSE;
+}
+
 /* Print the block to cancel JIT execution. */
 static void
 compile_cancel_handler(FILE *f, const struct rb_iseq_constant_body *body, struct compile_status *status)
@@ -176,6 +199,7 @@ mjit_compile(FILE *f, const struct rb_iseq_constant_body *body, const char *func
     status.success = TRUE;
     status.compiled_for_pos = ZALLOC_N(int, body->iseq_size);
     status.local_stack_p = !body->catch_except_p;
+    status.local_lvar_p = !body->catch_except_p && !create_block_p(body);
 
 #ifdef _WIN32
     fprintf(f, "__declspec(dllexport)\n");
@@ -186,6 +210,12 @@ mjit_compile(FILE *f, const struct rb_iseq_constant_body *body, const char *func
     }
     else {
         fprintf(f, "    VALUE *stack = reg_cfp->sp;\n");
+    }
+    if (status.local_lvar_p) {
+        unsigned int i;
+        for (i = 0; i < body->local_table_size; i++) {
+            fprintf(f, "    VALUE lvar%d = *(GET_EP() - %d);\n", VM_ENV_DATA_SIZE + i, VM_ENV_DATA_SIZE + i);
+        }
     }
     fprintf(f, "    static const VALUE *const original_body_iseq = (VALUE *)0x%"PRIxVALUE";\n",
             (VALUE)body->iseq_encoded);
