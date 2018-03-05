@@ -21,7 +21,7 @@
 %
 % # JIT: Initialize popped values
 % insn.pops.reverse_each.with_index.reverse_each do |pop, i|
-        fprintf(f, "    <%= pop.fetch(:name) %> = stack[%d];\n", b->stack_size - <%= i + 1 %>);
+        fprintf(f, "    <%= pop.fetch(:name) %> = stack_ref(%d);\n", b->stack_size - <%= i + 1 %>);
 % end
 %
 % # If local_lvar_p is TRUE, local_stack_p is TRUE too. So we don't need to move sp here.
@@ -40,7 +40,7 @@
 % # JIT: Set return values
 % insn.rets.reverse_each.with_index do |ret, i|
 %     # TOPN(n) = ...
-        fprintf(f, "    stack[%d] = <%= ret.fetch(:name) %>;\n", b->stack_size + (int)<%= insn.call_attribute('sp_inc') %> - <%= i + 1 %>);
+        fprintf(f, "    stack_ref(%d) = <%= ret.fetch(:name) %>;\n", b->stack_size + (int)<%= insn.call_attribute('sp_inc') %> - <%= i + 1 %>);
 % end
 %
 % # compiler: Move JIT compiler's internal stack pointer
