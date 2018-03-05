@@ -3371,7 +3371,8 @@ vm_stack_consistency_error(const rb_execution_context_t *ec,
 #endif
 }
 
-static VALUE
+ALWAYS_INLINE(static inline VALUE vm_opt_plus(VALUE recv, VALUE obj));
+static inline VALUE
 vm_opt_plus(VALUE recv, VALUE obj)
 {
     if (FIXNUM_2_P(recv, obj) &&
@@ -3516,7 +3517,8 @@ vm_opt_neq(CALL_INFO ci, CALL_CACHE cc,
     return Qundef;
 }
 
-static VALUE
+ALWAYS_INLINE(static inline VALUE vm_opt_lt(VALUE recv, VALUE obj));
+static inline VALUE
 vm_opt_lt(VALUE recv, VALUE obj)
 {
     if (FIXNUM_2_P(recv, obj) &&
