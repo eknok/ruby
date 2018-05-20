@@ -59,7 +59,7 @@ extern void mjit_add_iseq_to_process(const rb_iseq_t *iseq);
 extern mjit_func_t mjit_get_iseq_func(struct rb_iseq_constant_body *body);
 RUBY_SYMBOL_EXPORT_END
 
-extern int mjit_compile(FILE *f, const struct rb_iseq_constant_body *body, const char *funcname);
+extern int mjit_compile(FILE *f, const struct rb_iseq_constant_body *body, const char *funcname, const char *funcname_fp);
 extern void mjit_init(struct mjit_options *opts);
 extern void mjit_finish(void);
 extern void mjit_gc_start_hook(void);
@@ -84,24 +84,19 @@ mjit_target_iseq_p(struct rb_iseq_constant_body *body)
         && body->iseq_size < JIT_ISEQ_SIZE_THRESHOLD;
 }
 
-/* Try to execute the current iseq in ec.  Use JIT code if it is ready.
-   If it is not, add ISEQ to the compilation queue and return Qundef.  */
+/* `mjit_exec` but with more parameters to pass directly */
 static inline VALUE
-mjit_exec(rb_execution_context_t *ec)
+mjit_exec_iseq(rb_execution_context_t *ec, rb_control_frame_t *cfp, const rb_iseq_t *iseq, struct rb_iseq_constant_body *body)
 {
-    const rb_iseq_t *iseq;
-    struct rb_iseq_constant_body *body;
     long unsigned total_calls;
     mjit_func_t func;
 
     if (!mjit_init_p)
         return Qundef;
 
-    iseq = ec->cfp->iseq;
-    body = iseq->body;
     total_calls = ++body->total_calls;
-
     func = body->jit_func;
+
     if (UNLIKELY((ptrdiff_t)func <= (ptrdiff_t)LAST_JIT_ISEQ_FUNC)) {
         switch ((enum rb_mjit_iseq_func)func) {
           case NOT_ADDED_JIT_ISEQ_FUNC:
@@ -120,7 +115,23 @@ mjit_exec(rb_execution_context_t *ec)
         }
     }
 
-    return func(ec, ec->cfp);
+    return func(ec, cfp);
+}
+
+/* Try to execute the current iseq in ec.  Use JIT code if it is ready.
+   If it is not, add ISEQ to the compilation queue and return Qundef.  */
+static inline VALUE
+mjit_exec(rb_execution_context_t *ec)
+{
+    const rb_iseq_t *iseq;
+    rb_control_frame_t *cfp;
+
+    if (!mjit_init_p)
+        return Qundef;
+
+    cfp = ec->cfp;
+    iseq = cfp->iseq;
+    return mjit_exec_iseq(ec, cfp, iseq, iseq->body);
 }
 
 #endif /* RUBY_MJIT_H */

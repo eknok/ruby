@@ -431,6 +431,7 @@ struct rb_iseq_constant_body {
     /* The following fields are MJIT related info.  */
     VALUE (*jit_func)(struct rb_execution_context_struct *,
                       struct rb_control_frame_struct *); /* function pointer for loaded native code */
+    vm_call_handler jit_fastpath; /* For cc->call. This should always be set whenever jit_func is set. */
     long unsigned total_calls; /* number of total calls with `mjit_exec()` */
     struct rb_mjit_unit *jit_unit;
     char catch_except_p; /* If a frame of this ISeq may catch exception, set TRUE */

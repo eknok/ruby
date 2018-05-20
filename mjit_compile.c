@@ -185,9 +185,32 @@ compile_cancel_handler(FILE *f, const struct rb_iseq_constant_body *body, struct
     fprintf(f, "    return Qundef;\n");
 }
 
+/* This function can be directly called via cc->call in CALL_METHOD. */
+static void
+compile_fastpath(FILE *f, const char *funcname, const char *funcname_fp)
+{
+#ifdef _WIN32
+    fprintf(f, "__declspec(dllexport)\n");
+#endif
+    fprintf(f, "VALUE\n%s(rb_execution_context_t *ec, rb_control_frame_t *cfp, struct rb_calling_info *calling, const struct rb_call_info *ci, struct rb_call_cache *cc)\n{\n", funcname_fp);
+    fprintf(f, "    const rb_callable_method_entry_t *me = cc->me;\n");
+    fprintf(f, "    const rb_iseq_t *iseq = def_iseq_ptr(me->def);\n");
+    fprintf(f, "    struct rb_iseq_constant_body *body = iseq->body;\n");
+    fprintf(f, "    VALUE *argv = cfp->sp - calling->argc;\n");
+    fprintf(f, "    VALUE *sp = argv;\n");
+    fprintf(f, "    cfp->sp = argv - 1;\n");
+    fprintf(f, "    vm_push_frame(ec, iseq, VM_FRAME_MAGIC_METHOD | VM_ENV_FLAG_LOCAL, calling->recv,\n");
+    fprintf(f, "                  calling->block_handler, (VALUE)me,\n");
+    fprintf(f, "                  body->iseq_encoded, sp,\n");
+    fprintf(f, "                  0 - 0,\n");
+    fprintf(f, "                  body->stack_max);\n");
+    fprintf(f, "    return %s(ec, ec->cfp);\n", funcname);
+    fprintf(f, "} /* end of %s */\n", funcname_fp);
+}
+
 /* Compile ISeq to C code in F.  It returns 1 if it succeeds to compile. */
 int
-mjit_compile(FILE *f, const struct rb_iseq_constant_body *body, const char *funcname)
+mjit_compile(FILE *f, const struct rb_iseq_constant_body *body, const char *funcname, const char *funcname_fp)
 {
     struct compile_status status;
     status.success = TRUE;
@@ -234,7 +257,9 @@ mjit_compile(FILE *f, const struct rb_iseq_constant_body *body, const char *func
 
     compile_insns(f, body, 0, 0, &status);
     compile_cancel_handler(f, body, &status);
-    fprintf(f, "\n} /* end of %s */\n", funcname);
+    fprintf(f, "\n} /* end of %s */\n\n", funcname);
+
+    compile_fastpath(f, funcname, funcname_fp);
 
     xfree(status.stack_size_for_pos);
     return status.success;

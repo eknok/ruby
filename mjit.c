@@ -728,7 +728,7 @@ compile_c_to_so(const char *c_file, const char *so_file)
 }
 
 static void *
-load_func_from_so(const char *so_file, const char *funcname, struct rb_mjit_unit *unit)
+load_func_from_so(const char *so_file, const char *funcname, const char *funcname_fp, struct rb_mjit_unit *unit, void **fastpath)
 {
     void *handle, *func;
 
@@ -740,6 +740,7 @@ load_func_from_so(const char *so_file, const char *funcname, struct rb_mjit_unit
     }
 
     func = dlsym(handle, funcname);
+    *fastpath = dlsym(handle, funcname_fp);
     unit->handle = handle;
     return func;
 }
@@ -774,9 +775,9 @@ print_jit_result(const char *result, const struct rb_mjit_unit *unit, const doub
 /* Compile ISeq in UNIT and return function pointer of JIT-ed code.
    It may return NOT_COMPILABLE_JIT_ISEQ_FUNC if something went wrong. */
 static mjit_func_t
-convert_unit_to_func(struct rb_mjit_unit *unit)
+convert_unit_to_func(struct rb_mjit_unit *unit, vm_call_handler *fastpath)
 {
-    char c_file_buff[70], *c_file = c_file_buff, *so_file, funcname[35];
+    char c_file_buff[70], *c_file = c_file_buff, *so_file, funcname[35], funcname_fp[38];
     int success;
     int fd;
     FILE *f;
@@ -802,6 +803,7 @@ convert_unit_to_func(struct rb_mjit_unit *unit)
     memcpy(so_file, c_file, c_file_len - sizeof(c_ext));
     memcpy(&so_file[c_file_len - sizeof(c_ext)], so_ext, sizeof(so_ext));
     sprintf(funcname, "_mjit%d", unit->id);
+    sprintf(funcname_fp, "_mjit_fp%d", unit->id);
 
     fd = rb_cloexec_open(c_file, access_mode, 0600);
     if (fd < 0 || (f = fdopen(fd, "w")) == NULL) {
@@ -857,7 +859,7 @@ convert_unit_to_func(struct rb_mjit_unit *unit)
         verbose(2, "start compile: %s@%s:%d -> %s", label, path, lineno, c_file);
         fprintf(f, "/* %s@%s:%d */\n\n", label, path, lineno);
     }
-    success = mjit_compile(f, unit->iseq->body, funcname);
+    success = mjit_compile(f, unit->iseq->body, funcname, funcname_fp);
 
     /* release blocking mjit_gc_start_hook */
     CRITICAL_SECTION_START(3, "after mjit_compile to wakeup client for GC");
@@ -885,7 +887,7 @@ convert_unit_to_func(struct rb_mjit_unit *unit)
         return (mjit_func_t)NOT_COMPILABLE_JIT_ISEQ_FUNC;
     }
 
-    func = load_func_from_so(so_file, funcname, unit);
+    func = load_func_from_so(so_file, funcname, funcname_fp, unit, (void **)fastpath);
     if (!mjit_opts.save_temps) {
 #ifdef _WIN32
         unit->so_file = strdup(so_file);
@@ -941,11 +943,15 @@ worker(void)
         CRITICAL_SECTION_FINISH(3, "in worker dequeue");
 
         if (node) {
-            mjit_func_t func = convert_unit_to_func(node->unit);
+            vm_call_handler fastpath = NULL;
+            mjit_func_t func = convert_unit_to_func(node->unit, &fastpath);
 
             CRITICAL_SECTION_START(3, "in jit func replace");
             if (node->unit->iseq) { /* Check whether GCed or not */
-                /* Usage of jit_code might be not in a critical section.  */
+                /* jit_fastpath is used only when jit_func is already set. */
+                node->unit->iseq->body->jit_fastpath = fastpath;
+
+                /* Usage of jit_func might be not in a critical section. */
                 MJIT_ATOMIC_SET(node->unit->iseq->body->jit_func, func);
             }
             remove_from_list(node, &unit_queue);

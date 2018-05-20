@@ -1658,18 +1658,24 @@ static inline VALUE
 vm_call_iseq_setup_normal(rb_execution_context_t *ec, rb_control_frame_t *cfp, struct rb_calling_info *calling, const struct rb_call_info *ci, struct rb_call_cache *cc,
 			  int opt_pc, int param_size, int local_size)
 {
+    VALUE result;
     const rb_callable_method_entry_t *me = cc->me;
     const rb_iseq_t *iseq = def_iseq_ptr(me->def);
+    struct rb_iseq_constant_body *body = iseq->body;
     VALUE *argv = cfp->sp - calling->argc;
     VALUE *sp = argv + param_size;
     cfp->sp = argv - 1 /* recv */;
 
     vm_push_frame(ec, iseq, VM_FRAME_MAGIC_METHOD | VM_ENV_FLAG_LOCAL, calling->recv,
-		  calling->block_handler, (VALUE)me,
-		  iseq->body->iseq_encoded + opt_pc, sp,
-		  local_size - param_size,
-		  iseq->body->stack_max);
-    return Qundef;
+                  calling->block_handler, (VALUE)me,
+                  body->iseq_encoded + opt_pc, sp,
+                  local_size - param_size,
+                  body->stack_max);
+
+    if ((result = mjit_exec_iseq(ec, ec->cfp, iseq, body)) != Qundef) {
+        CI_SET_FASTPATH(cc, body->jit_fastpath, TRUE);
+    }
+    return result;
 }
 
 static inline VALUE
