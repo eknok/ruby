@@ -171,6 +171,7 @@ struct rb_mjit_unit_list {
 
 /* TRUE if MJIT is initialized and will be used.  */
 int mjit_init_p = FALSE;
+int mjit_calls = 0;
 
 /* Priority queue of iseqs waiting for JIT compilation.
    This variable is a pointer to head unit of the queue. */
@@ -1471,6 +1472,8 @@ mjit_finish(void)
     rb_native_cond_destroy(&mjit_client_wakeup);
     rb_native_cond_destroy(&mjit_worker_wakeup);
     rb_native_cond_destroy(&mjit_gc_wakeup);
+
+    fprintf(stderr, "\nMJIT calls: %d\n", mjit_calls);
 
     /* cleanup temps */
     if (!mjit_opts.save_temps)
