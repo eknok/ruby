@@ -50,8 +50,6 @@ switch (insn) {
 %   case insn.name
 %   when 'opt_send_without_block', 'send'
 <%=   render 'mjit_compile_send', locals: { insn: insn } -%>
-%   when 'opt_aref' # experimental. TODO: increase insns and make the list automatically by finding DISPATCH_ORIGINAL_INSN
-<%=   render 'mjit_compile_send', locals: { insn: opt_send_without_block } -%>
 %   when 'leave'
     if (b->stack_size != 1) {
         if (mjit_opts.warnings || mjit_opts.verbose)
