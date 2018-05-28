@@ -94,12 +94,12 @@ mjit_exec(rb_execution_context_t *ec)
     long unsigned total_calls;
     mjit_func_t func;
 
-    if (!mjit_init_p)
-        return Qundef;
-
     iseq = ec->cfp->iseq;
     body = iseq->body;
     total_calls = ++body->total_calls;
+
+    if (!mjit_init_p)
+        return Qundef;
 
     func = body->jit_func;
     if (UNLIKELY(mjit_opts.wait && mjit_opts.min_calls == total_calls && mjit_target_iseq_p(body)
