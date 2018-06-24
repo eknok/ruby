@@ -128,6 +128,7 @@ pid_t ruby_waitpid_locked(rb_vm_t *, rb_pid_t, int *status, int options,
 #define WEXITSTATUS(S) (S)
 #define WIFSIGNALED(S) (0)
 typedef intptr_t pid_t;
+#define USE_RUBY_WAITPID_LOCKED (0)
 #endif
 
 /* Atomically set function pointer if possible. */
@@ -140,6 +141,10 @@ typedef intptr_t pid_t;
 #else
 # define MJIT_ATOMIC_SET(var, val) ATOMIC_SET(var, val)
 #endif
+
+#ifndef USE_RUBY_WAITPID_LOCKED /* platforms with real waitpid */
+#  define USE_RUBY_WAITPID_LOCKED (1)
+#endif /* USE_RUBY_WAITPID_LOCKED */
 
 /* A copy of MJIT portion of MRI options since MJIT initialization.  We
    need them as MJIT threads still can work when the most MRI data were
@@ -386,24 +391,23 @@ start_process(const char *path, char *const *argv)
 static int
 exec_process(const char *path, char *const argv[])
 {
-    int stat, exit_code;
+    int stat, exit_code = -2;
     pid_t pid;
-    rb_vm_t *vm = GET_VM();
+    rb_vm_t *vm = USE_RUBY_WAITPID_LOCKED ? GET_VM() : 0;
     rb_nativethread_cond_t cond;
 
-    rb_nativethread_lock_lock(&vm->waitpid_lock);
-    pid = start_process(path, argv);
-    if (pid <= 0) {
-        rb_nativethread_lock_unlock(&vm->waitpid_lock);
-        return -2;
+    if (vm) {
+        rb_native_cond_initialize(&cond);
+        rb_nativethread_lock_lock(&vm->waitpid_lock);
     }
-    rb_native_cond_initialize(&cond);
-    for (;;) {
-        pid_t r = ruby_waitpid_locked(vm, pid, &stat, 0, &cond);
+
+    pid = start_process(path, argv);
+    for (;pid > 0;) {
+        pid_t r = vm ? ruby_waitpid_locked(vm, pid, &stat, 0, &cond)
+                     : waitpid(pid, &stat, 0);
         if (r == -1) {
             if (errno == EINTR) continue; /* should never happen */
             fprintf(stderr, "waitpid: %s\n", strerror(errno));
-            exit_code = -2;
             break;
         }
         else if (r == pid) {
@@ -416,8 +420,11 @@ exec_process(const char *path, char *const argv[])
             }
         }
     }
-    rb_nativethread_lock_unlock(&vm->waitpid_lock);
-    rb_native_cond_destroy(&cond);
+
+    if (vm) {
+        rb_native_cond_destroy(&cond);
+        rb_nativethread_lock_unlock(&vm->waitpid_lock);
+    }
     return exit_code;
 }
 
