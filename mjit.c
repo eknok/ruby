@@ -111,7 +111,8 @@ extern void rb_native_cond_wait(rb_nativethread_cond_t *cond, rb_nativethread_lo
 extern int rb_thread_create_mjit_thread(void (*child_hook)(void), void (*worker_func)(void));
 
 
-pid_t ruby_waitpid_locked(rb_vm_t *, rb_pid_t, int *status, int options);
+pid_t ruby_waitpid_locked(rb_vm_t *, rb_pid_t, int *status, int options,
+                          rb_nativethread_cond_t *cond);
 
 #define RB_CONDATTR_CLOCK_MONOTONIC 1
 
@@ -388,6 +389,7 @@ exec_process(const char *path, char *const argv[])
     int stat, exit_code;
     pid_t pid;
     rb_vm_t *vm = GET_VM();
+    rb_nativethread_cond_t cond;
 
     rb_nativethread_lock_lock(&vm->waitpid_lock);
     pid = start_process(path, argv);
@@ -395,11 +397,13 @@ exec_process(const char *path, char *const argv[])
         rb_nativethread_lock_unlock(&vm->waitpid_lock);
         return -2;
     }
+    rb_native_cond_initialize(&cond);
     for (;;) {
-        pid_t r = ruby_waitpid_locked(vm, pid, &stat, 0);
+        pid_t r = ruby_waitpid_locked(vm, pid, &stat, 0, &cond);
         if (r == -1) {
-            if (errno == EINTR) continue;
+            if (errno == EINTR) continue; /* should never happen */
             fprintf(stderr, "waitpid: %s\n", strerror(errno));
+            exit_code = -2;
             break;
         }
         else if (r == pid) {
@@ -413,6 +417,7 @@ exec_process(const char *path, char *const argv[])
         }
     }
     rb_nativethread_lock_unlock(&vm->waitpid_lock);
+    rb_native_cond_destroy(&cond);
     return exit_code;
 }
 
@@ -1563,7 +1568,7 @@ mjit_finish(void)
        absence.  So wait for a clean finish of the threads.  */
     while (pch_status == PCH_NOT_READY) {
         verbose(3, "Waiting wakeup from make_pch");
-	/* release GVL to handle interrupts */
+        /* release GVL to handle interrupts */
         rb_thread_call_without_gvl(wait_pch, 0, ubf_pch, 0);
     }
     CRITICAL_SECTION_FINISH(3, "in mjit_finish to wakeup from pch");

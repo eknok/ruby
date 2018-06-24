@@ -899,137 +899,101 @@ do_waitpid(rb_pid_t pid, int *st, int flags)
 
 struct waitpid_state {
     struct list_node wnode;
-    rb_nativethread_cond_t cond;
+    union {
+        rb_nativethread_cond_t *cond; /* non-Ruby thread */
+        rb_execution_context_t *ec; /* normal Ruby execution context */
+    } wake;
     rb_pid_t ret;
     rb_pid_t pid;
     int status;
     int options;
     int errnum;
-    rb_vm_t *vm;
+    unsigned int is_ruby : 1;
 };
 
+void rb_native_mutex_lock(rb_nativethread_lock_t *);
+void rb_native_mutex_unlock(rb_nativethread_lock_t *);
 void rb_native_cond_signal(rb_nativethread_cond_t *);
 void rb_native_cond_wait(rb_nativethread_cond_t *, rb_nativethread_lock_t *);
-void rb_native_cond_initialize(rb_nativethread_cond_t *);
-void rb_native_cond_destroy(rb_nativethread_cond_t *);
 
-/* only called by vm->main_thread */
+/* called by vm->main_thread */
 void
-rb_sigchld(rb_vm_t *vm)
+rb_waitpid_all(rb_vm_t *vm)
 {
     struct waitpid_state *w = 0, *next;
 
-    rb_nativethread_lock_lock(&vm->waitpid_lock);
+    rb_native_mutex_lock(&vm->waitpid_lock);
     list_for_each_safe(&vm->waiting_pids, w, next, wnode) {
         w->ret = do_waitpid(w->pid, &w->status, w->options | WNOHANG);
+
         if (w->ret == 0) continue;
         if (w->ret == -1) w->errnum = errno;
+
         list_del_init(&w->wnode);
-        rb_native_cond_signal(&w->cond);
+        if (w->is_ruby) {
+            rb_thread_wakeup_alive(rb_ec_thread_ptr(w->wake.ec)->self);
+        }
+        else {
+            rb_native_cond_signal(w->wake.cond);
+        }
     }
-    rb_nativethread_lock_unlock(&vm->waitpid_lock);
+    rb_native_mutex_unlock(&vm->waitpid_lock);
 }
 
 static void
-waitpid_state_init(struct waitpid_state *w, rb_vm_t *vm, pid_t pid, int options)
+waitpid_state_init(struct waitpid_state *w, pid_t pid, int options)
 {
-    rb_native_cond_initialize(&w->cond);
     w->ret = 0;
     w->pid = pid;
-    w->status = 0;
     w->options = options;
-    w->vm = vm;
     list_node_init(&w->wnode);
 }
 
-/* must be called with vm->waitpid_lock held, this is not interruptible */
+/*
+ * must be called with vm->waitpid_lock held, this is not interruptible
+ */
 pid_t
-ruby_waitpid_locked(rb_vm_t *vm, rb_pid_t pid, int *status, int options)
+ruby_waitpid_locked(rb_vm_t *vm, rb_pid_t pid, int *status, int options,
+                    rb_nativethread_cond_t *cond)
 {
     struct waitpid_state w;
 
     assert(!ruby_thread_has_gvl_p() && "must not have GVL");
 
-    waitpid_state_init(&w, vm, pid, options);
+    waitpid_state_init(&w, pid, options);
+    w.is_ruby = 0;
     w.ret = do_waitpid(w.pid, &w.status, w.options | WNOHANG);
     if (w.ret) {
-        if (w.ret == -1) {
-            w.errnum = errno;
-        }
+        if (w.ret == -1) w.errnum = errno;
     }
     else {
+        w.wake.cond = cond;
         list_add(&vm->waiting_pids, &w.wnode);
-        while (!w.ret) {
-            rb_native_cond_wait(&w.cond, &vm->waitpid_lock);
-        }
+        do {
+            rb_native_cond_wait(w.wake.cond, &vm->waitpid_lock);
+        } while (!w.ret);
         list_del(&w.wnode);
     }
     if (status) {
         *status = w.status;
     }
-    rb_native_cond_destroy(&w.cond);
     errno = w.errnum;
     return w.ret;
 }
 
-static void
-waitpid_ubf(void *x)
-{
-    struct waitpid_state *w = x;
-    rb_nativethread_lock_lock(&w->vm->waitpid_lock);
-    if (!w->ret) {
-        w->errnum = EINTR;
-        w->ret = -1;
-    }
-    rb_native_cond_signal(&w->cond);
-    rb_nativethread_lock_unlock(&w->vm->waitpid_lock);
-}
-
-static void *
-waitpid_nogvl(void *x)
-{
-    struct waitpid_state *w = x;
-
-    /* let rb_sigchld handle it */
-    rb_native_cond_wait(&w->cond, &w->vm->waitpid_lock);
-
-    return 0;
-}
+void rb_thread_sleep_interruptible(struct timespec *ts); /* thread.c */
 
 static VALUE
-waitpid_wait(VALUE x)
+waitpid_sleep(VALUE x)
 {
     struct waitpid_state *w = (struct waitpid_state *)x;
 
-    rb_nativethread_lock_lock(&w->vm->waitpid_lock);
-    w->ret = do_waitpid(w->pid, &w->status, w->options | WNOHANG);
-    if (w->ret) {
-        if (w->ret == -1) {
-            w->errnum = errno;
-        }
+    rb_thread_check_ints();
+    while (!w->ret) {
+        rb_thread_sleep_interruptible(0);
+        rb_thread_check_ints();
     }
-    else {
-        rb_execution_context_t *ec = GET_EC();
 
-        list_add(&w->vm->waiting_pids, &w->wnode);
-        do {
-            rb_thread_call_without_gvl2(waitpid_nogvl, w, waitpid_ubf, w);
-            if (RUBY_VM_INTERRUPTED_ANY(ec) ||
-                    (w->ret == -1 && w->errnum == EINTR)) {
-                rb_nativethread_lock_unlock(&w->vm->waitpid_lock);
-
-                RUBY_VM_CHECK_INTS(ec);
-
-                rb_nativethread_lock_lock(&w->vm->waitpid_lock);
-                if (w->ret == -1 && w->errnum == EINTR) {
-                    w->ret = do_waitpid(w->pid, &w->status, w->options|WNOHANG);
-                    if (w->ret == -1)
-                        w->errnum = errno;
-                }
-            }
-        } while (!w->ret);
-    }
-    rb_nativethread_lock_unlock(&w->vm->waitpid_lock);
     return Qfalse;
 }
 
@@ -1038,14 +1002,40 @@ waitpid_ensure(VALUE x)
 {
     struct waitpid_state *w = (struct waitpid_state *)x;
 
-    if (w->ret <= 0) {
-        rb_nativethread_lock_lock(&w->vm->waitpid_lock);
-        list_del_init(&w->wnode);
-        rb_nativethread_lock_unlock(&w->vm->waitpid_lock);
-    }
+    if (w->ret == 0) {
+        rb_vm_t *vm = rb_ec_vm_ptr(w->wake.ec);
 
-    rb_native_cond_destroy(&w->cond);
+        rb_native_mutex_lock(&vm->waitpid_lock);
+        list_del(&w->wnode);
+        rb_native_mutex_unlock(&vm->waitpid_lock);
+    }
     return Qfalse;
+}
+
+static void
+waitpid_wait(struct waitpid_state *w)
+{
+    rb_vm_t *vm = rb_ec_vm_ptr(w->wake.ec);
+
+    /*
+     * Lock here to prevent do_waitpid from stealing work from the
+     * ruby_waitpid_locked done by mjit workers since mjit works
+     * outside of GVL
+     */
+    rb_native_mutex_lock(&vm->waitpid_lock);
+
+    w->ret = do_waitpid(w->pid, &w->status, w->options | WNOHANG);
+    if (w->ret) {
+        if (w->ret == -1) w->errnum = errno;
+
+        rb_native_mutex_unlock(&vm->waitpid_lock);
+    }
+    else {
+        list_add(&vm->waiting_pids, &w->wnode);
+        rb_native_mutex_unlock(&vm->waitpid_lock);
+
+        rb_ensure(waitpid_sleep, (VALUE)w, waitpid_ensure, (VALUE)w);
+    }
 }
 
 rb_pid_t
@@ -1059,11 +1049,11 @@ rb_waitpid(rb_pid_t pid, int *st, int flags)
     else {
         struct waitpid_state w;
 
-        waitpid_state_init(&w, GET_VM(), pid, flags);
-        rb_ensure(waitpid_wait, (VALUE)&w, waitpid_ensure, (VALUE)&w);
-        if (st) {
-            *st = w.status;
-        }
+        waitpid_state_init(&w, pid, flags);
+        w.is_ruby = 1;
+        w.wake.ec = GET_EC();
+        waitpid_wait(&w);
+        if (st) *st = w.status;
         result = w.ret;
     }
     if (result > 0) {

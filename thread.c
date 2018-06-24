@@ -1288,6 +1288,17 @@ rb_thread_sleep_forever(void)
 }
 
 void
+rb_thread_sleep_interruptible(struct timespec *ts)
+{
+    rb_thread_t *th = GET_THREAD();
+    enum rb_thread_status prev_status = th->status;
+
+    th->status = THREAD_STOPPED;
+    native_sleep(th, ts);
+    th->status = prev_status;
+}
+
+void
 rb_thread_sleep_deadly(void)
 {
     thread_debug("rb_thread_sleep_deadly\n");

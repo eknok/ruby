@@ -66,6 +66,14 @@ ruby_atomic_compare_and_swap(rb_atomic_t *ptr, rb_atomic_t cmp,
 # define NSIG (_SIGMAX + 1)      /* For QNX */
 #endif
 
+#if defined(SIGCLD)
+#  define RUBY_SIGCHLD    (SIGCLD)
+#elif defined(SIGCHLD)
+#  define RUBY_SIGCHLD    (SIGCHLD)
+#else
+#  define RUBY_SIGCHLD    (0)
+#endif
+
 static const struct signals {
     const char *signm;
     int  signo;
@@ -129,15 +137,9 @@ static const struct signals {
 #ifdef SIGCONT
     {"CONT", SIGCONT},
 #endif
-#ifdef SIGCHLD
-    {"CHLD", SIGCHLD},
-#endif
-#ifdef SIGCLD
-    {"CLD", SIGCLD},
-#else
-# ifdef SIGCHLD
-    {"CLD", SIGCHLD},
-# endif
+#if RUBY_SIGCHLD
+    {"CHLD", RUBY_SIGCHLD },
+    {"CLD", RUBY_SIGCHLD },
 #endif
 #ifdef SIGTTIN
     {"TTIN", SIGTTIN},
@@ -1052,18 +1054,7 @@ rb_trap_exit(void)
     }
 }
 
-static int
-sig_is_chld(int sig)
-{
-#if defined(SIGCLD)
-    return (sig == SIGCLD);
-#elif defined(SIGCHLD)
-    return (sig == SIGCHLD);
-#endif
-    return 0;
-}
-
-void rb_sigchld(rb_vm_t *); /* process.c */
+void rb_waitpid_all(rb_vm_t *); /* process.c */
 
 void
 rb_signal_exec(rb_thread_t *th, int sig)
@@ -1072,9 +1063,10 @@ rb_signal_exec(rb_thread_t *th, int sig)
     VALUE cmd = vm->trap_list.cmd[sig];
     int safe = vm->trap_list.safe[sig];
 
-    if (sig_is_chld(sig)) {
-	rb_sigchld(vm);
+    if (sig == RUBY_SIGCHLD) {
+        rb_waitpid_all(vm);
     }
+
     if (cmd == 0) {
 	switch (sig) {
 	  case SIGINT:
@@ -1134,10 +1126,8 @@ default_handler(int sig)
 #ifdef SIGUSR2
       case SIGUSR2:
 #endif
-#ifdef SIGCLD
-      case SIGCLD:
-#elif defined(SIGCHLD)
-      case SIGCHLD:
+#if RUBY_SIGCHLD
+      case RUBY_SIGCHLD:
 #endif
         func = sighandler;
         break;
@@ -1176,7 +1166,7 @@ trap_handler(VALUE *cmd, int sig)
     VALUE command;
 
     if (NIL_P(*cmd)) {
-	if (sig_is_chld(sig)) {
+	if (sig == RUBY_SIGCHLD) {
 	    goto sig_dfl;
 	}
 	func = SIG_IGN;
@@ -1199,9 +1189,9 @@ trap_handler(VALUE *cmd, int sig)
 		break;
               case 14:
 		if (memcmp(cptr, "SYSTEM_DEFAULT", 14) == 0) {
-		    if (sig_is_chld(sig)) {
-			goto sig_dfl;
-		    }
+                    if (sig == RUBY_SIGCHLD) {
+                        goto sig_dfl;
+                    }
                     func = SIG_DFL;
                     *cmd = 0;
 		}
@@ -1209,9 +1199,9 @@ trap_handler(VALUE *cmd, int sig)
 	      case 7:
 		if (memcmp(cptr, "SIG_IGN", 7) == 0) {
 sig_ign:
-		    if (sig_is_chld(sig)) {
-			goto sig_dfl;
-		    }
+                    if (sig == RUBY_SIGCHLD) {
+                        goto sig_dfl;
+                    }
                     func = SIG_IGN;
                     *cmd = Qtrue;
 		}
@@ -1443,7 +1433,7 @@ install_sighandler(int signum, sighandler_t handler)
 #  define install_sighandler(signum, handler) \
     INSTALL_SIGHANDLER(install_sighandler(signum, handler), #signum, signum)
 
-#if defined(SIGCLD) || defined(SIGCHLD)
+#if RUBY_SIGCHLD
 static int
 init_sigchld(int sig)
 {
@@ -1570,10 +1560,8 @@ Init_signal(void)
     install_sighandler(SIGSYS, sig_do_nothing);
 #endif
 
-#if defined(SIGCLD)
-    init_sigchld(SIGCLD);
-#elif defined(SIGCHLD)
-    init_sigchld(SIGCHLD);
+#if RUBY_SIGCHLD
+    init_sigchld(RUBY_SIGCHLD);
 #endif
 
     rb_enable_interrupt();
