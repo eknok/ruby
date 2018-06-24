@@ -1052,6 +1052,19 @@ rb_trap_exit(void)
     }
 }
 
+static int
+sig_is_chld(int sig)
+{
+#if defined(SIGCLD)
+    return (sig == SIGCLD);
+#elif defined(SIGCHLD)
+    return (sig == SIGCHLD);
+#endif
+    return 0;
+}
+
+void rb_sigchld(rb_vm_t *); /* process.c */
+
 void
 rb_signal_exec(rb_thread_t *th, int sig)
 {
@@ -1059,6 +1072,9 @@ rb_signal_exec(rb_thread_t *th, int sig)
     VALUE cmd = vm->trap_list.cmd[sig];
     int safe = vm->trap_list.safe[sig];
 
+    if (sig_is_chld(sig)) {
+	rb_sigchld(vm);
+    }
     if (cmd == 0) {
 	switch (sig) {
 	  case SIGINT:
@@ -1118,6 +1134,11 @@ default_handler(int sig)
 #ifdef SIGUSR2
       case SIGUSR2:
 #endif
+#ifdef SIGCLD
+      case SIGCLD:
+#elif defined(SIGCHLD)
+      case SIGCHLD:
+#endif
         func = sighandler;
         break;
 #ifdef SIGBUS
@@ -1155,6 +1176,9 @@ trap_handler(VALUE *cmd, int sig)
     VALUE command;
 
     if (NIL_P(*cmd)) {
+	if (sig_is_chld(sig)) {
+	    goto sig_dfl;
+	}
 	func = SIG_IGN;
     }
     else {
@@ -1175,6 +1199,9 @@ trap_handler(VALUE *cmd, int sig)
 		break;
               case 14:
 		if (memcmp(cptr, "SYSTEM_DEFAULT", 14) == 0) {
+		    if (sig_is_chld(sig)) {
+			goto sig_dfl;
+		    }
                     func = SIG_DFL;
                     *cmd = 0;
 		}
@@ -1182,6 +1209,9 @@ trap_handler(VALUE *cmd, int sig)
 	      case 7:
 		if (memcmp(cptr, "SIG_IGN", 7) == 0) {
 sig_ign:
+		    if (sig_is_chld(sig)) {
+			goto sig_dfl;
+		    }
                     func = SIG_IGN;
                     *cmd = Qtrue;
 		}
@@ -1418,15 +1448,13 @@ static int
 init_sigchld(int sig)
 {
     sighandler_t oldfunc;
+    sighandler_t func = sighandler;
 
     oldfunc = ruby_signal(sig, SIG_DFL);
     if (oldfunc == SIG_ERR) return -1;
-    if (oldfunc != SIG_DFL && oldfunc != SIG_IGN) {
-	ruby_signal(sig, oldfunc);
-    }
-    else {
-	GET_VM()->trap_list.cmd[sig] = 0;
-    }
+    ruby_signal(sig, func);
+    GET_VM()->trap_list.cmd[sig] = 0;
+
     return 0;
 }
 

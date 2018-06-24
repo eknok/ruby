@@ -553,6 +553,8 @@ typedef struct rb_vm_struct {
 #endif
 
     rb_serial_t fork_gen;
+    rb_nativethread_lock_t waitpid_lock;
+    struct list_head waiting_pids; /* <=> struct waitpid_state */
     struct list_head waiting_fds; /* <=> struct waiting_fd */
     struct list_head living_threads;
     VALUE thgroup_default;
@@ -1561,6 +1563,7 @@ static inline void
 rb_vm_living_threads_init(rb_vm_t *vm)
 {
     list_head_init(&vm->waiting_fds);
+    list_head_init(&vm->waiting_pids);
     list_head_init(&vm->living_threads);
     vm->living_thread_num = 0;
 }

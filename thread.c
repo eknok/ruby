@@ -413,6 +413,7 @@ rb_vm_gvl_destroy(rb_vm_t *vm)
     gvl_release(vm);
     gvl_destroy(vm);
     rb_native_mutex_destroy(&vm->thread_destruct_lock);
+    rb_native_mutex_destroy(&vm->waitpid_lock);
 }
 
 void
@@ -4999,6 +5000,7 @@ Init_Thread(void)
 	    gvl_init(th->vm);
 	    gvl_acquire(th->vm, th);
             rb_native_mutex_initialize(&th->vm->thread_destruct_lock);
+            rb_native_mutex_initialize(&th->vm->waitpid_lock);
             rb_native_mutex_initialize(&th->interrupt_lock);
 
 	    th->pending_interrupt_queue = rb_ary_tmp_new(0);
