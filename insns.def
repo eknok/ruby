@@ -43,6 +43,9 @@
        * sp_inc: Used to dynamically calculate sp increase in
          `insn_stack_increase`.
 
+       * handles_stack: If this is true, JIT makes sure that values are
+         set to VM stack.
+
    - Attributes can access operands, but not stack (push/pop) variables.
 
    - An instruction's body is a pure C block, copied verbatimly into
@@ -690,6 +693,7 @@ defineclass
 (ID id, ISEQ class_iseq, rb_num_t flags)
 (VALUE cbase, VALUE super)
 (VALUE val)
+// attr bool handles_stack = true;
 {
     VALUE klass = vm_find_or_create_class_by_id(id, flags, cbase, super);
 
@@ -716,6 +720,7 @@ send
 (CALL_INFO ci, CALL_CACHE cc, ISEQ blockiseq)
 (...)
 (VALUE val)
+// attr bool handles_stack = true;
 // attr rb_snum_t sp_inc = - (int)(ci->orig_argc + ((ci->flag & VM_CALL_ARGS_BLOCKARG) ? 1 : 0));
 {
     struct rb_calling_info calling;
@@ -771,6 +776,7 @@ opt_send_without_block
 (CALL_INFO ci, CALL_CACHE cc)
 (...)
 (VALUE val)
+// attr bool handles_stack = true;
 // attr rb_snum_t sp_inc = -ci->orig_argc;
 {
     struct rb_calling_info calling;
@@ -785,6 +791,7 @@ invokesuper
 (CALL_INFO ci, CALL_CACHE cc, ISEQ blockiseq)
 (...)
 (VALUE val)
+// attr bool handles_stack = true;
 // attr rb_snum_t sp_inc = - (int)(ci->orig_argc + ((ci->flag & VM_CALL_ARGS_BLOCKARG) ? 1 : 0));
 {
     struct rb_calling_info calling;
@@ -802,6 +809,7 @@ invokeblock
 (CALL_INFO ci)
 (...)
 (VALUE val)
+// attr bool handles_stack = true;
 // attr rb_snum_t sp_inc = 1 - ci->orig_argc;
 {
     struct rb_calling_info calling;
@@ -828,6 +836,7 @@ leave
 ()
 (VALUE val)
 (VALUE val)
+// attr bool handles_stack = true;
 {
     if (OPT_CHECKED_RUN) {
 	const VALUE *const bp = vm_base_ptr(reg_cfp);
@@ -1415,6 +1424,7 @@ opt_call_c_function
 (rb_insn_func_t funcptr)
 ()
 ()
+// attr bool handles_stack = true;
 {
     reg_cfp = (funcptr)(ec, reg_cfp);
 
