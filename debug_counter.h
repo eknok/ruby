@@ -91,7 +91,7 @@ inline static int
 rb_debug_counter_add(enum rb_debug_counter_type type, int add, int cond)
 {
     if (cond) {
-	rb_debug_counter[(int)type] += add;
+        rb_debug_counter[(int)type] += add;
     }
     return cond;
 }

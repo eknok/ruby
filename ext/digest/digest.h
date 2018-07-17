@@ -15,7 +15,7 @@
 
 #include "ruby.h"
 
-#define RUBY_DIGEST_API_VERSION	3
+#define RUBY_DIGEST_API_VERSION        3
 
 typedef int (*rb_digest_hash_init_func_t)(void *);
 typedef void (*rb_digest_hash_update_func_t)(void *, unsigned char *, size_t);
@@ -38,7 +38,7 @@ rb_digest_##name##_update(void *ctx, unsigned char *ptr, size_t size) \
     const unsigned int stride = 16384; \
  \
     for (; size > stride; size -= stride, ptr += stride) { \
-	name##_Update(ctx, ptr, stride); \
+        name##_Update(ctx, ptr, stride); \
     } \
     if (size > 0) name##_Update(ctx, ptr, size); \
 }

@@ -61,13 +61,13 @@
 #endif
 
 # define RUBY_DESCRIPTION_WITH(opt) \
-    "ruby "RUBY_VERSION		    \
-    RUBY_PATCHLEVEL_STR		    \
-    " ("RUBY_RELEASE_DATE	    \
-    RUBY_REVISION_STR")"opt" "	    \
+    "ruby "RUBY_VERSION                    \
+    RUBY_PATCHLEVEL_STR                    \
+    " ("RUBY_RELEASE_DATE            \
+    RUBY_REVISION_STR")"opt" "            \
     "["RUBY_PLATFORM"]"
-# define RUBY_COPYRIGHT		    \
-    "ruby - Copyright (C) "	    \
+# define RUBY_COPYRIGHT                    \
+    "ruby - Copyright (C) "            \
     RUBY_BIRTH_YEAR_STR"-"   \
     RUBY_RELEASE_YEAR_STR" " \
     RUBY_AUTHOR

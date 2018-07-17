@@ -230,10 +230,10 @@ VALUE rb_enumeratorize_with_size(VALUE, VALUE, int, const VALUE *, rb_enumerator
 #endif
 #define SIZED_ENUMERATOR(obj, argc, argv, size_fn) \
     rb_enumeratorize_with_size((obj), ID2SYM(rb_frame_this_func()), \
-			       (argc), (argv), (size_fn))
-#define RETURN_SIZED_ENUMERATOR(obj, argc, argv, size_fn) do {		\
-	if (!rb_block_given_p())					\
-	    return SIZED_ENUMERATOR(obj, argc, argv, size_fn);		\
+                               (argc), (argv), (size_fn))
+#define RETURN_SIZED_ENUMERATOR(obj, argc, argv, size_fn) do {                \
+        if (!rb_block_given_p())                                        \
+            return SIZED_ENUMERATOR(obj, argc, argv, size_fn);                \
     } while (0)
 #define RETURN_ENUMERATOR(obj, argc, argv) RETURN_SIZED_ENUMERATOR(obj, argc, argv, 0)
 /* error.c */
@@ -253,10 +253,10 @@ void rb_error_untrusted(VALUE);
 void rb_check_frozen(VALUE);
 void rb_check_trusted(VALUE);
 #define rb_check_frozen_internal(obj) do { \
-	VALUE frozen_obj = (obj); \
-	if (RB_OBJ_FROZEN(frozen_obj)) { \
-	    rb_error_frozen_object(frozen_obj); \
-	} \
+        VALUE frozen_obj = (obj); \
+        if (RB_OBJ_FROZEN(frozen_obj)) { \
+            rb_error_frozen_object(frozen_obj); \
+        } \
     } while (0)
 #define rb_check_trusted_internal(obj) ((void) 0)
 #ifdef __GNUC__
@@ -292,7 +292,7 @@ static inline int
 rb_check_arity(int argc, int min, int max)
 {
     if ((argc < min) || (max != UNLIMITED_ARGUMENTS && argc > max))
-	rb_error_arity(argc, min, max);
+        rb_error_arity(argc, min, max);
     return argc;
 }
 #define rb_check_arity rb_check_arity /* for ifdef */
@@ -315,8 +315,8 @@ void rb_fd_dup(rb_fdset_t *dst, const rb_fdset_t *src);
 struct timeval;
 int rb_fd_select(int, rb_fdset_t *, rb_fdset_t *, rb_fdset_t *, struct timeval *);
 
-#define rb_fd_ptr(f)	((f)->fdset)
-#define rb_fd_max(f)	((f)->maxfd)
+#define rb_fd_ptr(f)        ((f)->fdset)
+#define rb_fd_max(f)        ((f)->maxfd)
 
 #elif defined(_WIN32)
 
@@ -327,13 +327,13 @@ typedef struct {
 
 void rb_fd_init(rb_fdset_t *);
 void rb_fd_term(rb_fdset_t *);
-#define rb_fd_zero(f)		((f)->fdset->fd_count = 0)
+#define rb_fd_zero(f)                ((f)->fdset->fd_count = 0)
 void rb_fd_set(int, rb_fdset_t *);
-#define rb_fd_clr(n, f)		rb_w32_fdclr((n), (f)->fdset)
-#define rb_fd_isset(n, f)	rb_w32_fdisset((n), (f)->fdset)
-#define rb_fd_copy(d, s, n)	rb_w32_fd_copy((d), (s), (n))
+#define rb_fd_clr(n, f)                rb_w32_fdclr((n), (f)->fdset)
+#define rb_fd_isset(n, f)        rb_w32_fdisset((n), (f)->fdset)
+#define rb_fd_copy(d, s, n)        rb_w32_fd_copy((d), (s), (n))
 void rb_w32_fd_copy(rb_fdset_t *, const fd_set *, int);
-#define rb_fd_dup(d, s)	rb_w32_fd_dup((d), (s))
+#define rb_fd_dup(d, s)        rb_w32_fd_dup((d), (s))
 void rb_w32_fd_dup(rb_fdset_t *dst, const rb_fdset_t *src);
 static inline int
 rb_fd_select(int n, rb_fdset_t *rfds, rb_fdset_t *wfds, rb_fdset_t *efds, struct timeval *timeout)
@@ -344,27 +344,27 @@ rb_fd_select(int n, rb_fdset_t *rfds, rb_fdset_t *wfds, rb_fdset_t *efds, struct
                          efds ? efds->fdset : NULL,
                          timeout);
 }
-#define rb_fd_resize(n, f)	((void)(f))
+#define rb_fd_resize(n, f)        ((void)(f))
 
-#define rb_fd_ptr(f)	((f)->fdset)
-#define rb_fd_max(f)	((f)->fdset->fd_count)
+#define rb_fd_ptr(f)        ((f)->fdset)
+#define rb_fd_max(f)        ((f)->fdset->fd_count)
 
 #else
 
 typedef fd_set rb_fdset_t;
-#define rb_fd_zero(f)	FD_ZERO(f)
-#define rb_fd_set(n, f)	FD_SET((n), (f))
-#define rb_fd_clr(n, f)	FD_CLR((n), (f))
+#define rb_fd_zero(f)        FD_ZERO(f)
+#define rb_fd_set(n, f)        FD_SET((n), (f))
+#define rb_fd_clr(n, f)        FD_CLR((n), (f))
 #define rb_fd_isset(n, f) FD_ISSET((n), (f))
 #define rb_fd_copy(d, s, n) (*(d) = *(s))
 #define rb_fd_dup(d, s) (*(d) = *(s))
-#define rb_fd_resize(n, f)	((void)(f))
-#define rb_fd_ptr(f)	(f)
-#define rb_fd_init(f)	FD_ZERO(f)
+#define rb_fd_resize(n, f)        ((void)(f))
+#define rb_fd_ptr(f)        (f)
+#define rb_fd_init(f)        FD_ZERO(f)
 #define rb_fd_init_copy(d, s) (*(d) = *(s))
-#define rb_fd_term(f)	((void)(f))
-#define rb_fd_max(f)	FD_SETSIZE
-#define rb_fd_select(n, rfds, wfds, efds, timeout)	select((n), (rfds), (wfds), (efds), (timeout))
+#define rb_fd_term(f)        ((void)(f))
+#define rb_fd_max(f)        FD_SETSIZE
+#define rb_fd_select(n, rfds, wfds, efds, timeout)        select((n), (rfds), (wfds), (efds), (timeout))
 
 #endif
 
@@ -778,66 +778,66 @@ VALUE rb_str_scrub(VALUE, VALUE);
 VALUE rb_sym_all_symbols(void);
 
 #ifdef HAVE_BUILTIN___BUILTIN_CONSTANT_P
-#define rb_str_new(str, len) RB_GNUC_EXTENSION_BLOCK(	\
+#define rb_str_new(str, len) RB_GNUC_EXTENSION_BLOCK(        \
     (__builtin_constant_p(str) && __builtin_constant_p(len)) ? \
-	rb_str_new_static((str), (len)) : \
-	rb_str_new((str), (len))	  \
+        rb_str_new_static((str), (len)) : \
+        rb_str_new((str), (len))          \
 )
-#define rb_str_new_cstr(str) RB_GNUC_EXTENSION_BLOCK(	\
-    (__builtin_constant_p(str)) ?		\
-	rb_str_new_static((str), (long)strlen(str)) : \
-	rb_str_new_cstr(str)			\
+#define rb_str_new_cstr(str) RB_GNUC_EXTENSION_BLOCK(        \
+    (__builtin_constant_p(str)) ?                \
+        rb_str_new_static((str), (long)strlen(str)) : \
+        rb_str_new_cstr(str)                        \
 )
 #define rb_usascii_str_new(str, len) RB_GNUC_EXTENSION_BLOCK( \
     (__builtin_constant_p(str) && __builtin_constant_p(len)) ? \
-	rb_usascii_str_new_static((str), (len)) : \
-	rb_usascii_str_new((str), (len))	  \
+        rb_usascii_str_new_static((str), (len)) : \
+        rb_usascii_str_new((str), (len))          \
 )
 #define rb_utf8_str_new(str, len) RB_GNUC_EXTENSION_BLOCK( \
     (__builtin_constant_p(str) && __builtin_constant_p(len)) ? \
-	rb_utf8_str_new_static((str), (len)) : \
-	rb_utf8_str_new((str), (len))	  \
+        rb_utf8_str_new_static((str), (len)) : \
+        rb_utf8_str_new((str), (len))          \
 )
 #define rb_tainted_str_new_cstr(str) RB_GNUC_EXTENSION_BLOCK( \
-    (__builtin_constant_p(str)) ?	       \
-	rb_tainted_str_new((str), (long)strlen(str)) : \
-	rb_tainted_str_new_cstr(str)	       \
+    (__builtin_constant_p(str)) ?               \
+        rb_tainted_str_new((str), (long)strlen(str)) : \
+        rb_tainted_str_new_cstr(str)               \
 )
 #define rb_usascii_str_new_cstr(str) RB_GNUC_EXTENSION_BLOCK( \
-    (__builtin_constant_p(str)) ?	       \
-	rb_usascii_str_new_static((str), (long)strlen(str)) : \
-	rb_usascii_str_new_cstr(str)	       \
+    (__builtin_constant_p(str)) ?               \
+        rb_usascii_str_new_static((str), (long)strlen(str)) : \
+        rb_usascii_str_new_cstr(str)               \
 )
 #define rb_utf8_str_new_cstr(str) RB_GNUC_EXTENSION_BLOCK( \
-    (__builtin_constant_p(str)) ?		\
-	rb_utf8_str_new_static((str), (long)strlen(str)) : \
-	rb_utf8_str_new_cstr(str)		\
+    (__builtin_constant_p(str)) ?                \
+        rb_utf8_str_new_static((str), (long)strlen(str)) : \
+        rb_utf8_str_new_cstr(str)                \
 )
 #define rb_external_str_new_cstr(str) RB_GNUC_EXTENSION_BLOCK( \
-    (__builtin_constant_p(str)) ?		\
-	rb_external_str_new((str), (long)strlen(str)) : \
-	rb_external_str_new_cstr(str)		\
+    (__builtin_constant_p(str)) ?                \
+        rb_external_str_new((str), (long)strlen(str)) : \
+        rb_external_str_new_cstr(str)                \
 )
 #define rb_locale_str_new_cstr(str) RB_GNUC_EXTENSION_BLOCK( \
-    (__builtin_constant_p(str)) ?	       \
-	rb_locale_str_new((str), (long)strlen(str)) :  \
-	rb_locale_str_new_cstr(str)	       \
+    (__builtin_constant_p(str)) ?               \
+        rb_locale_str_new((str), (long)strlen(str)) :  \
+        rb_locale_str_new_cstr(str)               \
 )
 #define rb_str_buf_new_cstr(str) RB_GNUC_EXTENSION_BLOCK( \
-    (__builtin_constant_p(str)) ?		\
-	rb_str_buf_cat(rb_str_buf_new((long)strlen(str)), \
-		       (str), (long)strlen(str)) : \
-	rb_str_buf_new_cstr(str)		\
+    (__builtin_constant_p(str)) ?                \
+        rb_str_buf_cat(rb_str_buf_new((long)strlen(str)), \
+                       (str), (long)strlen(str)) : \
+        rb_str_buf_new_cstr(str)                \
 )
 #define rb_str_cat_cstr(str, ptr) RB_GNUC_EXTENSION_BLOCK( \
-    (__builtin_constant_p(ptr)) ?	        \
-	rb_str_cat((str), (ptr), (long)strlen(ptr)) : \
-	rb_str_cat_cstr((str), (ptr))		\
+    (__builtin_constant_p(ptr)) ?                \
+        rb_str_cat((str), (ptr), (long)strlen(ptr)) : \
+        rb_str_cat_cstr((str), (ptr))                \
 )
 #define rb_exc_new_cstr(klass, ptr) RB_GNUC_EXTENSION_BLOCK( \
-    (__builtin_constant_p(ptr)) ?	        \
-	rb_exc_new((klass), (ptr), (long)strlen(ptr)) : \
-	rb_exc_new_cstr((klass), (ptr))		\
+    (__builtin_constant_p(ptr)) ?                \
+        rb_exc_new((klass), (ptr), (long)strlen(ptr)) : \
+        rb_exc_new_cstr((klass), (ptr))                \
 )
 #endif
 #define rb_str_new2 rb_str_new_cstr

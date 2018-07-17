@@ -97,20 +97,20 @@ extern int select_large_fdset(int, fd_set *, fd_set *, fd_set *, struct timeval 
 #define SAVE_ROOT_JMPBUF_AFTER_STMT \
     } \
     __except (GetExceptionCode() == EXCEPTION_STACK_OVERFLOW ? \
-	      (rb_ec_raised_set(GET_EC(), RAISED_STACKOVERFLOW), \
-	       raise(SIGSEGV), \
-	       EXCEPTION_EXECUTE_HANDLER) : \
-	      EXCEPTION_CONTINUE_SEARCH) { \
-	/* never reaches here */ \
+              (rb_ec_raised_set(GET_EC(), RAISED_STACKOVERFLOW), \
+               raise(SIGSEGV), \
+               EXCEPTION_EXECUTE_HANDLER) : \
+              EXCEPTION_CONTINUE_SEARCH) { \
+        /* never reaches here */ \
     }
 #elif defined(__MINGW32__)
 LONG WINAPI rb_w32_stack_overflow_handler(struct _EXCEPTION_POINTERS *);
 #define SAVE_ROOT_JMPBUF_BEFORE_STMT \
     do { \
-	PVOID _handler = AddVectoredExceptionHandler(1, rb_w32_stack_overflow_handler);
+        PVOID _handler = AddVectoredExceptionHandler(1, rb_w32_stack_overflow_handler);
 
 #define SAVE_ROOT_JMPBUF_AFTER_STMT \
-	RemoveVectoredExceptionHandler(_handler); \
+        RemoveVectoredExceptionHandler(_handler); \
     } while (0);
 #else
 #define SAVE_ROOT_JMPBUF_BEFORE_STMT
@@ -310,7 +310,7 @@ VALUE rb_vm_cbase(void);
 VALUE rb_ec_backtrace_object(const rb_execution_context_t *ec);
 VALUE rb_ec_backtrace_str_ary(const rb_execution_context_t *ec, long lev, long n);
 
-#ifndef CharNext		/* defined as CharNext[AW] on Windows. */
+#ifndef CharNext                /* defined as CharNext[AW] on Windows. */
 # ifdef HAVE_MBLEN
 #  define CharNext(p) ((p) + mblen((p), RUBY_MBCHAR_MAXSIZE))
 # else
@@ -323,9 +323,9 @@ static inline void
 translit_char(char *p, int from, int to)
 {
     while (*p) {
-	if ((unsigned char)*p == from)
-	    *p = to;
-	p = CharNext(p);
+        if ((unsigned char)*p == from)
+            *p = to;
+        p = CharNext(p);
     }
 }
 #endif

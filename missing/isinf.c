@@ -9,10 +9,10 @@ int
 isinf(double n)
 {
     if (IsNANorINF(n) && IsINF(n)) {
-	return 1;
+        return 1;
     }
     else {
-	return 0;
+        return 0;
     }
 }
 
@@ -59,11 +59,11 @@ isinf(double n)
     static double ninf = 0.0;
 
     if (pinf == 0.0) {
-	pinf = inf();
-	ninf = -pinf;
+        pinf = inf();
+        ninf = -pinf;
     }
     return memcmp(&n, &pinf, sizeof n) == 0
-	|| memcmp(&n, &ninf, sizeof n) == 0;
+        || memcmp(&n, &ninf, sizeof n) == 0;
 }
 #endif
 #endif

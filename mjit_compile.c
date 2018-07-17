@@ -92,12 +92,12 @@ comment_id(FILE *f, ID id)
     e = RSTRING_END(name);
     fputs("/* :\"", f);
     for (; p < e; ++p) {
-	switch (c = *p) {
-	  case '*': case '/': if (prev != (c ^ ('/' ^ '*'))) break;
-	  case '\\': case '"': fputc('\\', f);
-	}
-	fputc(c, f);
-	prev = c;
+        switch (c = *p) {
+          case '*': case '/': if (prev != (c ^ ('/' ^ '*'))) break;
+          case '\\': case '"': fputc('\\', f);
+        }
+        fputc(c, f);
+        prev = c;
     }
     fputs("\" */", f);
 #endif

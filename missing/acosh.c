@@ -16,7 +16,7 @@
 
 /* DBL_MANT_DIG must be less than 4 times of bits of int */
 #ifndef DBL_MANT_DIG
-#define DBL_MANT_DIG 53		/* in this case, at least 12 digit precision */
+#define DBL_MANT_DIG 53                /* in this case, at least 12 digit precision */
 #endif
 #define BIG_CRITERIA_BIT (1<<DBL_MANT_DIG/2)
 #if BIG_CRITERIA_BIT > 0
@@ -36,13 +36,13 @@ double
 acosh(double x)
 {
     if (x < 1)
-	x = -1;			/* NaN */
+        x = -1;                        /* NaN */
     else if (x == 1)
-	return 0;
+        return 0;
     else if (x > BIG_CRITERIA)
-	x += x;
+        x += x;
     else
-	x += sqrt((x + 1) * (x - 1));
+        x += sqrt((x + 1) * (x - 1));
     return log(x);
 }
 #endif
@@ -56,14 +56,14 @@ asinh(double x)
 
     if (z < SMALL_CRITERIA) return x;
     if (z < (1.0/(1<<DBL_MANT_DIG/5))) {
-	double x2 = z * z;
-	z *= 1 + x2 * (-1.0/6.0 + x2 * 3.0/40.0);
+        double x2 = z * z;
+        z *= 1 + x2 * (-1.0/6.0 + x2 * 3.0/40.0);
     }
     else if (z > BIG_CRITERIA) {
-	z = log(z + z);
+        z = log(z + z);
     }
     else {
-	z = log(z + sqrt(z * z + 1));
+        z = log(z + sqrt(z * z + 1));
     }
     if (neg) z = -z;
     return z;
@@ -82,11 +82,11 @@ atanh(double x)
     if (neg) z = -z;
     if (isinf(z))
 #if defined(ERANGE)
-	errno = ERANGE;
+        errno = ERANGE;
 #elif defined(EDOM)
-	errno = EDOM;
+        errno = EDOM;
 #else
-	;
+        ;
 #endif
     return z;
 }

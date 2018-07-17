@@ -28,4 +28,4 @@ typedef enum rb_id_table_iterator_result rb_id_table_foreach_values_func_t(VALUE
 void rb_id_table_foreach(struct rb_id_table *tbl, rb_id_table_foreach_func_t *func, void *data);
 void rb_id_table_foreach_values(struct rb_id_table *tbl, rb_id_table_foreach_values_func_t *func, void *data);
 
-#endif	/* RUBY_ID_TABLE_H */
+#endif        /* RUBY_ID_TABLE_H */

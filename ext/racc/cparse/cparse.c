@@ -224,9 +224,9 @@ static VALUE reduce0 _((VALUE block_args, VALUE data, VALUE self));
 static const rb_data_type_t cparse_params_type = {
     "racc/cparse",
     {
-	cparse_params_mark,
-	RUBY_TYPED_DEFAULT_FREE,
-	cparse_params_memsize,
+        cparse_params_mark,
+        RUBY_TYPED_DEFAULT_FREE,
+        cparse_params_memsize,
     },
 #ifdef RUBY_TYPED_FREE_IMMEDIATELY
     0, 0,
@@ -241,7 +241,7 @@ racc_cparse(VALUE parser, VALUE arg, VALUE sysdebug)
     struct cparse_params *v;
 
     vparams = TypedData_Make_Struct(CparseParams, struct cparse_params,
-				    &cparse_params_type, v);
+                                    &cparse_params_type, v);
     D_puts("starting cparse");
     v->sys_debug = RTEST(sysdebug);
     vparams = initialize_params(vparams, parser, arg, Qnil, Qnil);
@@ -259,7 +259,7 @@ racc_yyparse(VALUE parser, VALUE lexer, VALUE lexmid, VALUE arg, VALUE sysdebug)
     struct cparse_params *v;
 
     vparams = TypedData_Make_Struct(CparseParams, struct cparse_params,
-				    &cparse_params_type, v);
+                                    &cparse_params_type, v);
     v->sys_debug = RTEST(sysdebug);
     D_puts("start C yyparse");
     vparams = initialize_params(vparams, parser, arg, lexer, lexmid);

@@ -30,7 +30,7 @@ RUBY_SYMBOL_EXPORT_BEGIN
 /* #include <stdarg.h> conflict with varargs.h? */
 #if !defined(WSAAPI)
 #if defined(__cplusplus) && defined(_MSC_VER)
-extern "C++" {			/* template without extern "C++" */
+extern "C++" {                        /* template without extern "C++" */
 #endif
 #if !defined(_WIN64) && !defined(WIN32)
 #define WIN32
@@ -64,7 +64,7 @@ extern "C++" {			/* template without extern "C++" */
 #include <process.h>
 #include <time.h>
 #if defined(__cplusplus) && defined(_MSC_VER) && _MSC_VER == 1200
-extern "C++" {			/* template without extern "C++" */
+extern "C++" {                        /* template without extern "C++" */
 #endif
 #include <math.h>
 #if defined(__cplusplus) && defined(_MSC_VER) && _MSC_VER == 1200
@@ -138,38 +138,38 @@ typedef int clockid_t;
 #undef stat
 #undef fstat
 #ifdef RUBY_EXPORT
-#define utime(_p, _t)		rb_w32_utime(_p, _t)
+#define utime(_p, _t)                rb_w32_utime(_p, _t)
 #undef HAVE_UTIMES
 #define HAVE_UTIMES 1
-#define utimes(_p, _t)		rb_w32_utimes(_p, _t)
+#define utimes(_p, _t)                rb_w32_utimes(_p, _t)
 #undef HAVE_UTIMENSAT
 #define HAVE_UTIMENSAT 1
-#define AT_FDCWD		-100
-#define utimensat(_d, _p, _t, _f)	rb_w32_utimensat(_d, _p, _t, _f)
-#define lseek(_f, _o, _w)	_lseeki64(_f, _o, _w)
+#define AT_FDCWD                -100
+#define utimensat(_d, _p, _t, _f)        rb_w32_utimensat(_d, _p, _t, _f)
+#define lseek(_f, _o, _w)        _lseeki64(_f, _o, _w)
 
-#define pipe(p)			rb_w32_pipe(p)
-#define open			rb_w32_open
-#define close(h)		rb_w32_close(h)
-#define fclose(f)		rb_w32_fclose(f)
-#define read(f, b, s)		rb_w32_read(f, b, s)
-#define write(f, b, s)		rb_w32_write(f, b, s)
-#define getpid()		rb_w32_getpid()
-#define getppid()		rb_w32_getppid()
-#define sleep(x)		rb_w32_Sleep((x)*1000)
-#define Sleep(msec)		(void)rb_w32_Sleep(msec)
+#define pipe(p)                        rb_w32_pipe(p)
+#define open                        rb_w32_open
+#define close(h)                rb_w32_close(h)
+#define fclose(f)                rb_w32_fclose(f)
+#define read(f, b, s)                rb_w32_read(f, b, s)
+#define write(f, b, s)                rb_w32_write(f, b, s)
+#define getpid()                rb_w32_getpid()
+#define getppid()                rb_w32_getppid()
+#define sleep(x)                rb_w32_Sleep((x)*1000)
+#define Sleep(msec)                (void)rb_w32_Sleep(msec)
 
 #undef execv
-#define execv(path,argv)	rb_w32_aspawn(P_OVERLAY,path,argv)
+#define execv(path,argv)        rb_w32_aspawn(P_OVERLAY,path,argv)
 #undef isatty
-#define isatty(h)		rb_w32_isatty(h)
+#define isatty(h)                rb_w32_isatty(h)
 
 #undef mkdir
-#define mkdir(p, m)		rb_w32_mkdir(p, m)
+#define mkdir(p, m)                rb_w32_mkdir(p, m)
 #undef rmdir
-#define rmdir(p)		rb_w32_rmdir(p)
+#define rmdir(p)                rb_w32_rmdir(p)
 #undef unlink
-#define unlink(p)		rb_w32_unlink(p)
+#define unlink(p)                rb_w32_unlink(p)
 #endif /* RUBY_EXPORT */
 
 /* same with stati64 except the size of st_ino and nanosecond timestamps */
@@ -200,20 +200,20 @@ struct stati128 {
 #define HAVE_STRUCT_STAT_ST_ATIMENSEC
 #define HAVE_STRUCT_STAT_ST_MTIMENSEC
 #define HAVE_STRUCT_STAT_ST_CTIMENSEC
-#define fstat(fd,st)		rb_w32_fstati128(fd,st)
-#define stati128(path, st)	rb_w32_stati128(path,st)
+#define fstat(fd,st)                rb_w32_fstati128(fd,st)
+#define stati128(path, st)        rb_w32_stati128(path,st)
 #else
-#define stat(path,st)		rb_w32_stat(path,st)
-#define fstat(fd,st)		rb_w32_fstat(fd,st)
+#define stat(path,st)                rb_w32_stat(path,st)
+#define fstat(fd,st)                rb_w32_fstat(fd,st)
 extern int rb_w32_stat(const char *, struct stat *);
 extern int rb_w32_fstat(int, struct stat *);
 #endif
-#define lstat(path,st)		rb_w32_lstati128(path,st)
-#define access(path,mode)	rb_w32_access(path,mode)
+#define lstat(path,st)                rb_w32_lstati128(path,st)
+#define access(path,mode)        rb_w32_access(path,mode)
 
-#define strcasecmp		_stricmp
-#define strncasecmp		_strnicmp
-#define fsync			_commit
+#define strcasecmp                _stricmp
+#define strncasecmp                _strnicmp
+#define fsync                        _commit
 
 struct timezone;
 
@@ -481,7 +481,7 @@ extern char *rb_w32_strerror(int);
 #define SIGINT 2
 #endif
 #ifndef SIGKILL
-#define SIGKILL	9
+#define SIGKILL        9
 #endif
 
 
@@ -492,111 +492,111 @@ extern char *rb_w32_strerror(int);
 #include <errno.h>
 
 #ifndef EWOULDBLOCK
-# define EWOULDBLOCK		WSAEWOULDBLOCK
+# define EWOULDBLOCK                WSAEWOULDBLOCK
 #endif
 #ifndef EINPROGRESS
-# define EINPROGRESS		WSAEINPROGRESS
+# define EINPROGRESS                WSAEINPROGRESS
 #endif
 #ifndef EALREADY
-# define EALREADY		WSAEALREADY
+# define EALREADY                WSAEALREADY
 #endif
 #ifndef ENOTSOCK
-# define ENOTSOCK		WSAENOTSOCK
+# define ENOTSOCK                WSAENOTSOCK
 #endif
 #ifndef EDESTADDRREQ
-# define EDESTADDRREQ		WSAEDESTADDRREQ
+# define EDESTADDRREQ                WSAEDESTADDRREQ
 #endif
 #ifndef EMSGSIZE
-# define EMSGSIZE		WSAEMSGSIZE
+# define EMSGSIZE                WSAEMSGSIZE
 #endif
 #ifndef EPROTOTYPE
-# define EPROTOTYPE		WSAEPROTOTYPE
+# define EPROTOTYPE                WSAEPROTOTYPE
 #endif
 #ifndef ENOPROTOOPT
-# define ENOPROTOOPT		WSAENOPROTOOPT
+# define ENOPROTOOPT                WSAENOPROTOOPT
 #endif
 #ifndef EPROTONOSUPPORT
-# define EPROTONOSUPPORT	WSAEPROTONOSUPPORT
+# define EPROTONOSUPPORT        WSAEPROTONOSUPPORT
 #endif
 #ifndef ESOCKTNOSUPPORT
-# define ESOCKTNOSUPPORT	WSAESOCKTNOSUPPORT
+# define ESOCKTNOSUPPORT        WSAESOCKTNOSUPPORT
 #endif
 #ifndef EOPNOTSUPP
-# define EOPNOTSUPP		WSAEOPNOTSUPP
+# define EOPNOTSUPP                WSAEOPNOTSUPP
 #endif
 #ifndef EPFNOSUPPORT
-# define EPFNOSUPPORT		WSAEPFNOSUPPORT
+# define EPFNOSUPPORT                WSAEPFNOSUPPORT
 #endif
 #ifndef EAFNOSUPPORT
-# define EAFNOSUPPORT		WSAEAFNOSUPPORT
+# define EAFNOSUPPORT                WSAEAFNOSUPPORT
 #endif
 #ifndef EADDRINUSE
-# define EADDRINUSE		WSAEADDRINUSE
+# define EADDRINUSE                WSAEADDRINUSE
 #endif
 #ifndef EADDRNOTAVAIL
-# define EADDRNOTAVAIL		WSAEADDRNOTAVAIL
+# define EADDRNOTAVAIL                WSAEADDRNOTAVAIL
 #endif
 #ifndef ENETDOWN
-# define ENETDOWN		WSAENETDOWN
+# define ENETDOWN                WSAENETDOWN
 #endif
 #ifndef ENETUNREACH
-# define ENETUNREACH		WSAENETUNREACH
+# define ENETUNREACH                WSAENETUNREACH
 #endif
 #ifndef ENETRESET
-# define ENETRESET		WSAENETRESET
+# define ENETRESET                WSAENETRESET
 #endif
 #ifndef ECONNABORTED
-# define ECONNABORTED		WSAECONNABORTED
+# define ECONNABORTED                WSAECONNABORTED
 #endif
 #ifndef ECONNRESET
-# define ECONNRESET		WSAECONNRESET
+# define ECONNRESET                WSAECONNRESET
 #endif
 #ifndef ENOBUFS
-# define ENOBUFS		WSAENOBUFS
+# define ENOBUFS                WSAENOBUFS
 #endif
 #ifndef EISCONN
-# define EISCONN		WSAEISCONN
+# define EISCONN                WSAEISCONN
 #endif
 #ifndef ENOTCONN
-# define ENOTCONN		WSAENOTCONN
+# define ENOTCONN                WSAENOTCONN
 #endif
 #ifndef ESHUTDOWN
-# define ESHUTDOWN		WSAESHUTDOWN
+# define ESHUTDOWN                WSAESHUTDOWN
 #endif
 #ifndef ETOOMANYREFS
-# define ETOOMANYREFS		WSAETOOMANYREFS
+# define ETOOMANYREFS                WSAETOOMANYREFS
 #endif
 #ifndef ETIMEDOUT
-# define ETIMEDOUT		WSAETIMEDOUT
+# define ETIMEDOUT                WSAETIMEDOUT
 #endif
 #ifndef ECONNREFUSED
-# define ECONNREFUSED		WSAECONNREFUSED
+# define ECONNREFUSED                WSAECONNREFUSED
 #endif
 #ifndef ELOOP
-# define ELOOP			WSAELOOP
+# define ELOOP                        WSAELOOP
 #endif
-/*#define ENAMETOOLONG	WSAENAMETOOLONG*/
+/*#define ENAMETOOLONG        WSAENAMETOOLONG*/
 #ifndef EHOSTDOWN
-# define EHOSTDOWN		WSAEHOSTDOWN
+# define EHOSTDOWN                WSAEHOSTDOWN
 #endif
 #ifndef EHOSTUNREACH
-# define EHOSTUNREACH		WSAEHOSTUNREACH
+# define EHOSTUNREACH                WSAEHOSTUNREACH
 #endif
-/*#define ENOTEMPTY	WSAENOTEMPTY*/
+/*#define ENOTEMPTY        WSAENOTEMPTY*/
 #ifndef EPROCLIM
-# define EPROCLIM		WSAEPROCLIM
+# define EPROCLIM                WSAEPROCLIM
 #endif
 #ifndef EUSERS
-# define EUSERS			WSAEUSERS
+# define EUSERS                        WSAEUSERS
 #endif
 #ifndef EDQUOT
-# define EDQUOT			WSAEDQUOT
+# define EDQUOT                        WSAEDQUOT
 #endif
 #ifndef ESTALE
-# define ESTALE			WSAESTALE
+# define ESTALE                        WSAESTALE
 #endif
 #ifndef EREMOTE
-# define EREMOTE		WSAEREMOTE
+# define EREMOTE                WSAEREMOTE
 #endif
 
 #define F_DUPFD 0
@@ -611,7 +611,7 @@ extern char *rb_w32_strerror(int);
 #define O_NONBLOCK 1
 
 #undef FD_SET
-#define FD_SET(fd, set)	do {\
+#define FD_SET(fd, set)        do {\
     unsigned int i;\
     SOCKET s = _get_osfhandle(fd);\
 \
@@ -629,10 +629,10 @@ extern char *rb_w32_strerror(int);
 } while(0)
 
 #undef FD_CLR
-#define FD_CLR(f, s)		rb_w32_fdclr(f, s)
+#define FD_CLR(f, s)                rb_w32_fdclr(f, s)
 
 #undef FD_ISSET
-#define FD_ISSET(f, s)		rb_w32_fdisset(f, s)
+#define FD_ISSET(f, s)                rb_w32_fdisset(f, s)
 
 #ifdef RUBY_EXPORT
 #undef inet_ntop
@@ -642,40 +642,40 @@ extern char *rb_w32_strerror(int);
 #define inet_pton(f,s,d)        rb_w32_inet_pton(f,s,d)
 
 #undef accept
-#define accept(s, a, l)		rb_w32_accept(s, a, l)
+#define accept(s, a, l)                rb_w32_accept(s, a, l)
 
 #undef bind
-#define bind(s, a, l)		rb_w32_bind(s, a, l)
+#define bind(s, a, l)                rb_w32_bind(s, a, l)
 
 #undef connect
-#define connect(s, a, l)	rb_w32_connect(s, a, l)
+#define connect(s, a, l)        rb_w32_connect(s, a, l)
 
 #undef select
-#define select(n, r, w, e, t)	rb_w32_select(n, r, w, e, t)
+#define select(n, r, w, e, t)        rb_w32_select(n, r, w, e, t)
 
 #undef getpeername
-#define getpeername(s, a, l)	rb_w32_getpeername(s, a, l)
+#define getpeername(s, a, l)        rb_w32_getpeername(s, a, l)
 
 #undef getsockname
-#define getsockname(s, a, l)	rb_w32_getsockname(s, a, l)
+#define getsockname(s, a, l)        rb_w32_getsockname(s, a, l)
 
 #undef getsockopt
 #define getsockopt(s, v, n, o, l) rb_w32_getsockopt(s, v, n, o, l)
 
 #undef ioctlsocket
-#define ioctlsocket(s, c, a)	rb_w32_ioctlsocket(s, c, a)
+#define ioctlsocket(s, c, a)        rb_w32_ioctlsocket(s, c, a)
 
 #undef listen
-#define listen(s, b)		rb_w32_listen(s, b)
+#define listen(s, b)                rb_w32_listen(s, b)
 
 #undef recv
-#define recv(s, b, l, f)	rb_w32_recv(s, b, l, f)
+#define recv(s, b, l, f)        rb_w32_recv(s, b, l, f)
 
 #undef recvfrom
 #define recvfrom(s, b, l, f, fr, frl) rb_w32_recvfrom(s, b, l, f, fr, frl)
 
 #undef send
-#define send(s, b, l, f)	rb_w32_send(s, b, l, f)
+#define send(s, b, l, f)        rb_w32_send(s, b, l, f)
 
 #undef sendto
 #define sendto(s, b, l, f, t, tl) rb_w32_sendto(s, b, l, f, t, tl)
@@ -684,56 +684,56 @@ extern char *rb_w32_strerror(int);
 #define setsockopt(s, v, n, o, l) rb_w32_setsockopt(s, v, n, o, l)
 
 #undef shutdown
-#define shutdown(s, h)		rb_w32_shutdown(s, h)
+#define shutdown(s, h)                rb_w32_shutdown(s, h)
 
 #undef socket
-#define socket(s, t, p)		rb_w32_socket(s, t, p)
+#define socket(s, t, p)                rb_w32_socket(s, t, p)
 
 #undef gethostbyaddr
-#define gethostbyaddr(a, l, t)	rb_w32_gethostbyaddr(a, l, t)
+#define gethostbyaddr(a, l, t)        rb_w32_gethostbyaddr(a, l, t)
 
 #undef gethostbyname
-#define gethostbyname(n)	rb_w32_gethostbyname(n)
+#define gethostbyname(n)        rb_w32_gethostbyname(n)
 
 #undef gethostname
-#define gethostname(n, l)	rb_w32_gethostname(n, l)
+#define gethostname(n, l)        rb_w32_gethostname(n, l)
 
 #undef getprotobyname
-#define getprotobyname(n)	rb_w32_getprotobyname(n)
+#define getprotobyname(n)        rb_w32_getprotobyname(n)
 
 #undef getprotobynumber
-#define getprotobynumber(n)	rb_w32_getprotobynumber(n)
+#define getprotobynumber(n)        rb_w32_getprotobynumber(n)
 
 #undef getservbyname
-#define getservbyname(n, p)	rb_w32_getservbyname(n, p)
+#define getservbyname(n, p)        rb_w32_getservbyname(n, p)
 
 #undef getservbyport
-#define getservbyport(p, pr)	rb_w32_getservbyport(p, pr)
+#define getservbyport(p, pr)        rb_w32_getservbyport(p, pr)
 
 #undef get_osfhandle
-#define get_osfhandle(h)	rb_w32_get_osfhandle(h)
+#define get_osfhandle(h)        rb_w32_get_osfhandle(h)
 
 #undef getcwd
-#define getcwd(b, s)		rb_w32_getcwd(b, s)
+#define getcwd(b, s)                rb_w32_getcwd(b, s)
 
 #undef getenv
-#define getenv(n)		rb_w32_getenv(n)
+#define getenv(n)                rb_w32_getenv(n)
 
 #undef rename
-#define rename(o, n)		rb_w32_rename(o, n)
+#define rename(o, n)                rb_w32_rename(o, n)
 
 #undef times
-#define times(t)		rb_w32_times(t)
+#define times(t)                rb_w32_times(t)
 
 #undef dup2
-#define dup2(o, n)		rb_w32_dup2(o, n)
+#define dup2(o, n)                rb_w32_dup2(o, n)
 #endif
 
 struct tms {
-	long	tms_utime;
-	long	tms_stime;
-	long	tms_cutime;
-	long	tms_cstime;
+        long        tms_utime;
+        long        tms_stime;
+        long        tms_cutime;
+        long        tms_cstime;
 };
 
 int rb_w32_times(struct tms *);
@@ -757,7 +757,7 @@ int  rb_w32_utimes(const char *, const struct timeval *);
 int  rb_w32_uutimes(const char *, const struct timeval *);
 int  rb_w32_utimensat(int /* must be AT_FDCWD */, const char *, const struct timespec *, int /* must be 0 */);
 int  rb_w32_uutimensat(int /* must be AT_FDCWD */, const char *, const struct timespec *, int /* must be 0 */);
-long rb_w32_write_console(uintptr_t, int);	/* use uintptr_t instead of VALUE because it's not defined yet here */
+long rb_w32_write_console(uintptr_t, int);        /* use uintptr_t instead of VALUE because it's not defined yet here */
 int  WINAPI rb_w32_Sleep(unsigned long msec);
 int  rb_w32_wait_events_blocking(HANDLE *events, int num, DWORD timeout);
 int  rb_w32_time_subtract(struct timeval *rest, const struct timeval *wait);

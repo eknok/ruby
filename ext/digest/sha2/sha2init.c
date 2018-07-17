@@ -11,7 +11,7 @@
 #include "sha2.h"
 #endif
 
-#define FOREACH_BITLEN(func)	func(256) func(384) func(512)
+#define FOREACH_BITLEN(func)        func(256) func(384) func(512)
 
 #define DEFINE_ALGO_METADATA(bitlen) \
 static const rb_digest_metadata_t sha##bitlen = { \
@@ -53,7 +53,7 @@ Init_sha2(void)
     cDigest_SHA##bitlen = rb_define_class_under(mDigest, "SHA" #bitlen, cDigest_Base); \
 \
     rb_ivar_set(cDigest_SHA##bitlen, id_metadata, \
-		Data_Wrap_Struct(0, 0, 0, (void *)&sha##bitlen));
+                Data_Wrap_Struct(0, 0, 0, (void *)&sha##bitlen));
 
 #undef RUBY_UNTYPED_DATA_WARNING
 #define RUBY_UNTYPED_DATA_WARNING 0

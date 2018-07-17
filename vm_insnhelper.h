@@ -27,9 +27,9 @@ RUBY_SYMBOL_EXPORT_END
 
 #define COLLECT_USAGE_REGISTER(reg, s)     vm_collect_usage_register((reg), (s))
 #else
-#define COLLECT_USAGE_INSN(insn)		/* none */
-#define COLLECT_USAGE_OPERAND(insn, n, op)	/* none */
-#define COLLECT_USAGE_REGISTER(reg, s)		/* none */
+#define COLLECT_USAGE_INSN(insn)                /* none */
+#define COLLECT_USAGE_OPERAND(insn, n, op)        /* none */
+#define COLLECT_USAGE_REGISTER(reg, s)                /* none */
 #endif
 
 /**********************************************************/
@@ -53,7 +53,7 @@ rb_obj_hidden_p(VALUE obj)
 #define POP()   (DEC_SP(1))
 #define STACK_ADDR_FROM_TOP(n) (GET_SP()-(n))
 
-#define GET_TOS()  (tos)	/* dummy */
+#define GET_TOS()  (tos)        /* dummy */
 
 /**********************************************************/
 /* deal with registers                                    */
@@ -168,7 +168,7 @@ enum vm_regan_acttype {
         EXEC_EC_CFP(val); \
     } \
     else { \
-	val = v; \
+        val = v; \
     } \
 } while (0)
 
@@ -227,7 +227,7 @@ extern void rb_method_definition_set(const rb_method_entry_t *me, rb_method_defi
 extern int rb_method_definition_eq(const rb_method_definition_t *d1, const rb_method_definition_t *d2);
 
 extern VALUE rb_make_no_method_exception(VALUE exc, VALUE format, VALUE obj,
-					 int argc, const VALUE *argv, int priv);
+                                         int argc, const VALUE *argv, int priv);
 
 static inline struct vm_throw_data *
 THROW_DATA_NEW(VALUE val, const rb_control_frame_t *cf, VALUE st)
@@ -281,8 +281,8 @@ static inline void
 THROW_DATA_CONSUMED_SET(struct vm_throw_data *obj)
 {
     if (THROW_DATA_P(obj) &&
-	THROW_DATA_STATE(obj) == TAG_BREAK) {
-	obj->flags |= THROW_DATA_CONSUMED;
+        THROW_DATA_STATE(obj) == TAG_BREAK) {
+        obj->flags |= THROW_DATA_CONSUMED;
     }
 }
 

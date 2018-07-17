@@ -24,8 +24,8 @@ socks_init(VALUE sock, VALUE host, VALUE serv)
     static int init = 0;
 
     if (init == 0) {
-	SOCKSinit("ruby");
-	init = 1;
+        SOCKSinit("ruby");
+        init = 1;
     }
 
     return rsock_init_inetsock(sock, host, serv, Qnil, Qnil, INET_SOCKS);

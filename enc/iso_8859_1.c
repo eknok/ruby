@@ -104,8 +104,8 @@ static const OnigPairCaseFoldCodes CaseFoldMap[] = {
 
 static int
 apply_all_case_fold(OnigCaseFoldType flag,
-		    OnigApplyAllCaseFoldFunc f, void* arg,
-		    OnigEncoding enc ARG_UNUSED)
+                    OnigApplyAllCaseFoldFunc f, void* arg,
+                    OnigEncoding enc ARG_UNUSED)
 {
   return onigenc_apply_all_case_fold_with_map(
             numberof(CaseFoldMap), CaseFoldMap, 1,
@@ -114,16 +114,16 @@ apply_all_case_fold(OnigCaseFoldType flag,
 
 static int
 get_case_fold_codes_by_str(OnigCaseFoldType flag,
-			   const OnigUChar* p, const OnigUChar* end,
-			   OnigCaseFoldCodeItem items[],
-			   OnigEncoding enc ARG_UNUSED)
+                           const OnigUChar* p, const OnigUChar* end,
+                           OnigCaseFoldCodeItem items[],
+                           OnigEncoding enc ARG_UNUSED)
 {
   if (0x41 <= *p && *p <= 0x5a) {
     items[0].byte_len = 1;
     items[0].code_len = 1;
     items[0].code[0] = (OnigCodePoint )(*p + 0x20);
     if (*p == 0x53 && end > p + 1
-	&& (*(p+1) == 0x53 || *(p+1) == 0x73)) { /* SS */
+        && (*(p+1) == 0x53 || *(p+1) == 0x73)) { /* SS */
       items[1].byte_len = 2;
       items[1].code_len = 1;
       items[1].code[0] = (OnigCodePoint )SHARP_s;
@@ -137,7 +137,7 @@ get_case_fold_codes_by_str(OnigCaseFoldType flag,
     items[0].code_len = 1;
     items[0].code[0] = (OnigCodePoint )(*p - 0x20);
     if (*p == 0x73 && end > p + 1
-	&& (*(p+1) == 0x73 || *(p+1) == 0x53)) { /* ss */
+        && (*(p+1) == 0x73 || *(p+1) == 0x53)) { /* ss */
       items[1].byte_len = 2;
       items[1].code_len = 1;
       items[1].code[0] = (OnigCodePoint )SHARP_s;
@@ -203,7 +203,7 @@ get_case_fold_codes_by_str(OnigCaseFoldType flag,
 
 static int
 mbc_case_fold(OnigCaseFoldType flag, const UChar** pp, const UChar* end ARG_UNUSED,
-	      UChar* lower, OnigEncoding enc ARG_UNUSED)
+              UChar* lower, OnigEncoding enc ARG_UNUSED)
 {
   const UChar* p = *pp;
 
@@ -222,7 +222,7 @@ mbc_case_fold(OnigCaseFoldType flag, const UChar** pp, const UChar* end ARG_UNUS
 #if 0
 static int
 is_mbc_ambiguous(OnigCaseFoldType flag,
-		 const UChar** pp, const UChar* end)
+                 const UChar** pp, const UChar* end)
 {
   int v;
   const UChar* p = *pp;
@@ -257,8 +257,8 @@ is_code_ctype(OnigCodePoint code, unsigned int ctype, OnigEncoding enc ARG_UNUSE
 
 static int
 case_map(OnigCaseFoldType* flagP, const OnigUChar** pp,
-	 const OnigUChar* end, OnigUChar* to, OnigUChar* to_end,
-	 const struct OnigEncodingTypeST* enc)
+         const OnigUChar* end, OnigUChar* to, OnigUChar* to_end,
+         const struct OnigEncodingTypeST* enc)
 {
   OnigCodePoint code;
   OnigUChar *to_start = to;
@@ -268,25 +268,25 @@ case_map(OnigCaseFoldType* flagP, const OnigUChar** pp,
     code = *(*pp)++;
     if (code == SHARP_s) {
       if (flags & ONIGENC_CASE_UPCASE) {
-	flags |= ONIGENC_CASE_MODIFIED;
-	*to++ = 'S';
-	code = (flags & ONIGENC_CASE_TITLECASE) ? 's' : 'S';
+        flags |= ONIGENC_CASE_MODIFIED;
+        *to++ = 'S';
+        code = (flags & ONIGENC_CASE_TITLECASE) ? 's' : 'S';
       }
       else if (flags & ONIGENC_CASE_FOLD) {
-	flags |= ONIGENC_CASE_MODIFIED;
-	*to++ = 's';
-	code = 's';
+        flags |= ONIGENC_CASE_MODIFIED;
+        *to++ = 's';
+        code = 's';
       }
     }
     else if ((EncISO_8859_1_CtypeTable[code] & BIT_CTYPE_UPPER)
-	     && (flags & (ONIGENC_CASE_DOWNCASE | ONIGENC_CASE_FOLD))) {
+             && (flags & (ONIGENC_CASE_DOWNCASE | ONIGENC_CASE_FOLD))) {
       flags |= ONIGENC_CASE_MODIFIED;
       code += 0x20;
     }
     else if (code == 0xAA || code == 0xBA || code == 0xB5 || code == 0xFF)
       ;
     else if ((EncISO_8859_1_CtypeTable[code] & BIT_CTYPE_LOWER)
-	     && (flags & ONIGENC_CASE_UPCASE)) {
+             && (flags & ONIGENC_CASE_UPCASE)) {
       flags |= ONIGENC_CASE_MODIFIED;
       code -= 0x20;
     }

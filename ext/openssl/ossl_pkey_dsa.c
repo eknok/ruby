@@ -14,7 +14,7 @@
 #define GetPKeyDSA(obj, pkey) do { \
     GetPKey((obj), (pkey)); \
     if (EVP_PKEY_base_id(pkey) != EVP_PKEY_DSA) { /* PARANOIA? */ \
-	ossl_raise(rb_eRuntimeError, "THIS IS NOT A DSA!"); \
+        ossl_raise(rb_eRuntimeError, "THIS IS NOT A DSA!"); \
     } \
 } while (0)
 #define GetDSA(obj, dsa) do { \
@@ -53,15 +53,15 @@ dsa_instance(VALUE klass, DSA *dsa)
     VALUE obj;
 
     if (!dsa) {
-	return Qfalse;
+        return Qfalse;
     }
     obj = NewPKey(klass);
     if (!(pkey = EVP_PKEY_new())) {
-	return Qfalse;
+        return Qfalse;
     }
     if (!EVP_PKEY_assign_DSA(pkey, dsa)) {
-	EVP_PKEY_free(pkey);
-	return Qfalse;
+        EVP_PKEY_free(pkey);
+        return Qfalse;
     }
     SetPKey(obj, pkey);
 
@@ -74,16 +74,16 @@ ossl_dsa_new(EVP_PKEY *pkey)
     VALUE obj;
 
     if (!pkey) {
-	obj = dsa_instance(cDSA, DSA_new());
+        obj = dsa_instance(cDSA, DSA_new());
     } else {
-	obj = NewPKey(cDSA);
-	if (EVP_PKEY_base_id(pkey) != EVP_PKEY_DSA) {
-	    ossl_raise(rb_eTypeError, "Not a DSA key!");
-	}
-	SetPKey(obj, pkey);
+        obj = NewPKey(cDSA);
+        if (EVP_PKEY_base_id(pkey) != EVP_PKEY_DSA) {
+            ossl_raise(rb_eTypeError, "Not a DSA key!");
+        }
+        SetPKey(obj, pkey);
     }
     if (obj == Qfalse) {
-	ossl_raise(eDSAError, NULL);
+        ossl_raise(eDSAError, NULL);
     }
 
     return obj;
@@ -106,7 +106,7 @@ dsa_blocking_gen(void *arg)
 {
     struct dsa_blocking_gen_arg *gen = (struct dsa_blocking_gen_arg *)arg;
     gen->result = DSA_generate_parameters_ex(gen->dsa, gen->size, NULL, 0,
-					     gen->counter, gen->h, gen->cb);
+                                             gen->counter, gen->h, gen->cb);
     return 0;
 }
 
@@ -121,13 +121,13 @@ dsa_generate(int size)
     unsigned long h;
 
     if (!dsa || !cb) {
-	DSA_free(dsa);
-	BN_GENCB_free(cb);
-	return NULL;
+        DSA_free(dsa);
+        BN_GENCB_free(cb);
+        return NULL;
     }
 
     if (rb_block_given_p())
-	cb_arg.yield = 1;
+        cb_arg.yield = 1;
     BN_GENCB_set(cb, ossl_generate_cb_2, &cb_arg);
     gen_arg.dsa = dsa;
     gen_arg.size = size;
@@ -135,30 +135,30 @@ dsa_generate(int size)
     gen_arg.h = &h;
     gen_arg.cb = cb;
     if (cb_arg.yield == 1) {
-	/* we cannot release GVL when callback proc is supplied */
-	dsa_blocking_gen(&gen_arg);
+        /* we cannot release GVL when callback proc is supplied */
+        dsa_blocking_gen(&gen_arg);
     } else {
-	/* there's a chance to unblock */
-	rb_thread_call_without_gvl(dsa_blocking_gen, &gen_arg, ossl_generate_cb_stop, &cb_arg);
+        /* there's a chance to unblock */
+        rb_thread_call_without_gvl(dsa_blocking_gen, &gen_arg, ossl_generate_cb_stop, &cb_arg);
     }
 
     BN_GENCB_free(cb);
     if (!gen_arg.result) {
-	DSA_free(dsa);
-	if (cb_arg.state) {
-	    /* Clear OpenSSL error queue before re-raising. By the way, the
-	     * documentation of DSA_generate_parameters_ex() says the error code
-	     * can be obtained by ERR_get_error(), but the default
-	     * implementation, dsa_builtin_paramgen() doesn't put any error... */
-	    ossl_clear_error();
-	    rb_jump_tag(cb_arg.state);
-	}
-	return NULL;
+        DSA_free(dsa);
+        if (cb_arg.state) {
+            /* Clear OpenSSL error queue before re-raising. By the way, the
+             * documentation of DSA_generate_parameters_ex() says the error code
+             * can be obtained by ERR_get_error(), but the default
+             * implementation, dsa_builtin_paramgen() doesn't put any error... */
+            ossl_clear_error();
+            rb_jump_tag(cb_arg.state);
+        }
+        return NULL;
     }
 
     if (!DSA_generate_key(dsa)) {
-	DSA_free(dsa);
-	return NULL;
+        DSA_free(dsa);
+        return NULL;
     }
 
     return dsa;
@@ -182,8 +182,8 @@ ossl_dsa_s_generate(VALUE klass, VALUE size)
     VALUE obj = dsa_instance(klass, dsa);
 
     if (obj == Qfalse) {
-	DSA_free(dsa);
-	ossl_raise(eDSAError, NULL);
+        DSA_free(dsa);
+        ossl_raise(eDSAError, NULL);
     }
 
     return obj;
@@ -222,43 +222,43 @@ ossl_dsa_initialize(int argc, VALUE *argv, VALUE self)
         dsa = DSA_new();
     }
     else if (RB_INTEGER_TYPE_P(arg)) {
-	if (!(dsa = dsa_generate(NUM2INT(arg)))) {
-	    ossl_raise(eDSAError, NULL);
-	}
+        if (!(dsa = dsa_generate(NUM2INT(arg)))) {
+            ossl_raise(eDSAError, NULL);
+        }
     }
     else {
-	pass = ossl_pem_passwd_value(pass);
-	arg = ossl_to_der_if_possible(arg);
-	in = ossl_obj2bio(&arg);
-	dsa = PEM_read_bio_DSAPrivateKey(in, NULL, ossl_pem_passwd_cb, (void *)pass);
-	if (!dsa) {
-	    OSSL_BIO_reset(in);
-	    dsa = PEM_read_bio_DSA_PUBKEY(in, NULL, NULL, NULL);
-	}
-	if (!dsa) {
-	    OSSL_BIO_reset(in);
-	    dsa = d2i_DSAPrivateKey_bio(in, NULL);
-	}
-	if (!dsa) {
-	    OSSL_BIO_reset(in);
-	    dsa = d2i_DSA_PUBKEY_bio(in, NULL);
-	}
-	if (!dsa) {
-	    OSSL_BIO_reset(in);
+        pass = ossl_pem_passwd_value(pass);
+        arg = ossl_to_der_if_possible(arg);
+        in = ossl_obj2bio(&arg);
+        dsa = PEM_read_bio_DSAPrivateKey(in, NULL, ossl_pem_passwd_cb, (void *)pass);
+        if (!dsa) {
+            OSSL_BIO_reset(in);
+            dsa = PEM_read_bio_DSA_PUBKEY(in, NULL, NULL, NULL);
+        }
+        if (!dsa) {
+            OSSL_BIO_reset(in);
+            dsa = d2i_DSAPrivateKey_bio(in, NULL);
+        }
+        if (!dsa) {
+            OSSL_BIO_reset(in);
+            dsa = d2i_DSA_PUBKEY_bio(in, NULL);
+        }
+        if (!dsa) {
+            OSSL_BIO_reset(in);
 #define PEM_read_bio_DSAPublicKey(bp,x,cb,u) (DSA *)PEM_ASN1_read_bio( \
-	(d2i_of_void *)d2i_DSAPublicKey, PEM_STRING_DSA_PUBLIC, (bp), (void **)(x), (cb), (u))
-	    dsa = PEM_read_bio_DSAPublicKey(in, NULL, NULL, NULL);
+        (d2i_of_void *)d2i_DSAPublicKey, PEM_STRING_DSA_PUBLIC, (bp), (void **)(x), (cb), (u))
+            dsa = PEM_read_bio_DSAPublicKey(in, NULL, NULL, NULL);
 #undef PEM_read_bio_DSAPublicKey
-	}
-	BIO_free(in);
-	if (!dsa) {
-	    ossl_clear_error();
-	    ossl_raise(eDSAError, "Neither PUB key nor PRIV key");
-	}
+        }
+        BIO_free(in);
+        if (!dsa) {
+            ossl_clear_error();
+            ossl_raise(eDSAError, "Neither PUB key nor PRIV key");
+        }
     }
     if (!EVP_PKEY_assign_DSA(pkey, dsa)) {
-	DSA_free(dsa);
-	ossl_raise(eDSAError, NULL);
+        DSA_free(dsa);
+        ossl_raise(eDSAError, NULL);
     }
 
     return self;
@@ -272,12 +272,12 @@ ossl_dsa_initialize_copy(VALUE self, VALUE other)
 
     GetPKey(self, pkey);
     if (EVP_PKEY_base_id(pkey) != EVP_PKEY_NONE)
-	ossl_raise(eDSAError, "DSA already initialized");
+        ossl_raise(eDSAError, "DSA already initialized");
     GetDSA(other, dsa);
 
     dsa_new = ASN1_dup((i2d_of_void *)i2d_DSAPrivateKey, (d2i_of_void *)d2i_DSAPrivateKey, (char *)dsa);
     if (!dsa_new)
-	ossl_raise(eDSAError, "ASN1_dup");
+        ossl_raise(eDSAError, "ASN1_dup");
 
     EVP_PKEY_assign_DSA(pkey, dsa_new);
 
@@ -348,23 +348,23 @@ ossl_dsa_export(int argc, VALUE *argv, VALUE self)
     GetDSA(self, dsa);
     rb_scan_args(argc, argv, "02", &cipher, &pass);
     if (!NIL_P(cipher)) {
-	ciph = ossl_evp_get_cipherbyname(cipher);
-	pass = ossl_pem_passwd_value(pass);
+        ciph = ossl_evp_get_cipherbyname(cipher);
+        pass = ossl_pem_passwd_value(pass);
     }
     if (!(out = BIO_new(BIO_s_mem()))) {
-	ossl_raise(eDSAError, NULL);
+        ossl_raise(eDSAError, NULL);
     }
     if (DSA_HAS_PRIVATE(dsa)) {
-	if (!PEM_write_bio_DSAPrivateKey(out, dsa, ciph, NULL, 0,
-					 ossl_pem_passwd_cb, (void *)pass)){
-	    BIO_free(out);
-	    ossl_raise(eDSAError, NULL);
-	}
+        if (!PEM_write_bio_DSAPrivateKey(out, dsa, ciph, NULL, 0,
+                                         ossl_pem_passwd_cb, (void *)pass)){
+            BIO_free(out);
+            ossl_raise(eDSAError, NULL);
+        }
     } else {
-	if (!PEM_write_bio_DSA_PUBKEY(out, dsa)) {
-	    BIO_free(out);
-	    ossl_raise(eDSAError, NULL);
-	}
+        if (!PEM_write_bio_DSA_PUBKEY(out, dsa)) {
+            BIO_free(out);
+            ossl_raise(eDSAError, NULL);
+        }
     }
     str = ossl_membio2str(out);
 
@@ -389,15 +389,15 @@ ossl_dsa_to_der(VALUE self)
 
     GetDSA(self, dsa);
     if(DSA_HAS_PRIVATE(dsa))
-	i2d_func = (int (*)(DSA *,unsigned char **))i2d_DSAPrivateKey;
+        i2d_func = (int (*)(DSA *,unsigned char **))i2d_DSAPrivateKey;
     else
-	i2d_func = i2d_DSA_PUBKEY;
+        i2d_func = i2d_DSA_PUBKEY;
     if((len = i2d_func(dsa, NULL)) <= 0)
-	ossl_raise(eDSAError, NULL);
+        ossl_raise(eDSAError, NULL);
     str = rb_str_new(0, len);
     p = (unsigned char *)RSTRING_PTR(str);
     if(i2d_func(dsa, &p) < 0)
-	ossl_raise(eDSAError, NULL);
+        ossl_raise(eDSAError, NULL);
     ossl_str_adjust(str, p);
 
     return str;
@@ -450,11 +450,11 @@ ossl_dsa_to_text(VALUE self)
 
     GetDSA(self, dsa);
     if (!(out = BIO_new(BIO_s_mem()))) {
-	ossl_raise(eDSAError, NULL);
+        ossl_raise(eDSAError, NULL);
     }
     if (!DSA_print(out, dsa, 0)) { /* offset = 0 */
-	BIO_free(out);
-	ossl_raise(eDSAError, NULL);
+        BIO_free(out);
+        ossl_raise(eDSAError, NULL);
     }
     str = ossl_membio2str(out);
 
@@ -488,13 +488,13 @@ ossl_dsa_to_public_key(VALUE self)
     GetPKeyDSA(self, pkey);
     /* err check performed by dsa_instance */
 #define DSAPublicKey_dup(dsa) (DSA *)ASN1_dup( \
-	(i2d_of_void *)i2d_DSAPublicKey, (d2i_of_void *)d2i_DSAPublicKey, (char *)(dsa))
+        (i2d_of_void *)i2d_DSAPublicKey, (d2i_of_void *)d2i_DSAPublicKey, (char *)(dsa))
     dsa = DSAPublicKey_dup(EVP_PKEY_get0_DSA(pkey));
 #undef DSAPublicKey_dup
     obj = dsa_instance(rb_obj_class(self), dsa);
     if (obj == Qfalse) {
-	DSA_free(dsa);
-	ossl_raise(eDSAError, NULL);
+        DSA_free(dsa);
+        ossl_raise(eDSAError, NULL);
     }
     return obj;
 }
@@ -529,15 +529,15 @@ ossl_dsa_sign(VALUE self, VALUE data)
     GetDSA(self, dsa);
     DSA_get0_pqg(dsa, NULL, &dsa_q, NULL);
     if (!dsa_q)
-	ossl_raise(eDSAError, "incomplete DSA");
+        ossl_raise(eDSAError, "incomplete DSA");
     if (!DSA_PRIVATE(self, dsa))
-	ossl_raise(eDSAError, "Private DSA key needed!");
+        ossl_raise(eDSAError, "Private DSA key needed!");
     StringValue(data);
     str = rb_str_new(0, DSA_size(dsa));
     if (!DSA_sign(0, (unsigned char *)RSTRING_PTR(data), RSTRING_LENINT(data),
-		  (unsigned char *)RSTRING_PTR(str),
-		  &buf_len, dsa)) { /* type is ignored (0) */
-	ossl_raise(eDSAError, NULL);
+                  (unsigned char *)RSTRING_PTR(str),
+                  &buf_len, dsa)) { /* type is ignored (0) */
+        ossl_raise(eDSAError, NULL);
     }
     rb_str_set_len(str, buf_len);
 
@@ -574,12 +574,12 @@ ossl_dsa_verify(VALUE self, VALUE digest, VALUE sig)
     StringValue(sig);
     /* type is ignored (0) */
     ret = DSA_verify(0, (unsigned char *)RSTRING_PTR(digest), RSTRING_LENINT(digest),
-		     (unsigned char *)RSTRING_PTR(sig), RSTRING_LENINT(sig), dsa);
+                     (unsigned char *)RSTRING_PTR(sig), RSTRING_LENINT(sig), dsa);
     if (ret < 0) {
-	ossl_raise(eDSAError, NULL);
+        ossl_raise(eDSAError, NULL);
     }
     else if (ret == 1) {
-	return Qtrue;
+        return Qtrue;
     }
 
     return Qfalse;

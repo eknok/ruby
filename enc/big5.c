@@ -205,7 +205,7 @@ big5_mbc_case_fold(OnigCaseFoldType flag, const UChar** pp, const UChar* end,
 #if 0
 static int
 big5_is_mbc_ambiguous(OnigCaseFoldType flag,
-		      const UChar** pp, const UChar* end, OnigEncoding enc)
+                      const UChar** pp, const UChar* end, OnigEncoding enc)
 {
   return onigenc_mbn_is_mbc_ambiguous(enc, flag, pp, end);
 }
@@ -240,9 +240,9 @@ static const char BIG5_CAN_BE_TRAIL_TABLE[256] = {
 #define BIG5_UAO_P(enc) ((enc)->precise_mbc_enc_len == big5_uao_mbc_enc_len)
 
 #define BIG5_ISMB_FIRST(byte)  ( \
-	BIG5_HKSCS_P(enc) ? EncLen_BIG5_HKSCS[byte] > 1 : \
-	EncLen_BIG5[byte] > 1 \
-	)
+        BIG5_HKSCS_P(enc) ? EncLen_BIG5_HKSCS[byte] > 1 : \
+        EncLen_BIG5[byte] > 1 \
+        )
 #define BIG5_ISMB_TRAIL(byte)  BIG5_CAN_BE_TRAIL_TABLE[(byte)]
 
 static UChar*
@@ -257,8 +257,8 @@ big5_left_adjust_char_head(const UChar* start, const UChar* s, const UChar* end,
   if (BIG5_ISMB_TRAIL(*p)) {
     while (p > start) {
       if (! BIG5_ISMB_FIRST(*--p)) {
-	p++;
-	break;
+        p++;
+        break;
       }
     }
   }

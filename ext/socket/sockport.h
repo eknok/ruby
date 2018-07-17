@@ -81,8 +81,8 @@
 #endif
 
 #ifndef IN_MULTICAST
-# define IN_CLASSD(i)	(((long)(i) & 0xf0000000) == 0xe0000000)
-# define IN_MULTICAST(i)	IN_CLASSD(i)
+# define IN_CLASSD(i)        (((long)(i) & 0xf0000000) == 0xe0000000)
+# define IN_MULTICAST(i)        IN_CLASSD(i)
 #endif
 
 #ifndef IN_EXPERIMENTAL

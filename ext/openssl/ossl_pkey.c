@@ -29,18 +29,18 @@ ossl_generate_cb_2(int p, int n, BN_GENCB *cb)
 
     arg = (struct ossl_generate_cb_arg *)BN_GENCB_get_arg(cb);
     if (arg->yield) {
-	ary = rb_ary_new2(2);
-	rb_ary_store(ary, 0, INT2NUM(p));
-	rb_ary_store(ary, 1, INT2NUM(n));
+        ary = rb_ary_new2(2);
+        rb_ary_store(ary, 0, INT2NUM(p));
+        rb_ary_store(ary, 1, INT2NUM(n));
 
-	/*
-	* can be break by raising exception or 'break'
-	*/
-	rb_protect(rb_yield, ary, &state);
-	if (state) {
-	    arg->stop = 1;
-	    arg->state = state;
-	}
+        /*
+        * can be break by raising exception or 'break'
+        */
+        rb_protect(rb_yield, ary, &state);
+        if (state) {
+            arg->stop = 1;
+            arg->state = state;
+        }
     }
     if (arg->stop) return 0;
     return 1;
@@ -65,7 +65,7 @@ ossl_evp_pkey_free(void *ptr)
 const rb_data_type_t ossl_evp_pkey_type = {
     "OpenSSL/EVP_PKEY",
     {
-	0, ossl_evp_pkey_free,
+        0, ossl_evp_pkey_free,
     },
     0, 0, RUBY_TYPED_FREE_IMMEDIATELY,
 };
@@ -77,29 +77,29 @@ pkey_new0(EVP_PKEY *pkey)
     int type;
 
     if (!pkey || (type = EVP_PKEY_base_id(pkey)) == EVP_PKEY_NONE)
-	ossl_raise(rb_eRuntimeError, "pkey is empty");
+        ossl_raise(rb_eRuntimeError, "pkey is empty");
 
     switch (type) {
 #if !defined(OPENSSL_NO_RSA)
     case EVP_PKEY_RSA:
-	return ossl_rsa_new(pkey);
+        return ossl_rsa_new(pkey);
 #endif
 #if !defined(OPENSSL_NO_DSA)
     case EVP_PKEY_DSA:
-	return ossl_dsa_new(pkey);
+        return ossl_dsa_new(pkey);
 #endif
 #if !defined(OPENSSL_NO_DH)
     case EVP_PKEY_DH:
-	return ossl_dh_new(pkey);
+        return ossl_dh_new(pkey);
 #endif
 #if !defined(OPENSSL_NO_EC)
     case EVP_PKEY_EC:
-	return ossl_ec_new(pkey);
+        return ossl_ec_new(pkey);
 #endif
     default:
-	obj = NewPKey(cPKey);
-	SetPKey(obj, pkey);
-	return obj;
+        obj = NewPKey(cPKey);
+        SetPKey(obj, pkey);
+        return obj;
     }
 }
 
@@ -111,8 +111,8 @@ ossl_pkey_new(EVP_PKEY *pkey)
 
     obj = rb_protect((VALUE (*)(VALUE))pkey_new0, (VALUE)pkey, &status);
     if (status) {
-	EVP_PKEY_free(pkey);
-	rb_jump_tag(status);
+        EVP_PKEY_free(pkey);
+        rb_jump_tag(status);
     }
 
     return obj;
@@ -146,19 +146,19 @@ ossl_pkey_new_from_data(int argc, VALUE *argv, VALUE self)
 
     bio = ossl_obj2bio(&data);
     if (!(pkey = d2i_PrivateKey_bio(bio, NULL))) {
-	OSSL_BIO_reset(bio);
-	if (!(pkey = PEM_read_bio_PrivateKey(bio, NULL, ossl_pem_passwd_cb, (void *)pass))) {
-	    OSSL_BIO_reset(bio);
-	    if (!(pkey = d2i_PUBKEY_bio(bio, NULL))) {
-		OSSL_BIO_reset(bio);
-		pkey = PEM_read_bio_PUBKEY(bio, NULL, ossl_pem_passwd_cb, (void *)pass);
-	    }
-	}
+        OSSL_BIO_reset(bio);
+        if (!(pkey = PEM_read_bio_PrivateKey(bio, NULL, ossl_pem_passwd_cb, (void *)pass))) {
+            OSSL_BIO_reset(bio);
+            if (!(pkey = d2i_PUBKEY_bio(bio, NULL))) {
+                OSSL_BIO_reset(bio);
+                pkey = PEM_read_bio_PUBKEY(bio, NULL, ossl_pem_passwd_cb, (void *)pass);
+            }
+        }
     }
 
     BIO_free(bio);
     if (!pkey)
-	ossl_raise(ePKeyError, "Could not parse PKey");
+        ossl_raise(ePKeyError, "Could not parse PKey");
 
     return ossl_pkey_new(pkey);
 }
@@ -170,35 +170,35 @@ ossl_pkey_check_public_key(const EVP_PKEY *pkey)
     const BIGNUM *n, *e, *pubkey;
 
     if (EVP_PKEY_missing_parameters(pkey))
-	ossl_raise(ePKeyError, "parameters missing");
+        ossl_raise(ePKeyError, "parameters missing");
 
     /* OpenSSL < 1.1.0 takes non-const pointer */
     ptr = EVP_PKEY_get0((EVP_PKEY *)pkey);
     switch (EVP_PKEY_base_id(pkey)) {
       case EVP_PKEY_RSA:
-	RSA_get0_key(ptr, &n, &e, NULL);
-	if (n && e)
-	    return;
-	break;
+        RSA_get0_key(ptr, &n, &e, NULL);
+        if (n && e)
+            return;
+        break;
       case EVP_PKEY_DSA:
-	DSA_get0_key(ptr, &pubkey, NULL);
-	if (pubkey)
-	    return;
-	break;
+        DSA_get0_key(ptr, &pubkey, NULL);
+        if (pubkey)
+            return;
+        break;
       case EVP_PKEY_DH:
-	DH_get0_key(ptr, &pubkey, NULL);
-	if (pubkey)
-	    return;
-	break;
+        DH_get0_key(ptr, &pubkey, NULL);
+        if (pubkey)
+            return;
+        break;
 #if !defined(OPENSSL_NO_EC)
       case EVP_PKEY_EC:
-	if (EC_KEY_get0_public_key(ptr))
-	    return;
-	break;
+        if (EC_KEY_get0_public_key(ptr))
+            return;
+        break;
 #endif
       default:
-	/* unsupported type; assuming ok */
-	return;
+        /* unsupported type; assuming ok */
+        return;
     }
     ossl_raise(ePKeyError, "public key missing");
 }
@@ -219,7 +219,7 @@ GetPrivPKeyPtr(VALUE obj)
     EVP_PKEY *pkey;
 
     if (rb_funcallv(obj, id_private_q, 0, NULL) != Qtrue) {
-	ossl_raise(rb_eArgError, "Private key is needed.");
+        ossl_raise(rb_eArgError, "Private key is needed.");
     }
     GetPKey(obj, pkey);
 
@@ -248,7 +248,7 @@ ossl_pkey_alloc(VALUE klass)
 
     obj = NewPKey(klass);
     if (!(pkey = EVP_PKEY_new())) {
-	ossl_raise(ePKeyError, NULL);
+        ossl_raise(ePKeyError, NULL);
     }
     SetPKey(obj, pkey);
 
@@ -266,7 +266,7 @@ static VALUE
 ossl_pkey_initialize(VALUE self)
 {
     if (rb_obj_is_instance_of(self, cPKey)) {
-	ossl_raise(rb_eTypeError, "OpenSSL::PKey::PKey can't be instantiated directly");
+        ossl_raise(rb_eTypeError, "OpenSSL::PKey::PKey can't be instantiated directly");
     }
     return self;
 }
@@ -305,19 +305,19 @@ ossl_pkey_sign(VALUE self, VALUE digest, VALUE data)
 
     ctx = EVP_MD_CTX_new();
     if (!ctx)
-	ossl_raise(ePKeyError, "EVP_MD_CTX_new");
+        ossl_raise(ePKeyError, "EVP_MD_CTX_new");
     if (!EVP_SignInit_ex(ctx, md, NULL)) {
-	EVP_MD_CTX_free(ctx);
-	ossl_raise(ePKeyError, "EVP_SignInit_ex");
+        EVP_MD_CTX_free(ctx);
+        ossl_raise(ePKeyError, "EVP_SignInit_ex");
     }
     if (!EVP_SignUpdate(ctx, RSTRING_PTR(data), RSTRING_LEN(data))) {
-	EVP_MD_CTX_free(ctx);
-	ossl_raise(ePKeyError, "EVP_SignUpdate");
+        EVP_MD_CTX_free(ctx);
+        ossl_raise(ePKeyError, "EVP_SignUpdate");
     }
     result = EVP_SignFinal(ctx, (unsigned char *)RSTRING_PTR(str), &buf_len, pkey);
     EVP_MD_CTX_free(ctx);
     if (!result)
-	ossl_raise(ePKeyError, "EVP_SignFinal");
+        ossl_raise(ePKeyError, "EVP_SignFinal");
     rb_str_set_len(str, buf_len);
 
     return str;
@@ -361,25 +361,25 @@ ossl_pkey_verify(VALUE self, VALUE digest, VALUE sig, VALUE data)
 
     ctx = EVP_MD_CTX_new();
     if (!ctx)
-	ossl_raise(ePKeyError, "EVP_MD_CTX_new");
+        ossl_raise(ePKeyError, "EVP_MD_CTX_new");
     if (!EVP_VerifyInit_ex(ctx, md, NULL)) {
-	EVP_MD_CTX_free(ctx);
-	ossl_raise(ePKeyError, "EVP_VerifyInit_ex");
+        EVP_MD_CTX_free(ctx);
+        ossl_raise(ePKeyError, "EVP_VerifyInit_ex");
     }
     if (!EVP_VerifyUpdate(ctx, RSTRING_PTR(data), RSTRING_LEN(data))) {
-	EVP_MD_CTX_free(ctx);
-	ossl_raise(ePKeyError, "EVP_VerifyUpdate");
+        EVP_MD_CTX_free(ctx);
+        ossl_raise(ePKeyError, "EVP_VerifyUpdate");
     }
     result = EVP_VerifyFinal(ctx, (unsigned char *)RSTRING_PTR(sig), siglen, pkey);
     EVP_MD_CTX_free(ctx);
     switch (result) {
     case 0:
-	ossl_clear_error();
-	return Qfalse;
+        ossl_clear_error();
+        return Qfalse;
     case 1:
-	return Qtrue;
+        return Qtrue;
     default:
-	ossl_raise(ePKeyError, "EVP_VerifyFinal");
+        ossl_raise(ePKeyError, "EVP_VerifyFinal");
     }
 }
 

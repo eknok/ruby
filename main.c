@@ -37,8 +37,8 @@ main(int argc, char **argv)
 
     ruby_sysinit(&argc, &argv);
     {
-	RUBY_INIT_STACK;
-	ruby_init();
-	return ruby_run_node(ruby_options(argc, argv));
+        RUBY_INIT_STACK;
+        ruby_init();
+        return ruby_run_node(ruby_options(argc, argv));
     }
 }

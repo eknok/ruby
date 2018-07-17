@@ -79,10 +79,10 @@ error !
 
 #define INSN_ENTRY_SIG(insn) \
   if (0) fprintf(stderr, "exec: %s@(%d, %d)@%s:%d\n", #insn, \
-		 (int)(reg_pc - reg_cfp->iseq->body->iseq_encoded), \
-		 (int)(reg_cfp->pc - reg_cfp->iseq->body->iseq_encoded), \
-		 RSTRING_PTR(rb_iseq_path(reg_cfp->iseq)), \
-		 (int)(rb_iseq_line_no(reg_cfp->iseq, reg_pc - reg_cfp->iseq->body->iseq_encoded)));
+                 (int)(reg_pc - reg_cfp->iseq->body->iseq_encoded), \
+                 (int)(reg_cfp->pc - reg_cfp->iseq->body->iseq_encoded), \
+                 RSTRING_PTR(rb_iseq_path(reg_cfp->iseq)), \
+                 (int)(rb_iseq_line_no(reg_cfp->iseq, reg_pc - reg_cfp->iseq->body->iseq_encoded)));
 
 #define INSN_DISPATCH_SIG(insn)
 
@@ -97,7 +97,7 @@ error !
 
 #else
 #define DISPATCH_ARCH_DEPEND_WAY(addr) \
-				/* do nothing */
+                                /* do nothing */
 #endif
 
 /**********************************/
@@ -150,7 +150,7 @@ case BIN(insn):
   break;
 
 #define INSN_DISPATCH()         \
-  while (1) {			\
+  while (1) {                        \
     switch (GET_CURRENT_INSN()) {
 
 #define END_INSNS_DISPATCH()    \

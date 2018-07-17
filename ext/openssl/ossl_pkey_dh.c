@@ -14,7 +14,7 @@
 #define GetPKeyDH(obj, pkey) do { \
     GetPKey((obj), (pkey)); \
     if (EVP_PKEY_base_id(pkey) != EVP_PKEY_DH) { /* PARANOIA? */ \
-	ossl_raise(rb_eRuntimeError, "THIS IS NOT A DH!") ; \
+        ossl_raise(rb_eRuntimeError, "THIS IS NOT A DH!") ; \
     } \
 } while (0)
 #define GetDH(obj, dh) do { \
@@ -39,15 +39,15 @@ dh_instance(VALUE klass, DH *dh)
     VALUE obj;
 
     if (!dh) {
-	return Qfalse;
+        return Qfalse;
     }
     obj = NewPKey(klass);
     if (!(pkey = EVP_PKEY_new())) {
-	return Qfalse;
+        return Qfalse;
     }
     if (!EVP_PKEY_assign_DH(pkey, dh)) {
-	EVP_PKEY_free(pkey);
-	return Qfalse;
+        EVP_PKEY_free(pkey);
+        return Qfalse;
     }
     SetPKey(obj, pkey);
 
@@ -60,16 +60,16 @@ ossl_dh_new(EVP_PKEY *pkey)
     VALUE obj;
 
     if (!pkey) {
-	obj = dh_instance(cDH, DH_new());
+        obj = dh_instance(cDH, DH_new());
     } else {
-	obj = NewPKey(cDH);
-	if (EVP_PKEY_base_id(pkey) != EVP_PKEY_DH) {
-	    ossl_raise(rb_eTypeError, "Not a DH key!");
-	}
-	SetPKey(obj, pkey);
+        obj = NewPKey(cDH);
+        if (EVP_PKEY_base_id(pkey) != EVP_PKEY_DH) {
+            ossl_raise(rb_eTypeError, "Not a DH key!");
+        }
+        SetPKey(obj, pkey);
     }
     if (obj == Qfalse) {
-	ossl_raise(eDHError, NULL);
+        ossl_raise(eDHError, NULL);
     }
 
     return obj;
@@ -103,35 +103,35 @@ dh_generate(int size, int gen)
     BN_GENCB *cb = BN_GENCB_new();
 
     if (!dh || !cb) {
-	DH_free(dh);
-	BN_GENCB_free(cb);
-	return NULL;
+        DH_free(dh);
+        BN_GENCB_free(cb);
+        return NULL;
     }
 
     if (rb_block_given_p())
-	cb_arg.yield = 1;
+        cb_arg.yield = 1;
     BN_GENCB_set(cb, ossl_generate_cb_2, &cb_arg);
     gen_arg.dh = dh;
     gen_arg.size = size;
     gen_arg.gen = gen;
     gen_arg.cb = cb;
     if (cb_arg.yield == 1) {
-	/* we cannot release GVL when callback proc is supplied */
-	dh_blocking_gen(&gen_arg);
+        /* we cannot release GVL when callback proc is supplied */
+        dh_blocking_gen(&gen_arg);
     } else {
-	/* there's a chance to unblock */
-	rb_thread_call_without_gvl(dh_blocking_gen, &gen_arg, ossl_generate_cb_stop, &cb_arg);
+        /* there's a chance to unblock */
+        rb_thread_call_without_gvl(dh_blocking_gen, &gen_arg, ossl_generate_cb_stop, &cb_arg);
     }
 
     BN_GENCB_free(cb);
     if (!gen_arg.result) {
-	DH_free(dh);
-	if (cb_arg.state) {
-	    /* Clear OpenSSL error queue before re-raising. */
-	    ossl_clear_error();
-	    rb_jump_tag(cb_arg.state);
-	}
-	return NULL;
+        DH_free(dh);
+        if (cb_arg.state) {
+            /* Clear OpenSSL error queue before re-raising. */
+            ossl_clear_error();
+            rb_jump_tag(cb_arg.state);
+        }
+        return NULL;
     }
 
     if (!DH_generate_key(dh)) {
@@ -162,13 +162,13 @@ ossl_dh_s_generate(int argc, VALUE *argv, VALUE klass)
     VALUE size, gen, obj;
 
     if (rb_scan_args(argc, argv, "11", &size, &gen) == 2) {
-	g = NUM2INT(gen);
+        g = NUM2INT(gen);
     }
     dh = dh_generate(NUM2INT(size), g);
     obj = dh_instance(klass, dh);
     if (obj == Qfalse) {
-	DH_free(dh);
-	ossl_raise(eDHError, NULL);
+        DH_free(dh);
+        ossl_raise(eDHError, NULL);
     }
 
     return obj;
@@ -213,29 +213,29 @@ ossl_dh_initialize(int argc, VALUE *argv, VALUE self)
       dh = DH_new();
     }
     else if (RB_INTEGER_TYPE_P(arg)) {
-	if (!NIL_P(gen)) {
-	    g = NUM2INT(gen);
-	}
-	if (!(dh = dh_generate(NUM2INT(arg), g))) {
-	    ossl_raise(eDHError, NULL);
-	}
+        if (!NIL_P(gen)) {
+            g = NUM2INT(gen);
+        }
+        if (!(dh = dh_generate(NUM2INT(arg), g))) {
+            ossl_raise(eDHError, NULL);
+        }
     }
     else {
-	arg = ossl_to_der_if_possible(arg);
-	in = ossl_obj2bio(&arg);
-	dh = PEM_read_bio_DHparams(in, NULL, NULL, NULL);
-	if (!dh){
-	    OSSL_BIO_reset(in);
-	    dh = d2i_DHparams_bio(in, NULL);
-	}
-	BIO_free(in);
-	if (!dh) {
-	    ossl_raise(eDHError, NULL);
-	}
+        arg = ossl_to_der_if_possible(arg);
+        in = ossl_obj2bio(&arg);
+        dh = PEM_read_bio_DHparams(in, NULL, NULL, NULL);
+        if (!dh){
+            OSSL_BIO_reset(in);
+            dh = d2i_DHparams_bio(in, NULL);
+        }
+        BIO_free(in);
+        if (!dh) {
+            ossl_raise(eDHError, NULL);
+        }
     }
     if (!EVP_PKEY_assign_DH(pkey, dh)) {
-	DH_free(dh);
-	ossl_raise(eDHError, NULL);
+        DH_free(dh);
+        ossl_raise(eDHError, NULL);
     }
     return self;
 }
@@ -249,25 +249,25 @@ ossl_dh_initialize_copy(VALUE self, VALUE other)
 
     GetPKey(self, pkey);
     if (EVP_PKEY_base_id(pkey) != EVP_PKEY_NONE)
-	ossl_raise(eDHError, "DH already initialized");
+        ossl_raise(eDHError, "DH already initialized");
     GetDH(other, dh_other);
 
     dh = DHparams_dup(dh_other);
     if (!dh)
-	ossl_raise(eDHError, "DHparams_dup");
+        ossl_raise(eDHError, "DHparams_dup");
     EVP_PKEY_assign_DH(pkey, dh);
 
     DH_get0_key(dh_other, &pub, &priv);
     if (pub) {
-	BIGNUM *pub2 = BN_dup(pub);
-	BIGNUM *priv2 = BN_dup(priv);
+        BIGNUM *pub2 = BN_dup(pub);
+        BIGNUM *priv2 = BN_dup(priv);
 
-	if (!pub2 || priv && !priv2) {
-	    BN_clear_free(pub2);
-	    BN_clear_free(priv2);
-	    ossl_raise(eDHError, "BN_dup");
-	}
-	DH_set0_key(dh, pub2, priv2);
+        if (!pub2 || priv && !priv2) {
+            BN_clear_free(pub2);
+            BN_clear_free(priv2);
+            ossl_raise(eDHError, "BN_dup");
+        }
+        DH_set0_key(dh, pub2, priv2);
     }
 
     return self;
@@ -334,11 +334,11 @@ ossl_dh_export(VALUE self)
 
     GetDH(self, dh);
     if (!(out = BIO_new(BIO_s_mem()))) {
-	ossl_raise(eDHError, NULL);
+        ossl_raise(eDHError, NULL);
     }
     if (!PEM_write_bio_DHparams(out, dh)) {
-	BIO_free(out);
-	ossl_raise(eDHError, NULL);
+        BIO_free(out);
+        ossl_raise(eDHError, NULL);
     }
     str = ossl_membio2str(out);
 
@@ -364,11 +364,11 @@ ossl_dh_to_der(VALUE self)
 
     GetDH(self, dh);
     if((len = i2d_DHparams(dh, NULL)) <= 0)
-	ossl_raise(eDHError, NULL);
+        ossl_raise(eDHError, NULL);
     str = rb_str_new(0, len);
     p = (unsigned char *)RSTRING_PTR(str);
     if(i2d_DHparams(dh, &p) < 0)
-	ossl_raise(eDHError, NULL);
+        ossl_raise(eDHError, NULL);
     ossl_str_adjust(str, p);
 
     return str;
@@ -420,11 +420,11 @@ ossl_dh_to_text(VALUE self)
 
     GetDH(self, dh);
     if (!(out = BIO_new(BIO_s_mem()))) {
-	ossl_raise(eDHError, NULL);
+        ossl_raise(eDHError, NULL);
     }
     if (!DHparams_print(out, dh)) {
-	BIO_free(out);
-	ossl_raise(eDHError, NULL);
+        BIO_free(out);
+        ossl_raise(eDHError, NULL);
     }
     str = ossl_membio2str(out);
 
@@ -462,8 +462,8 @@ ossl_dh_to_public_key(VALUE self)
     dh = DHparams_dup(orig_dh); /* err check perfomed by dh_instance */
     obj = dh_instance(rb_obj_class(self), dh);
     if (obj == Qfalse) {
-	DH_free(dh);
-	ossl_raise(eDHError, NULL);
+        DH_free(dh);
+        ossl_raise(eDHError, NULL);
     }
 
     return obj;
@@ -485,7 +485,7 @@ ossl_dh_check_params(VALUE self)
 
     GetDH(self, dh);
     if (!DH_check(dh, &codes)) {
-	return Qfalse;
+        return Qfalse;
     }
 
     return codes == 0 ? Qtrue : Qfalse;
@@ -514,7 +514,7 @@ ossl_dh_generate_key(VALUE self)
 
     GetDH(self, dh);
     if (!DH_generate_key(dh))
-	ossl_raise(eDHError, "Failed to generate key");
+        ossl_raise(eDHError, "Failed to generate key");
     return self;
 }
 
@@ -540,12 +540,12 @@ ossl_dh_compute_key(VALUE self, VALUE pub)
     GetDH(self, dh);
     DH_get0_pqg(dh, &dh_p, NULL, NULL);
     if (!dh_p)
-	ossl_raise(eDHError, "incomplete DH");
+        ossl_raise(eDHError, "incomplete DH");
     pub_key = GetBNPtr(pub);
     len = DH_size(dh);
     str = rb_str_new(0, len);
     if ((len = DH_compute_key((unsigned char *)RSTRING_PTR(str), pub_key, dh)) < 0) {
-	ossl_raise(eDHError, NULL);
+        ossl_raise(eDHError, NULL);
     }
     rb_str_set_len(str, len);
 

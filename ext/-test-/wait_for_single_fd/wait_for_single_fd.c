@@ -9,13 +9,13 @@ wait_for_single_fd(VALUE ign, VALUE fd, VALUE events, VALUE timeout)
     int rc;
 
     if (!NIL_P(timeout)) {
-	tv = rb_time_timeval(timeout);
-	tvp = &tv;
+        tv = rb_time_timeval(timeout);
+        tvp = &tv;
     }
 
     rc = rb_wait_for_single_fd(NUM2INT(fd), NUM2INT(events), tvp);
     if (rc == -1)
-	rb_sys_fail("rb_wait_for_single_fd");
+        rb_sys_fail("rb_wait_for_single_fd");
     return INT2NUM(rc);
 }
 

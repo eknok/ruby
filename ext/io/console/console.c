@@ -23,7 +23,7 @@ static int
 setattr(int fd, conmode *t)
 {
     while (tcsetattr(fd, TCSAFLUSH, t)) {
-	if (errno != EINTR) return 0;
+        if (errno != EINTR) return 0;
     }
     return 1;
 }
@@ -87,11 +87,11 @@ rb_f_send(int argc, VALUE *argv, VALUE recv)
     VALUE sym = argv[0];
     ID vid = rb_check_id(&sym);
     if (vid) {
-	--argc;
-	++argv;
+        --argc;
+        ++argv;
     }
     else {
-	vid = id___send__;
+        vid = id___send__;
     }
     return rb_funcallv(recv, vid, argc, argv);
 }
@@ -109,21 +109,21 @@ rawmode_opt(int argc, VALUE *argv, rawmode_arg_t *opts)
     VALUE vopts;
     rb_scan_args(argc, argv, "0:", &vopts);
     if (!NIL_P(vopts)) {
-	VALUE vmin = rb_hash_aref(vopts, ID2SYM(id_min));
-	VALUE vtime = rb_hash_aref(vopts, ID2SYM(id_time));
-	/* default values by `stty raw` */
-	opts->vmin = 1;
-	opts->vtime = 0;
-	if (!NIL_P(vmin)) {
-	    opts->vmin = NUM2INT(vmin);
-	    optp = opts;
-	}
-	if (!NIL_P(vtime)) {
-	    VALUE v10 = INT2FIX(10);
-	    vtime = rb_funcall3(vtime, '*', 1, &v10);
-	    opts->vtime = NUM2INT(vtime);
-	    optp = opts;
-	}
+        VALUE vmin = rb_hash_aref(vopts, ID2SYM(id_min));
+        VALUE vtime = rb_hash_aref(vopts, ID2SYM(id_time));
+        /* default values by `stty raw` */
+        opts->vmin = 1;
+        opts->vtime = 0;
+        if (!NIL_P(vmin)) {
+            opts->vmin = NUM2INT(vmin);
+            optp = opts;
+        }
+        if (!NIL_P(vtime)) {
+            VALUE v10 = INT2FIX(10);
+            vtime = rb_funcall3(vtime, '*', 1, &v10);
+            opts->vtime = NUM2INT(vtime);
+            optp = opts;
+        }
     }
     return optp;
 }
@@ -148,9 +148,9 @@ set_rawmode(conmode *t, void *arg)
 #endif
 #if defined HAVE_TERMIOS_H || defined HAVE_TERMIO_H
     if (arg) {
-	const rawmode_arg_t *r = arg;
-	if (r->vmin >= 0) t->c_cc[VMIN] = r->vmin;
-	if (r->vtime >= 0) t->c_cc[VTIME] = r->vtime;
+        const rawmode_arg_t *r = arg;
+        if (r->vmin >= 0) t->c_cc[VMIN] = r->vmin;
+        if (r->vtime >= 0) t->c_cc[VTIME] = r->vtime;
     }
 #endif
 }
@@ -244,45 +244,45 @@ ttymode(VALUE io, VALUE (*func)(VALUE), void (*setter)(conmode *, void *), void 
     GetOpenFile(io, fptr);
     fd[0] = GetReadFD(fptr);
     if (fd[0] != -1) {
-	if (set_ttymode(fd[0], t+0, setter, arg)) {
-	    status = 0;
-	}
-	else {
-	    error = errno;
-	    fd[0] = -1;
-	}
+        if (set_ttymode(fd[0], t+0, setter, arg)) {
+            status = 0;
+        }
+        else {
+            error = errno;
+            fd[0] = -1;
+        }
     }
     fd[1] = GetWriteFD(fptr);
     if (fd[1] != -1 && fd[1] != fd[0]) {
-	if (set_ttymode(fd[1], t+1, setter, arg)) {
-	    status = 0;
-	}
-	else {
-	    error = errno;
-	    fd[1] = -1;
-	}
+        if (set_ttymode(fd[1], t+1, setter, arg)) {
+            status = 0;
+        }
+        else {
+            error = errno;
+            fd[1] = -1;
+        }
     }
     if (status == 0) {
-	result = rb_protect(func, io, &status);
+        result = rb_protect(func, io, &status);
     }
     GetOpenFile(io, fptr);
     if (fd[0] != -1 && fd[0] == GetReadFD(fptr)) {
-	if (!setattr(fd[0], t+0)) {
-	    error = errno;
-	    status = -1;
-	}
+        if (!setattr(fd[0], t+0)) {
+            error = errno;
+            status = -1;
+        }
     }
     if (fd[1] != -1 && fd[1] != fd[0] && fd[1] == GetWriteFD(fptr)) {
-	if (!setattr(fd[1], t+1)) {
-	    error = errno;
-	    status = -1;
-	}
+        if (!setattr(fd[1], t+1)) {
+            error = errno;
+            status = -1;
+        }
     }
     if (status) {
-	if (status == -1) {
-	    rb_syserr_fail(error, 0);
-	}
-	rb_jump_tag(status);
+        if (status == -1) {
+            rb_syserr_fail(error, 0);
+        }
+        rb_jump_tag(status);
     }
     return result;
 }
@@ -447,9 +447,9 @@ console_set_echo(VALUE io, VALUE f)
     fd = GetReadFD(fptr);
     if (!getattr(fd, &t)) rb_sys_fail(0);
     if (RTEST(f))
-	set_echo(&t, NULL);
+        set_echo(&t, NULL);
     else
-	set_noecho(&t, NULL);
+        set_noecho(&t, NULL);
     if (!setattr(fd, &t)) rb_sys_fail(0);
     return io;
 }
@@ -543,9 +543,9 @@ console_set_winsize(VALUE io, VALUE size)
     GetOpenFile(io, fptr);
     size = rb_Array(size);
     if ((sizelen = RARRAY_LEN(size)) != 2 && sizelen != 4) {
-	rb_raise(rb_eArgError,
-		 "wrong number of arguments (given %ld, expected 2 or 4)",
-		 sizelen);
+        rb_raise(rb_eArgError,
+                 "wrong number of arguments (given %ld, expected 2 or 4)",
+                 sizelen);
     }
     sz = RARRAY_CONST_PTR(size);
     row = sz[0], col = sz[1], xpixel = ypixel = Qnil;
@@ -569,7 +569,7 @@ console_set_winsize(VALUE io, VALUE size)
     if (!NIL_P(xpixel)) (void)NUM2UINT(xpixel);
     if (!NIL_P(ypixel)) (void)NUM2UINT(ypixel);
     if (!GetConsoleScreenBufferInfo(wh, &ws)) {
-	rb_syserr_fail(LAST_ERROR, "GetConsoleScreenBufferInfo");
+        rb_syserr_fail(LAST_ERROR, "GetConsoleScreenBufferInfo");
     }
     ws.dwSize.X = newcol;
     ret = SetConsoleScreenBufferSize(wh, ws.dwSize);
@@ -578,15 +578,15 @@ console_set_winsize(VALUE io, VALUE size)
     ws.srWindow.Right = newcol-1;
     ws.srWindow.Bottom = newrow-1;
     if (!SetConsoleWindowInfo(wh, TRUE, &ws.srWindow)) {
-	rb_syserr_fail(LAST_ERROR, "SetConsoleWindowInfo");
+        rb_syserr_fail(LAST_ERROR, "SetConsoleWindowInfo");
     }
     /* retry when shrinking buffer after shrunk window */
     if (!ret && !SetConsoleScreenBufferSize(wh, ws.dwSize)) {
-	rb_syserr_fail(LAST_ERROR, "SetConsoleScreenBufferInfo");
+        rb_syserr_fail(LAST_ERROR, "SetConsoleScreenBufferInfo");
     }
     /* remove scrollbar if possible */
     if (!SetConsoleWindowInfo(wh, TRUE, &ws.srWindow)) {
-	rb_syserr_fail(LAST_ERROR, "SetConsoleWindowInfo");
+        rb_syserr_fail(LAST_ERROR, "SetConsoleWindowInfo");
     }
 #endif
     return io;
@@ -660,11 +660,11 @@ console_ioflush(VALUE io)
     fd1 = GetReadFD(fptr);
     fd2 = GetWriteFD(fptr);
     if (fd2 != -1 && fd1 != fd2) {
-	if (tcflush(fd1, TCIFLUSH)) rb_sys_fail(0);
-	if (tcflush(fd2, TCOFLUSH)) rb_sys_fail(0);
+        if (tcflush(fd1, TCIFLUSH)) rb_sys_fail(0);
+        if (tcflush(fd2, TCOFLUSH)) rb_sys_fail(0);
     }
     else {
-	if (tcflush(fd1, TCIOFLUSH)) rb_sys_fail(0);
+        if (tcflush(fd1, TCIOFLUSH)) rb_sys_fail(0);
     }
 #endif
     return io;
@@ -683,7 +683,7 @@ console_beep(VALUE io)
     MessageBeep(0);
 #else
     if (write(fd, "\a", 1) < 0)
-	rb_sys_fail(0);
+        rb_sys_fail(0);
 #endif
     return io;
 }
@@ -701,7 +701,7 @@ console_goto(VALUE io, VALUE x, VALUE y)
     pos.X = NUM2UINT(x);
     pos.Y = NUM2UINT(y);
     if (!SetConsoleCursorPosition((HANDLE)rb_w32_get_osfhandle(fd), pos)) {
-	rb_syserr_fail(LAST_ERROR, 0);
+        rb_syserr_fail(LAST_ERROR, 0);
     }
     return io;
 }
@@ -716,7 +716,7 @@ console_cursor_pos(VALUE io)
     GetOpenFile(io, fptr);
     fd = GetWriteFD(fptr);
     if (!GetConsoleScreenBufferInfo((HANDLE)rb_w32_get_osfhandle(fd), &ws)) {
-	rb_syserr_fail(LAST_ERROR, 0);
+        rb_syserr_fail(LAST_ERROR, 0);
     }
     return rb_assoc_new(UINT2NUM(ws.dwCursorPosition.X), UINT2NUM(ws.dwCursorPosition.Y));
 }
@@ -737,22 +737,22 @@ console_key_pressed_p(VALUE io, VALUE k)
     int vk = -1;
 
     if (FIXNUM_P(k)) {
-	vk = NUM2UINT(k);
+        vk = NUM2UINT(k);
     }
     else {
-	const struct vktable *t;
-	const char *kn;
-	if (SYMBOL_P(k)) {
-	    k = rb_sym2str(k);
-	    kn = RSTRING_PTR(k);
-	}
-	else {
-	    kn = StringValuePtr(k);
-	}
-	t = console_win32_vk(kn, RSTRING_LEN(k));
-	if (!t || (vk = (short)t->vk) == -1) {
-	    rb_raise(rb_eArgError, "unknown virtual key code: % "PRIsVALUE, k);
-	}
+        const struct vktable *t;
+        const char *kn;
+        if (SYMBOL_P(k)) {
+            k = rb_sym2str(k);
+            kn = RSTRING_PTR(k);
+        }
+        else {
+            kn = StringValuePtr(k);
+        }
+        t = console_win32_vk(kn, RSTRING_LEN(k));
+        if (!t || (vk = (short)t->vk) == -1) {
+            rb_raise(rb_eArgError, "unknown virtual key code: % "PRIsVALUE, k);
+        }
     }
     return GetKeyState(vk) & 0x80 ? Qtrue : Qfalse;
 }
@@ -785,29 +785,29 @@ console_dev(int argc, VALUE *argv, VALUE klass)
 
     rb_check_arity(argc, 0, UNLIMITED_ARGUMENTS);
     if (argc) {
-	Check_Type(sym = argv[0], T_SYMBOL);
+        Check_Type(sym = argv[0], T_SYMBOL);
     }
     if (klass == rb_cIO) klass = rb_cFile;
     if (rb_const_defined(klass, id_console)) {
-	con = rb_const_get(klass, id_console);
-	if (!RB_TYPE_P(con, T_FILE) ||
-	    (!(fptr = RFILE(con)->fptr) || GetReadFD(fptr) == -1)) {
-	    rb_const_remove(klass, id_console);
-	    con = 0;
-	}
+        con = rb_const_get(klass, id_console);
+        if (!RB_TYPE_P(con, T_FILE) ||
+            (!(fptr = RFILE(con)->fptr) || GetReadFD(fptr) == -1)) {
+            rb_const_remove(klass, id_console);
+            con = 0;
+        }
     }
     if (sym) {
-	if (sym == ID2SYM(id_close) && argc == 1) {
-	    if (con) {
-		rb_io_close(con);
-		rb_const_remove(klass, id_console);
-		con = 0;
-	    }
-	    return Qnil;
-	}
+        if (sym == ID2SYM(id_close) && argc == 1) {
+            if (con) {
+                rb_io_close(con);
+                rb_const_remove(klass, id_console);
+                con = 0;
+            }
+            return Qnil;
+        }
     }
     if (!con) {
-	VALUE args[2];
+        VALUE args[2];
 #if defined HAVE_TERMIOS_H || defined HAVE_TERMIO_H || defined HAVE_SGTTY_H
 # define CONSOLE_DEVICE "/dev/tty"
 #elif defined _WIN32
@@ -819,43 +819,43 @@ console_dev(int argc, VALUE *argv, VALUE klass)
 # define CONSOLE_DEVICE_FOR_READING CONSOLE_DEVICE
 #endif
 #ifdef CONSOLE_DEVICE_FOR_WRITING
-	VALUE out;
-	rb_io_t *ofptr;
+        VALUE out;
+        rb_io_t *ofptr;
 #endif
-	int fd;
+        int fd;
 
 #ifdef CONSOLE_DEVICE_FOR_WRITING
-	fd = rb_cloexec_open(CONSOLE_DEVICE_FOR_WRITING, O_RDWR, 0);
-	if (fd < 0) return Qnil;
+        fd = rb_cloexec_open(CONSOLE_DEVICE_FOR_WRITING, O_RDWR, 0);
+        if (fd < 0) return Qnil;
         rb_update_max_fd(fd);
-	args[1] = INT2FIX(O_WRONLY);
-	args[0] = INT2NUM(fd);
-	out = rb_class_new_instance(2, args, klass);
+        args[1] = INT2FIX(O_WRONLY);
+        args[0] = INT2NUM(fd);
+        out = rb_class_new_instance(2, args, klass);
 #endif
-	fd = rb_cloexec_open(CONSOLE_DEVICE_FOR_READING, O_RDWR, 0);
-	if (fd < 0) {
+        fd = rb_cloexec_open(CONSOLE_DEVICE_FOR_READING, O_RDWR, 0);
+        if (fd < 0) {
 #ifdef CONSOLE_DEVICE_FOR_WRITING
-	    rb_io_close(out);
+            rb_io_close(out);
 #endif
-	    return Qnil;
-	}
+            return Qnil;
+        }
         rb_update_max_fd(fd);
-	args[1] = INT2FIX(O_RDWR);
-	args[0] = INT2NUM(fd);
-	con = rb_class_new_instance(2, args, klass);
-	GetOpenFile(con, fptr);
-	fptr->pathv = rb_obj_freeze(rb_str_new2(CONSOLE_DEVICE));
+        args[1] = INT2FIX(O_RDWR);
+        args[0] = INT2NUM(fd);
+        con = rb_class_new_instance(2, args, klass);
+        GetOpenFile(con, fptr);
+        fptr->pathv = rb_obj_freeze(rb_str_new2(CONSOLE_DEVICE));
 #ifdef CONSOLE_DEVICE_FOR_WRITING
-	GetOpenFile(out, ofptr);
-	ofptr->pathv = fptr->pathv;
-	fptr->tied_io_for_writing = out;
-	ofptr->mode |= FMODE_SYNC;
+        GetOpenFile(out, ofptr);
+        ofptr->pathv = fptr->pathv;
+        fptr->tied_io_for_writing = out;
+        ofptr->mode |= FMODE_SYNC;
 #endif
-	fptr->mode |= FMODE_SYNC;
-	rb_const_set(klass, id_console, con);
+        fptr->mode |= FMODE_SYNC;
+        rb_const_set(klass, id_console, con);
     }
     if (sym) {
-	return rb_f_send(argc, argv, con);
+        return rb_f_send(argc, argv, con);
     }
     return con;
 }
@@ -889,10 +889,10 @@ static void
 prompt(int argc, VALUE *argv, VALUE io)
 {
     if (argc > 0 && !NIL_P(argv[0])) {
-	VALUE str = argv[0];
-	StringValueCStr(str);
-	rb_check_safe_obj(str);
-	rb_io_write(io, str);
+        VALUE str = argv[0];
+        StringValueCStr(str);
+        rb_check_safe_obj(str);
+        rb_io_write(io, str);
     }
 }
 
@@ -900,7 +900,7 @@ static VALUE
 str_chomp(VALUE str)
 {
     if (!NIL_P(str)) {
-	str = rb_funcallv(str, rb_intern("chomp!"), 0, 0);
+        str = rb_funcallv(str, rb_intern("chomp!"), 0, 0);
     }
     return str;
 }
@@ -993,10 +993,10 @@ InitVM_console(void)
 #endif
     rb_define_singleton_method(rb_cIO, "console", console_dev, -1);
     {
-	VALUE mReadable = rb_define_module_under(rb_cIO, "generic_readable");
-	rb_define_method(mReadable, "getch", io_getch, -1);
+        VALUE mReadable = rb_define_module_under(rb_cIO, "generic_readable");
+        rb_define_method(mReadable, "getch", io_getch, -1);
 #if ENABLE_IO_GETPASS
-	rb_define_method(mReadable, "getpass", io_getpass, -1);
+        rb_define_method(mReadable, "getpass", io_getpass, -1);
 #endif
     }
 }

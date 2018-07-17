@@ -407,44 +407,44 @@ typedef struct gc_profile_record {
 
 typedef struct RVALUE {
     union {
-	struct {
-	    VALUE flags;		/* always 0 for freed obj */
-	    struct RVALUE *next;
-	} free;
-	struct RBasic  basic;
-	struct RObject object;
-	struct RClass  klass;
-	struct RFloat  flonum;
-	struct RString string;
-	struct RArray  array;
-	struct RRegexp regexp;
-	struct RHash   hash;
-	struct RData   data;
-	struct RTypedData   typeddata;
-	struct RStruct rstruct;
-	struct RBignum bignum;
-	struct RFile   file;
-	struct RMatch  match;
-	struct RRational rational;
-	struct RComplex complex;
-	union {
-	    rb_cref_t cref;
-	    struct vm_svar svar;
-	    struct vm_throw_data throw_data;
-	    struct vm_ifunc ifunc;
-	    struct MEMO memo;
-	    struct rb_method_entry_struct ment;
-	    const rb_iseq_t iseq;
-	    rb_env_t env;
-	    struct rb_imemo_tmpbuf_struct alloc;
-	    rb_ast_t ast;
-	} imemo;
-	struct {
-	    struct RBasic basic;
-	    VALUE v1;
-	    VALUE v2;
-	    VALUE v3;
-	} values;
+        struct {
+            VALUE flags;                /* always 0 for freed obj */
+            struct RVALUE *next;
+        } free;
+        struct RBasic  basic;
+        struct RObject object;
+        struct RClass  klass;
+        struct RFloat  flonum;
+        struct RString string;
+        struct RArray  array;
+        struct RRegexp regexp;
+        struct RHash   hash;
+        struct RData   data;
+        struct RTypedData   typeddata;
+        struct RStruct rstruct;
+        struct RBignum bignum;
+        struct RFile   file;
+        struct RMatch  match;
+        struct RRational rational;
+        struct RComplex complex;
+        union {
+            rb_cref_t cref;
+            struct vm_svar svar;
+            struct vm_throw_data throw_data;
+            struct vm_ifunc ifunc;
+            struct MEMO memo;
+            struct rb_method_entry_struct ment;
+            const rb_iseq_t iseq;
+            rb_env_t env;
+            struct rb_imemo_tmpbuf_struct alloc;
+            rb_ast_t ast;
+        } imemo;
+        struct {
+            struct RBasic basic;
+            VALUE v1;
+            VALUE v2;
+            VALUE v3;
+        } values;
     } as;
 #if GC_DEBUG
     const char *file;
@@ -515,27 +515,27 @@ enum gc_mode {
 
 typedef struct rb_objspace {
     struct {
-	size_t limit;
-	size_t increase;
+        size_t limit;
+        size_t increase;
 #if MALLOC_ALLOCATED_SIZE
-	size_t allocated_size;
-	size_t allocations;
+        size_t allocated_size;
+        size_t allocations;
 #endif
     } malloc_params;
 
     struct {
-	unsigned int mode : 2;
-	unsigned int immediate_sweep : 1;
-	unsigned int dont_gc : 1;
-	unsigned int dont_incremental : 1;
-	unsigned int during_gc : 1;
-	unsigned int gc_stressful: 1;
-	unsigned int has_hook: 1;
+        unsigned int mode : 2;
+        unsigned int immediate_sweep : 1;
+        unsigned int dont_gc : 1;
+        unsigned int dont_incremental : 1;
+        unsigned int during_gc : 1;
+        unsigned int gc_stressful: 1;
+        unsigned int has_hook: 1;
 #if USE_RGENGC
-	unsigned int during_minor_gc : 1;
+        unsigned int during_minor_gc : 1;
 #endif
 #if GC_ENABLE_INCREMENTAL_MARK
-	unsigned int during_incremental_marking : 1;
+        unsigned int during_incremental_marking : 1;
 #endif
     } flags;
 
@@ -546,77 +546,77 @@ typedef struct rb_objspace {
     rb_heap_t tomb_heap; /* heap for zombies and ghosts */
 
     struct {
-	rb_atomic_t finalizing;
+        rb_atomic_t finalizing;
     } atomic_flags;
 
     struct mark_func_data_struct {
-	void *data;
-	void (*mark_func)(VALUE v, void *data);
+        void *data;
+        void (*mark_func)(VALUE v, void *data);
     } *mark_func_data;
 
     mark_stack_t mark_stack;
     size_t marked_slots;
 
     struct {
-	struct heap_page **sorted;
-	size_t allocated_pages;
-	size_t allocatable_pages;
-	size_t sorted_length;
-	RVALUE *range[2];
-	size_t freeable_pages;
+        struct heap_page **sorted;
+        size_t allocated_pages;
+        size_t allocatable_pages;
+        size_t sorted_length;
+        RVALUE *range[2];
+        size_t freeable_pages;
 
-	/* final */
-	size_t final_slots;
-	VALUE deferred_final;
+        /* final */
+        size_t final_slots;
+        VALUE deferred_final;
     } heap_pages;
 
     st_table *finalizer_table;
 
     struct {
-	int run;
-	int latest_gc_info;
-	gc_profile_record *records;
-	gc_profile_record *current_record;
-	size_t next_index;
-	size_t size;
+        int run;
+        int latest_gc_info;
+        gc_profile_record *records;
+        gc_profile_record *current_record;
+        size_t next_index;
+        size_t size;
 
 #if GC_PROFILE_MORE_DETAIL
-	double prepare_time;
+        double prepare_time;
 #endif
-	double invoke_time;
+        double invoke_time;
 
 #if USE_RGENGC
-	size_t minor_gc_count;
-	size_t major_gc_count;
+        size_t minor_gc_count;
+        size_t major_gc_count;
 #if RGENGC_PROFILE > 0
-	size_t total_generated_normal_object_count;
-	size_t total_generated_shady_object_count;
-	size_t total_shade_operation_count;
-	size_t total_promoted_count;
-	size_t total_remembered_normal_object_count;
-	size_t total_remembered_shady_object_count;
+        size_t total_generated_normal_object_count;
+        size_t total_generated_shady_object_count;
+        size_t total_shade_operation_count;
+        size_t total_promoted_count;
+        size_t total_remembered_normal_object_count;
+        size_t total_remembered_shady_object_count;
 
 #if RGENGC_PROFILE >= 2
-	size_t generated_normal_object_count_types[RUBY_T_MASK];
-	size_t generated_shady_object_count_types[RUBY_T_MASK];
-	size_t shade_operation_count_types[RUBY_T_MASK];
-	size_t promoted_types[RUBY_T_MASK];
-	size_t remembered_normal_object_count_types[RUBY_T_MASK];
-	size_t remembered_shady_object_count_types[RUBY_T_MASK];
+        size_t generated_normal_object_count_types[RUBY_T_MASK];
+        size_t generated_shady_object_count_types[RUBY_T_MASK];
+        size_t shade_operation_count_types[RUBY_T_MASK];
+        size_t promoted_types[RUBY_T_MASK];
+        size_t remembered_normal_object_count_types[RUBY_T_MASK];
+        size_t remembered_shady_object_count_types[RUBY_T_MASK];
 #endif
 #endif /* RGENGC_PROFILE */
 #endif /* USE_RGENGC */
 
-	/* temporary profiling space */
-	double gc_sweep_start_time;
-	size_t total_allocated_objects_at_gc_start;
-	size_t heap_used_at_gc_start;
+        /* temporary profiling space */
+        double gc_sweep_start_time;
+        size_t total_allocated_objects_at_gc_start;
+        size_t heap_used_at_gc_start;
 
-	/* basic statistics */
-	size_t count;
-	size_t total_freed_objects;
-	size_t total_allocated_pages;
-	size_t total_freed_pages;
+        /* basic statistics */
+        size_t count;
+        size_t total_freed_objects;
+        size_t total_allocated_pages;
+        size_t total_freed_pages;
     } profile;
     struct gc_list *global_list;
 
@@ -624,28 +624,28 @@ typedef struct rb_objspace {
 
 #if USE_RGENGC
     struct {
-	VALUE parent_object;
-	int need_major_gc;
-	size_t last_major_gc;
-	size_t uncollectible_wb_unprotected_objects;
-	size_t uncollectible_wb_unprotected_objects_limit;
-	size_t old_objects;
-	size_t old_objects_limit;
+        VALUE parent_object;
+        int need_major_gc;
+        size_t last_major_gc;
+        size_t uncollectible_wb_unprotected_objects;
+        size_t uncollectible_wb_unprotected_objects_limit;
+        size_t old_objects;
+        size_t old_objects_limit;
 
 #if RGENGC_ESTIMATE_OLDMALLOC
-	size_t oldmalloc_increase;
-	size_t oldmalloc_increase_limit;
+        size_t oldmalloc_increase;
+        size_t oldmalloc_increase_limit;
 #endif
 
 #if RGENGC_CHECK_MODE >= 2
-	struct st_table *allrefs_table;
-	size_t error_count;
+        struct st_table *allrefs_table;
+        size_t error_count;
 #endif
     } rgengc;
 #if GC_ENABLE_INCREMENTAL_MARK
     struct {
-	size_t pooled_slots;
-	size_t step_slots;
+        size_t pooled_slots;
+        size_t step_slots;
     } rincgc;
 #endif
 #endif /* USE_RGENGC */
@@ -677,10 +677,10 @@ struct heap_page {
     short free_slots;
     short final_slots;
     struct {
-	unsigned int before_sweep : 1;
-	unsigned int has_remembered_objects : 1;
-	unsigned int has_uncollectible_shady_objects : 1;
-	unsigned int in_tomb : 1;
+        unsigned int before_sweep : 1;
+        unsigned int has_remembered_objects : 1;
+        unsigned int has_uncollectible_shady_objects : 1;
+        unsigned int in_tomb : 1;
     } flags;
 
     struct heap_page *free_next;
@@ -734,30 +734,30 @@ static rb_objspace_t rb_objspace = {{GC_MALLOC_LIMIT_MIN}};
 #define rb_objspace_of(vm) (&rb_objspace)
 #endif
 
-#define ruby_initial_gc_stress	gc_params.gc_stress
+#define ruby_initial_gc_stress        gc_params.gc_stress
 
 VALUE *ruby_initial_gc_stress_ptr = &ruby_initial_gc_stress;
 
-#define malloc_limit		objspace->malloc_params.limit
-#define malloc_increase 	objspace->malloc_params.increase
-#define malloc_allocated_size 	objspace->malloc_params.allocated_size
+#define malloc_limit                objspace->malloc_params.limit
+#define malloc_increase         objspace->malloc_params.increase
+#define malloc_allocated_size         objspace->malloc_params.allocated_size
 #define heap_pages_sorted       objspace->heap_pages.sorted
 #define heap_allocated_pages    objspace->heap_pages.allocated_pages
 #define heap_pages_sorted_length objspace->heap_pages.sorted_length
-#define heap_pages_lomem	objspace->heap_pages.range[0]
-#define heap_pages_himem	objspace->heap_pages.range[1]
-#define heap_allocatable_pages	objspace->heap_pages.allocatable_pages
-#define heap_pages_freeable_pages	objspace->heap_pages.freeable_pages
-#define heap_pages_final_slots		objspace->heap_pages.final_slots
-#define heap_pages_deferred_final	objspace->heap_pages.deferred_final
+#define heap_pages_lomem        objspace->heap_pages.range[0]
+#define heap_pages_himem        objspace->heap_pages.range[1]
+#define heap_allocatable_pages        objspace->heap_pages.allocatable_pages
+#define heap_pages_freeable_pages        objspace->heap_pages.freeable_pages
+#define heap_pages_final_slots                objspace->heap_pages.final_slots
+#define heap_pages_deferred_final        objspace->heap_pages.deferred_final
 #define heap_eden               (&objspace->eden_heap)
 #define heap_tomb               (&objspace->tomb_heap)
-#define dont_gc 		objspace->flags.dont_gc
-#define during_gc		objspace->flags.during_gc
-#define finalizing		objspace->atomic_flags.finalizing
-#define finalizer_table 	objspace->finalizer_table
-#define global_list		objspace->global_list
-#define ruby_gc_stressful	objspace->flags.gc_stressful
+#define dont_gc                 objspace->flags.dont_gc
+#define during_gc                objspace->flags.during_gc
+#define finalizing                objspace->atomic_flags.finalizing
+#define finalizer_table         objspace->finalizer_table
+#define global_list                objspace->global_list
+#define ruby_gc_stressful        objspace->flags.gc_stressful
 #define ruby_gc_stress_mode     objspace->gc_stress_mode
 #if GC_DEBUG_STRESS_TO_CLASS
 #define stress_to_class         objspace->stress_to_class
@@ -773,9 +773,9 @@ gc_mode_verify(enum gc_mode mode)
       case gc_mode_none:
       case gc_mode_marking:
       case gc_mode_sweeping:
-	break;
+        break;
       default:
-	rb_bug("gc_mode_verify: unreachable (%d)", (int)mode);
+        rb_bug("gc_mode_verify: unreachable (%d)", (int)mode);
     }
 #endif
     return mode;
@@ -1072,53 +1072,53 @@ check_rvalue_consistency(const VALUE obj)
     rb_objspace_t *objspace = &rb_objspace;
 
     if (SPECIAL_CONST_P(obj)) {
-	rb_bug("check_rvalue_consistency: %p is a special const.", (void *)obj);
+        rb_bug("check_rvalue_consistency: %p is a special const.", (void *)obj);
     }
     else if (!is_pointer_to_heap(objspace, (void *)obj)) {
-	rb_bug("check_rvalue_consistency: %p is not a Ruby object.", (void *)obj);
+        rb_bug("check_rvalue_consistency: %p is not a Ruby object.", (void *)obj);
     }
     else {
-	const int wb_unprotected_bit = RVALUE_WB_UNPROTECTED_BITMAP(obj) != 0;
-	const int uncollectible_bit = RVALUE_UNCOLLECTIBLE_BITMAP(obj) != 0;
-	const int mark_bit = RVALUE_MARK_BITMAP(obj) != 0;
-	const int marking_bit = RVALUE_MARKING_BITMAP(obj) != 0, remembered_bit = marking_bit;
-	const int age = RVALUE_FLAGS_AGE(RBASIC(obj)->flags);
+        const int wb_unprotected_bit = RVALUE_WB_UNPROTECTED_BITMAP(obj) != 0;
+        const int uncollectible_bit = RVALUE_UNCOLLECTIBLE_BITMAP(obj) != 0;
+        const int mark_bit = RVALUE_MARK_BITMAP(obj) != 0;
+        const int marking_bit = RVALUE_MARKING_BITMAP(obj) != 0, remembered_bit = marking_bit;
+        const int age = RVALUE_FLAGS_AGE(RBASIC(obj)->flags);
 
-	if (BUILTIN_TYPE(obj) == T_NONE)   rb_bug("check_rvalue_consistency: %s is T_NONE", obj_info(obj));
-	if (BUILTIN_TYPE(obj) == T_ZOMBIE) rb_bug("check_rvalue_consistency: %s is T_ZOMBIE", obj_info(obj));
-	obj_memsize_of((VALUE)obj, FALSE);
+        if (BUILTIN_TYPE(obj) == T_NONE)   rb_bug("check_rvalue_consistency: %s is T_NONE", obj_info(obj));
+        if (BUILTIN_TYPE(obj) == T_ZOMBIE) rb_bug("check_rvalue_consistency: %s is T_ZOMBIE", obj_info(obj));
+        obj_memsize_of((VALUE)obj, FALSE);
 
-	/* check generation
-	 *
-	 * OLD == age == 3 && old-bitmap && mark-bit (except incremental marking)
-	 */
-	if (age > 0 && wb_unprotected_bit) {
-	    rb_bug("check_rvalue_consistency: %s is not WB protected, but age is %d > 0.", obj_info(obj), age);
-	}
+        /* check generation
+         *
+         * OLD == age == 3 && old-bitmap && mark-bit (except incremental marking)
+         */
+        if (age > 0 && wb_unprotected_bit) {
+            rb_bug("check_rvalue_consistency: %s is not WB protected, but age is %d > 0.", obj_info(obj), age);
+        }
 
-	if (!is_marking(objspace) && uncollectible_bit && !mark_bit) {
-	    rb_bug("check_rvalue_consistency: %s is uncollectible, but is not marked while !gc.", obj_info(obj));
-	}
+        if (!is_marking(objspace) && uncollectible_bit && !mark_bit) {
+            rb_bug("check_rvalue_consistency: %s is uncollectible, but is not marked while !gc.", obj_info(obj));
+        }
 
-	if (!is_full_marking(objspace)) {
-	    if (uncollectible_bit && age != RVALUE_OLD_AGE && !wb_unprotected_bit) {
-		rb_bug("check_rvalue_consistency: %s is uncollectible, but not old (age: %d) and not WB unprotected.", obj_info(obj), age);
-	    }
-	    if (remembered_bit && age != RVALUE_OLD_AGE) {
-		rb_bug("check_rvalue_consistency: %s is remembered, but not old (age: %d).", obj_info(obj), age);
-	    }
-	}
+        if (!is_full_marking(objspace)) {
+            if (uncollectible_bit && age != RVALUE_OLD_AGE && !wb_unprotected_bit) {
+                rb_bug("check_rvalue_consistency: %s is uncollectible, but not old (age: %d) and not WB unprotected.", obj_info(obj), age);
+            }
+            if (remembered_bit && age != RVALUE_OLD_AGE) {
+                rb_bug("check_rvalue_consistency: %s is remembered, but not old (age: %d).", obj_info(obj), age);
+            }
+        }
 
-	/*
-	 * check coloring
-	 *
-	 *               marking:false marking:true
-	 * marked:false  white         *invalid*
-	 * marked:true   black         grey
-	 */
-	if (is_incremental_marking(objspace) && marking_bit) {
-	    if (!is_marking(objspace) && !mark_bit) rb_bug("check_rvalue_consistency: %s is marking, but not marked.", obj_info(obj));
-	}
+        /*
+         * check coloring
+         *
+         *               marking:false marking:true
+         * marked:false  white         *invalid*
+         * marked:true   black         grey
+         */
+        if (is_incremental_marking(objspace) && marking_bit) {
+            if (!is_marking(objspace) && !mark_bit) rb_bug("check_rvalue_consistency: %s is marking, but not marked.", obj_info(obj));
+        }
     }
     return obj;
 }
@@ -1217,14 +1217,14 @@ RVALUE_AGE_INC(rb_objspace_t *objspace, VALUE obj)
     int age = RVALUE_FLAGS_AGE(flags);
 
     if (RGENGC_CHECK_MODE && age == RVALUE_OLD_AGE) {
-	rb_bug("RVALUE_AGE_INC: can not increment age of OLD object %s.", obj_info(obj));
+        rb_bug("RVALUE_AGE_INC: can not increment age of OLD object %s.", obj_info(obj));
     }
 
     age++;
     RBASIC(obj)->flags = RVALUE_FLAGS_AGE_SET(flags, age);
 
     if (age == RVALUE_OLD_AGE) {
-	RVALUE_OLD_UNCOLLECTIBLE_SET(objspace, obj);
+        RVALUE_OLD_UNCOLLECTIBLE_SET(objspace, obj);
     }
     check_rvalue_consistency(obj);
 }
@@ -1268,13 +1268,13 @@ RVALUE_DEMOTE(rb_objspace_t *objspace, VALUE obj)
     GC_ASSERT(RVALUE_OLD_P(obj));
 
     if (!is_incremental_marking(objspace) && RVALUE_REMEMBERED(obj)) {
-	CLEAR_IN_BITMAP(GET_HEAP_MARKING_BITS(obj), obj);
+        CLEAR_IN_BITMAP(GET_HEAP_MARKING_BITS(obj), obj);
     }
 
     RVALUE_DEMOTE_RAW(objspace, obj);
 
     if (RVALUE_MARKED(obj)) {
-	objspace->rgengc.old_objects--;
+        objspace->rgengc.old_objects--;
     }
 
     check_rvalue_consistency(obj);
@@ -1344,33 +1344,33 @@ void
 rb_objspace_free(rb_objspace_t *objspace)
 {
     if (is_lazy_sweeping(heap_eden))
-	rb_bug("lazy sweeping underway when freeing object space");
+        rb_bug("lazy sweeping underway when freeing object space");
 
     if (objspace->profile.records) {
-	free(objspace->profile.records);
-	objspace->profile.records = 0;
+        free(objspace->profile.records);
+        objspace->profile.records = 0;
     }
 
     if (global_list) {
-	struct gc_list *list, *next;
-	for (list = global_list; list; list = next) {
-	    next = list->next;
-	    xfree(list);
-	}
+        struct gc_list *list, *next;
+        for (list = global_list; list; list = next) {
+            next = list->next;
+            xfree(list);
+        }
     }
     if (heap_pages_sorted) {
-	size_t i;
-	for (i = 0; i < heap_allocated_pages; ++i) {
-	    heap_page_free(objspace, heap_pages_sorted[i]);
-	}
-	free(heap_pages_sorted);
-	heap_allocated_pages = 0;
-	heap_pages_sorted_length = 0;
-	heap_pages_lomem = 0;
-	heap_pages_himem = 0;
+        size_t i;
+        for (i = 0; i < heap_allocated_pages; ++i) {
+            heap_page_free(objspace, heap_pages_sorted[i]);
+        }
+        free(heap_pages_sorted);
+        heap_allocated_pages = 0;
+        heap_pages_sorted_length = 0;
+        heap_pages_lomem = 0;
+        heap_pages_himem = 0;
 
-	objspace->eden_heap.total_pages = 0;
-	objspace->eden_heap.total_slots = 0;
+        objspace->eden_heap.total_pages = 0;
+        objspace->eden_heap.total_slots = 0;
     }
     free_stack_chunks(&objspace->mark_stack);
 #if !(defined(ENABLE_VM_OBJSPACE) && ENABLE_VM_OBJSPACE)
@@ -1388,15 +1388,15 @@ heap_pages_expand_sorted_to(rb_objspace_t *objspace, size_t next_length)
     gc_report(3, objspace, "heap_pages_expand_sorted: next_length: %d, size: %d\n", (int)next_length, (int)size);
 
     if (heap_pages_sorted_length > 0) {
-	sorted = (struct heap_page **)realloc(heap_pages_sorted, size);
-	if (sorted) heap_pages_sorted = sorted;
+        sorted = (struct heap_page **)realloc(heap_pages_sorted, size);
+        if (sorted) heap_pages_sorted = sorted;
     }
     else {
-	sorted = heap_pages_sorted = (struct heap_page **)malloc(size);
+        sorted = heap_pages_sorted = (struct heap_page **)malloc(size);
     }
 
     if (sorted == 0) {
-	rb_memerror();
+        rb_memerror();
     }
 
     heap_pages_sorted_length = next_length;
@@ -1415,7 +1415,7 @@ heap_pages_expand_sorted(rb_objspace_t *objspace)
     next_length += heap_tomb->total_pages;
 
     if (next_length > heap_pages_sorted_length) {
-	heap_pages_expand_sorted_to(objspace, next_length);
+        heap_pages_expand_sorted_to(objspace, next_length);
     }
 
     GC_ASSERT(heap_allocatable_pages + heap_eden->total_pages <= heap_pages_sorted_length);
@@ -1439,7 +1439,7 @@ heap_page_add_freeobj(rb_objspace_t *objspace, struct heap_page *page, VALUE obj
     page->freelist = p;
 
     if (RGENGC_CHECK_MODE && !is_pointer_to_heap(objspace, p)) {
-	rb_bug("heap_page_add_freeobj: %p is not rvalue.", (void *)p);
+        rb_bug("heap_page_add_freeobj: %p is not rvalue.", (void *)p);
     }
 
     gc_report(3, objspace, "heap_page_add_freeobj: add %p to freelist\n", (void *)obj);
@@ -1449,8 +1449,8 @@ static inline void
 heap_add_freepage(rb_objspace_t *objspace, rb_heap_t *heap, struct heap_page *page)
 {
     if (page->freelist) {
-	page->free_next = heap->free_pages;
-	heap->free_pages = page;
+        page->free_next = heap->free_pages;
+        heap->free_pages = page;
     }
 }
 
@@ -1459,13 +1459,13 @@ static inline int
 heap_add_poolpage(rb_objspace_t *objspace, rb_heap_t *heap, struct heap_page *page)
 {
     if (page->freelist) {
-	page->free_next = heap->pooled_pages;
-	heap->pooled_pages = page;
-	objspace->rincgc.pooled_slots += page->free_slots;
-	return TRUE;
+        page->free_next = heap->pooled_pages;
+        heap->pooled_pages = page;
+        objspace->rincgc.pooled_slots += page->free_slots;
+        return TRUE;
     }
     else {
-	return FALSE;
+        return FALSE;
     }
 }
 #endif
@@ -1493,21 +1493,21 @@ heap_pages_free_unused_pages(rb_objspace_t *objspace)
     size_t i, j;
 
     if (!list_empty(&heap_tomb->pages)) {
-	for (i = j = 1; j < heap_allocated_pages; i++) {
-	    struct heap_page *page = heap_pages_sorted[i];
+        for (i = j = 1; j < heap_allocated_pages; i++) {
+            struct heap_page *page = heap_pages_sorted[i];
 
-	    if (page->flags.in_tomb && page->free_slots == page->total_slots) {
-		heap_unlink_page(objspace, heap_tomb, page);
-		heap_page_free(objspace, page);
-	    }
-	    else {
-		if (i != j) {
-		    heap_pages_sorted[j] = page;
-		}
-		j++;
-	    }
-	}
-	GC_ASSERT(j == heap_allocated_pages);
+            if (page->flags.in_tomb && page->free_slots == page->total_slots) {
+                heap_unlink_page(objspace, heap_tomb, page);
+                heap_page_free(objspace, page);
+            }
+            else {
+                if (i != j) {
+                    heap_pages_sorted[j] = page;
+                }
+                j++;
+            }
+        }
+        GC_ASSERT(j == heap_allocated_pages);
     }
 }
 
@@ -1523,22 +1523,22 @@ heap_page_allocate(rb_objspace_t *objspace)
     /* assign heap_page body (contains heap_page_header and RVALUEs) */
     page_body = (struct heap_page_body *)aligned_malloc(HEAP_PAGE_ALIGN, HEAP_PAGE_SIZE);
     if (page_body == 0) {
-	rb_memerror();
+        rb_memerror();
     }
 
     /* assign heap_page entry */
     page = (struct heap_page *)calloc(1, sizeof(struct heap_page));
     if (page == 0) {
-	aligned_free(page_body);
-	rb_memerror();
+        aligned_free(page_body);
+        rb_memerror();
     }
 
     /* adjust obj_limit (object number available in this page) */
     start = (RVALUE*)((VALUE)page_body + sizeof(struct heap_page_header));
     if ((VALUE)start % sizeof(RVALUE) != 0) {
-	int delta = (int)(sizeof(RVALUE) - ((VALUE)start % sizeof(RVALUE)));
-	start = (RVALUE*)((VALUE)start + delta);
-	limit = (HEAP_PAGE_SIZE - (int)((VALUE)start - (VALUE)page_body))/(int)sizeof(RVALUE);
+        int delta = (int)(sizeof(RVALUE) - ((VALUE)start % sizeof(RVALUE)));
+        start = (RVALUE*)((VALUE)start + delta);
+        limit = (HEAP_PAGE_SIZE - (int)((VALUE)start - (VALUE)page_body))/(int)sizeof(RVALUE);
     }
     end = start + limit;
 
@@ -1546,23 +1546,23 @@ heap_page_allocate(rb_objspace_t *objspace)
     lo = 0;
     hi = heap_allocated_pages;
     while (lo < hi) {
-	struct heap_page *mid_page;
+        struct heap_page *mid_page;
 
-	mid = (lo + hi) / 2;
-	mid_page = heap_pages_sorted[mid];
-	if (mid_page->start < start) {
-	    lo = mid + 1;
-	}
-	else if (mid_page->start > start) {
-	    hi = mid;
-	}
-	else {
-	    rb_bug("same heap page is allocated: %p at %"PRIuVALUE, (void *)page_body, (VALUE)mid);
-	}
+        mid = (lo + hi) / 2;
+        mid_page = heap_pages_sorted[mid];
+        if (mid_page->start < start) {
+            lo = mid + 1;
+        }
+        else if (mid_page->start > start) {
+            hi = mid;
+        }
+        else {
+            rb_bug("same heap page is allocated: %p at %"PRIuVALUE, (void *)page_body, (VALUE)mid);
+        }
     }
 
     if (hi < heap_allocated_pages) {
-	MEMMOVE(&heap_pages_sorted[hi+1], &heap_pages_sorted[hi], struct heap_page_header*, heap_allocated_pages - hi);
+        MEMMOVE(&heap_pages_sorted[hi+1], &heap_pages_sorted[hi], struct heap_page_header*, heap_allocated_pages - hi);
     }
 
     heap_pages_sorted[hi] = page;
@@ -1576,8 +1576,8 @@ heap_page_allocate(rb_objspace_t *objspace)
     objspace->profile.total_allocated_pages++;
 
     if (heap_allocated_pages > heap_pages_sorted_length) {
-	rb_bug("heap_page_allocate: allocated(%"PRIdSIZE") > sorted(%"PRIdSIZE")",
-	       heap_allocated_pages, heap_pages_sorted_length);
+        rb_bug("heap_page_allocate: allocated(%"PRIdSIZE") > sorted(%"PRIdSIZE")",
+               heap_allocated_pages, heap_pages_sorted_length);
     }
 
     if (heap_pages_lomem == 0 || heap_pages_lomem > start) heap_pages_lomem = start;
@@ -1588,8 +1588,8 @@ heap_page_allocate(rb_objspace_t *objspace)
     page_body->header.page = page;
 
     for (p = start; p != end; p++) {
-	gc_report(3, objspace, "assign_heap_page: %p is added to freelist\n", (void *)p);
-	heap_page_add_freeobj(objspace, page, (VALUE)p);
+        gc_report(3, objspace, "assign_heap_page: %p is added to freelist\n", (void *)p);
+        heap_page_add_freeobj(objspace, page, (VALUE)p);
     }
     page->free_slots = limit;
 
@@ -1602,10 +1602,10 @@ heap_page_resurrect(rb_objspace_t *objspace)
     struct heap_page *page = 0, *next;
 
     list_for_each_safe(&heap_tomb->pages, page, next, page_node) {
-	if (page->freelist != NULL) {
-	    heap_unlink_page(objspace, heap_tomb, page);
-	    return page;
-	}
+        if (page->freelist != NULL) {
+            heap_unlink_page(objspace, heap_tomb, page);
+            return page;
+        }
     }
 
     return NULL;
@@ -1622,11 +1622,11 @@ heap_page_create(rb_objspace_t *objspace)
     page = heap_page_resurrect(objspace);
 
     if (page == NULL) {
-	page = heap_page_allocate(objspace);
-	method = "allocate";
+        page = heap_page_allocate(objspace);
+        method = "allocate";
     }
     if (0) fprintf(stderr, "heap_page_create: %s - %p, heap_allocated_pages: %d, heap_allocated_pages: %d, tomb->total_pages: %d\n",
-		   method, (void *)page, (int)heap_pages_sorted_length, (int)heap_allocated_pages, (int)heap_tomb->total_pages);
+                   method, (void *)page, (int)heap_pages_sorted_length, (int)heap_allocated_pages, (int)heap_tomb->total_pages);
     return page;
 }
 
@@ -1655,7 +1655,7 @@ heap_add_pages(rb_objspace_t *objspace, rb_heap_t *heap, size_t add)
     heap_allocatable_pages_set(objspace, add);
 
     for (i = 0; i < add; i++) {
-	heap_assign_page(objspace, heap);
+        heap_assign_page(objspace, heap);
     }
 
     GC_ASSERT(heap_allocatable_pages == 0);
@@ -1669,32 +1669,32 @@ heap_extend_pages(rb_objspace_t *objspace, size_t free_slots, size_t total_slots
     size_t next_used;
 
     if (goal_ratio == 0.0) {
-	next_used = (size_t)(used * gc_params.growth_factor);
+        next_used = (size_t)(used * gc_params.growth_factor);
     }
     else {
-	/* Find `f' where free_slots = f * total_slots * goal_ratio
-	 * => f = (total_slots - free_slots) / ((1 - goal_ratio) * total_slots)
-	 */
-	double f = (double)(total_slots - free_slots) / ((1 - goal_ratio) * total_slots);
+        /* Find `f' where free_slots = f * total_slots * goal_ratio
+         * => f = (total_slots - free_slots) / ((1 - goal_ratio) * total_slots)
+         */
+        double f = (double)(total_slots - free_slots) / ((1 - goal_ratio) * total_slots);
 
-	if (f > gc_params.growth_factor) f = gc_params.growth_factor;
-	if (f < 1.0) f = 1.1;
+        if (f > gc_params.growth_factor) f = gc_params.growth_factor;
+        if (f < 1.0) f = 1.1;
 
-	next_used = (size_t)(f * used);
+        next_used = (size_t)(f * used);
 
-	if (0) {
-	    fprintf(stderr,
-		    "free_slots(%8"PRIuSIZE")/total_slots(%8"PRIuSIZE")=%1.2f,"
-		    " G(%1.2f), f(%1.2f),"
-		    " used(%8"PRIuSIZE") => next_used(%8"PRIuSIZE")\n",
-		    free_slots, total_slots, free_slots/(double)total_slots,
-		    goal_ratio, f, used, next_used);
-	}
+        if (0) {
+            fprintf(stderr,
+                    "free_slots(%8"PRIuSIZE")/total_slots(%8"PRIuSIZE")=%1.2f,"
+                    " G(%1.2f), f(%1.2f),"
+                    " used(%8"PRIuSIZE") => next_used(%8"PRIuSIZE")\n",
+                    free_slots, total_slots, free_slots/(double)total_slots,
+                    goal_ratio, f, used, next_used);
+        }
     }
 
     if (gc_params.growth_max_slots > 0) {
-	size_t max_used = (size_t)(used + gc_params.growth_max_slots/HEAP_PAGE_OBJ_LIMIT);
-	if (next_used > max_used) next_used = max_used;
+        size_t max_used = (size_t)(used + gc_params.growth_max_slots/HEAP_PAGE_OBJ_LIMIT);
+        if (next_used > max_used) next_used = max_used;
     }
 
     return next_used - used;
@@ -1717,14 +1717,14 @@ static int
 heap_increment(rb_objspace_t *objspace, rb_heap_t *heap)
 {
     if (heap_allocatable_pages > 0) {
-	gc_report(1, objspace, "heap_increment: heap_pages_sorted_length: %d, heap_pages_inc: %d, heap->total_pages: %d\n",
-		  (int)heap_pages_sorted_length, (int)heap_allocatable_pages, (int)heap->total_pages);
+        gc_report(1, objspace, "heap_increment: heap_pages_sorted_length: %d, heap_pages_inc: %d, heap->total_pages: %d\n",
+                  (int)heap_pages_sorted_length, (int)heap_allocatable_pages, (int)heap->total_pages);
 
-	GC_ASSERT(heap_allocatable_pages + heap_eden->total_pages <= heap_pages_sorted_length);
-	GC_ASSERT(heap_allocated_pages <= heap_pages_sorted_length);
+        GC_ASSERT(heap_allocatable_pages + heap_eden->total_pages <= heap_pages_sorted_length);
+        GC_ASSERT(heap_allocated_pages <= heap_pages_sorted_length);
 
-	heap_assign_page(objspace, heap);
-	return TRUE;
+        heap_assign_page(objspace, heap);
+        return TRUE;
     }
     return FALSE;
 }
@@ -1735,16 +1735,16 @@ heap_prepare(rb_objspace_t *objspace, rb_heap_t *heap)
     GC_ASSERT(heap->free_pages == NULL);
 
     if (is_lazy_sweeping(heap)) {
-	gc_sweep_continue(objspace, heap);
+        gc_sweep_continue(objspace, heap);
     }
     else if (is_incremental_marking(objspace)) {
-	gc_marks_continue(objspace, heap);
+        gc_marks_continue(objspace, heap);
     }
 
     if (heap->free_pages == NULL &&
-	(will_be_incremental_marking(objspace) || heap_increment(objspace, heap) == FALSE) &&
-	gc_start(objspace, GPR_FLAG_NEWOBJ) == FALSE) {
-	rb_memerror();
+        (will_be_incremental_marking(objspace) || heap_increment(objspace, heap) == FALSE) &&
+        gc_start(objspace, GPR_FLAG_NEWOBJ) == FALSE) {
+        rb_memerror();
     }
 }
 
@@ -1755,7 +1755,7 @@ heap_get_freeobj_from_next_freepage(rb_objspace_t *objspace, rb_heap_t *heap)
     RVALUE *p;
 
     while (heap->free_pages == NULL) {
-	heap_prepare(objspace, heap);
+        heap_prepare(objspace, heap);
     }
     page = heap->free_pages;
     heap->free_pages = page->free_next;
@@ -1773,7 +1773,7 @@ heap_get_freeobj_head(rb_objspace_t *objspace, rb_heap_t *heap)
 {
     RVALUE *p = heap->freelist;
     if (LIKELY(p != NULL)) {
-	heap->freelist = p->as.free.next;
+        heap->freelist = p->as.free.next;
     }
     return (VALUE)p;
 }
@@ -1784,13 +1784,13 @@ heap_get_freeobj(rb_objspace_t *objspace, rb_heap_t *heap)
     RVALUE *p = heap->freelist;
 
     while (1) {
-	if (LIKELY(p != NULL)) {
-	    heap->freelist = p->as.free.next;
-	    return (VALUE)p;
-	}
-	else {
-	    p = heap_get_freeobj_from_next_freepage(objspace, heap);
-	}
+        if (LIKELY(p != NULL)) {
+            heap->freelist = p->as.free.next;
+            return (VALUE)p;
+        }
+        else {
+            p = heap_get_freeobj_from_next_freepage(objspace, heap);
+        }
     }
 }
 
@@ -1813,7 +1813,7 @@ gc_event_hook_body(rb_execution_context_t *ec, rb_objspace_t *objspace, const rb
 
 #define gc_event_hook(objspace, event, data) do { \
     if (UNLIKELY(gc_event_hook_needed_p(objspace, event))) { \
-	gc_event_hook_body(GET_EC(), (objspace), (event), (data)); \
+        gc_event_hook_body(GET_EC(), (objspace), (event), (data)); \
     } \
 } while (0)
 
@@ -1837,31 +1837,31 @@ newobj_init(VALUE klass, VALUE flags, VALUE v1, VALUE v2, VALUE v3, int wb_prote
     GC_ASSERT(RVALUE_WB_UNPROTECTED(obj) == FALSE);
 
     if (flags & FL_PROMOTED1) {
-	if (RVALUE_AGE(obj) != 2) rb_bug("newobj: %s of age (%d) != 2.", obj_info(obj), RVALUE_AGE(obj));
+        if (RVALUE_AGE(obj) != 2) rb_bug("newobj: %s of age (%d) != 2.", obj_info(obj), RVALUE_AGE(obj));
     }
     else {
-	if (RVALUE_AGE(obj) > 0) rb_bug("newobj: %s of age (%d) > 0.", obj_info(obj), RVALUE_AGE(obj));
+        if (RVALUE_AGE(obj) > 0) rb_bug("newobj: %s of age (%d) > 0.", obj_info(obj), RVALUE_AGE(obj));
     }
     if (rgengc_remembered(objspace, (VALUE)obj)) rb_bug("newobj: %s is remembered.", obj_info(obj));
 #endif
 
 #if USE_RGENGC
     if (UNLIKELY(wb_protected == FALSE)) {
-	MARK_IN_BITMAP(GET_HEAP_WB_UNPROTECTED_BITS(obj), obj);
+        MARK_IN_BITMAP(GET_HEAP_WB_UNPROTECTED_BITS(obj), obj);
     }
 #endif
 
 #if RGENGC_PROFILE
     if (wb_protected) {
-	objspace->profile.total_generated_normal_object_count++;
+        objspace->profile.total_generated_normal_object_count++;
 #if RGENGC_PROFILE >= 2
-	objspace->profile.generated_normal_object_count_types[BUILTIN_TYPE(obj)]++;
+        objspace->profile.generated_normal_object_count_types[BUILTIN_TYPE(obj)]++;
 #endif
     }
     else {
-	objspace->profile.total_generated_shady_object_count++;
+        objspace->profile.total_generated_shady_object_count++;
 #if RGENGC_PROFILE >= 2
-	objspace->profile.generated_shady_object_count_types[BUILTIN_TYPE(obj)]++;
+        objspace->profile.generated_shady_object_count_types[BUILTIN_TYPE(obj)]++;
 #endif
     }
 #endif
@@ -1877,20 +1877,20 @@ newobj_init(VALUE klass, VALUE flags, VALUE v1, VALUE v2, VALUE v3, int wb_prote
 
 #if RGENGC_OLD_NEWOBJ_CHECK > 0
     {
-	static int newobj_cnt = RGENGC_OLD_NEWOBJ_CHECK;
+        static int newobj_cnt = RGENGC_OLD_NEWOBJ_CHECK;
 
-	if (!is_incremental_marking(objspace) &&
-	    flags & FL_WB_PROTECTED &&   /* do not promote WB unprotected objects */
-	    ! RB_TYPE_P(obj, T_ARRAY)) { /* array.c assumes that allocated objects are new */
-	    if (--newobj_cnt == 0) {
-		newobj_cnt = RGENGC_OLD_NEWOBJ_CHECK;
+        if (!is_incremental_marking(objspace) &&
+            flags & FL_WB_PROTECTED &&   /* do not promote WB unprotected objects */
+            ! RB_TYPE_P(obj, T_ARRAY)) { /* array.c assumes that allocated objects are new */
+            if (--newobj_cnt == 0) {
+                newobj_cnt = RGENGC_OLD_NEWOBJ_CHECK;
 
-		gc_mark_set(objspace, obj);
-		RVALUE_AGE_SET_OLD(objspace, obj);
+                gc_mark_set(objspace, obj);
+                RVALUE_AGE_SET_OLD(objspace, obj);
 
-		rb_gc_writebarrier_remember(obj);
-	    }
-	}
+                rb_gc_writebarrier_remember(obj);
+            }
+        }
     }
 #endif
     check_rvalue_consistency(obj);
@@ -1903,17 +1903,17 @@ newobj_slowpath(VALUE klass, VALUE flags, VALUE v1, VALUE v2, VALUE v3, rb_objsp
     VALUE obj;
 
     if (UNLIKELY(during_gc || ruby_gc_stressful)) {
-	if (during_gc) {
-	    dont_gc = 1;
-	    during_gc = 0;
-	    rb_bug("object allocation during garbage collection phase");
-	}
+        if (during_gc) {
+            dont_gc = 1;
+            during_gc = 0;
+            rb_bug("object allocation during garbage collection phase");
+        }
 
-	if (ruby_gc_stressful) {
-	    if (!garbage_collect(objspace, GPR_FLAG_NEWOBJ)) {
-		rb_memerror();
-	    }
-	}
+        if (ruby_gc_stressful) {
+            if (!garbage_collect(objspace, GPR_FLAG_NEWOBJ)) {
+                rb_memerror();
+            }
+        }
     }
 
     obj = heap_get_freeobj(objspace, heap_eden);
@@ -1945,23 +1945,23 @@ newobj_of(VALUE klass, VALUE flags, VALUE v1, VALUE v2, VALUE v3, int wb_protect
 
 #if GC_DEBUG_STRESS_TO_CLASS
     if (UNLIKELY(stress_to_class)) {
-	long i, cnt = RARRAY_LEN(stress_to_class);
-	const VALUE *ptr = RARRAY_CONST_PTR(stress_to_class);
-	for (i = 0; i < cnt; ++i) {
-	    if (klass == ptr[i]) rb_memerror();
-	}
+        long i, cnt = RARRAY_LEN(stress_to_class);
+        const VALUE *ptr = RARRAY_CONST_PTR(stress_to_class);
+        for (i = 0; i < cnt; ++i) {
+            if (klass == ptr[i]) rb_memerror();
+        }
     }
 #endif
     if (!(during_gc ||
-	  ruby_gc_stressful ||
-	  gc_event_hook_available_p(objspace)) &&
-	(obj = heap_get_freeobj_head(objspace, heap_eden)) != Qfalse) {
-	return newobj_init(klass, flags, v1, v2, v3, wb_protected, objspace, obj);
+          ruby_gc_stressful ||
+          gc_event_hook_available_p(objspace)) &&
+        (obj = heap_get_freeobj_head(objspace, heap_eden)) != Qfalse) {
+        return newobj_init(klass, flags, v1, v2, v3, wb_protected, objspace, obj);
     }
     else {
-	return wb_protected ?
-	  newobj_slowpath_wb_protected(klass, flags, v1, v2, v3, objspace) :
-	  newobj_slowpath_wb_unprotected(klass, flags, v1, v2, v3, objspace);
+        return wb_protected ?
+          newobj_slowpath_wb_protected(klass, flags, v1, v2, v3, objspace) :
+          newobj_slowpath_wb_unprotected(klass, flags, v1, v2, v3, objspace);
     }
 }
 
@@ -1995,7 +1995,7 @@ rb_newobj_of(VALUE klass, VALUE flags)
 
 #define UNEXPECTED_NODE(func) \
     rb_bug(#func"(): GC does not handle T_NODE 0x%x(%p) 0x%"PRIxVALUE, \
-	   BUILTIN_TYPE(obj), (void*)(obj), RBASIC(obj)->flags)
+           BUILTIN_TYPE(obj), (void*)(obj), RBASIC(obj)->flags)
 
 #undef rb_imemo_new
 
@@ -2050,8 +2050,8 @@ rb_data_object_wrap(VALUE klass, void *datap, RUBY_DATA_FUNC dmark, RUBY_DATA_FU
 
 #undef rb_data_object_alloc
 RUBY_ALIAS_FUNCTION(rb_data_object_alloc(VALUE klass, void *datap,
-					 RUBY_DATA_FUNC dmark, RUBY_DATA_FUNC dfree),
-		    rb_data_object_wrap, (klass, datap, dmark, dfree))
+                                         RUBY_DATA_FUNC dmark, RUBY_DATA_FUNC dfree),
+                    rb_data_object_wrap, (klass, datap, dmark, dfree))
 
 
 VALUE
@@ -2071,8 +2071,8 @@ rb_data_typed_object_wrap(VALUE klass, void *datap, const rb_data_type_t *type)
 
 #undef rb_data_typed_object_alloc
 RUBY_ALIAS_FUNCTION(rb_data_typed_object_alloc(VALUE klass, void *datap,
-					       const rb_data_type_t *type),
-		    rb_data_typed_object_wrap, (klass, datap, type))
+                                               const rb_data_type_t *type),
+                    rb_data_typed_object_wrap, (klass, datap, type))
 
 VALUE
 rb_data_typed_object_zalloc(VALUE klass, size_t size, const rb_data_type_t *type)
@@ -2086,11 +2086,11 @@ size_t
 rb_objspace_data_type_memsize(VALUE obj)
 {
     if (RTYPEDDATA_P(obj)) {
-	const rb_data_type_t *type = RTYPEDDATA_TYPE(obj);
-	const void *ptr = RTYPEDDATA_DATA(obj);
-	if (ptr && type->function.dsize) {
-	    return type->function.dsize(ptr);
-	}
+        const rb_data_type_t *type = RTYPEDDATA_TYPE(obj);
+        const void *ptr = RTYPEDDATA_DATA(obj);
+        if (ptr && type->function.dsize) {
+            return type->function.dsize(ptr);
+        }
     }
     return 0;
 }
@@ -2099,10 +2099,10 @@ const char *
 rb_objspace_data_type_name(VALUE obj)
 {
     if (RTYPEDDATA_P(obj)) {
-	return RTYPEDDATA_TYPE(obj)->wrap_struct_name;
+        return RTYPEDDATA_TYPE(obj)->wrap_struct_name;
     }
     else {
-	return 0;
+        return 0;
     }
 }
 
@@ -2121,17 +2121,17 @@ is_pointer_to_heap(rb_objspace_t *objspace, void *ptr)
     lo = 0;
     hi = heap_allocated_pages;
     while (lo < hi) {
-	mid = (lo + hi) / 2;
-	page = heap_pages_sorted[mid];
-	if (page->start <= p) {
-	    if (p < page->start + page->total_slots) {
-		return TRUE;
-	    }
-	    lo = mid + 1;
-	}
-	else {
-	    hi = mid;
-	}
+        mid = (lo + hi) / 2;
+        page = heap_pages_sorted[mid];
+        if (page->start <= p) {
+            if (p < page->start + page->total_slots) {
+                return TRUE;
+            }
+            lo = mid + 1;
+        }
+        else {
+            hi = mid;
+        }
     }
     return FALSE;
 }
@@ -2181,13 +2181,13 @@ obj_free(rb_objspace_t *objspace, VALUE obj)
       case T_FIXNUM:
       case T_TRUE:
       case T_FALSE:
-	rb_bug("obj_free() called for broken object");
-	break;
+        rb_bug("obj_free() called for broken object");
+        break;
     }
 
     if (FL_TEST(obj, FL_EXIVAR)) {
-	rb_free_generic_ivar((VALUE)obj);
-	FL_UNSET(obj, FL_EXIVAR);
+        rb_free_generic_ivar((VALUE)obj);
+        FL_UNSET(obj, FL_EXIVAR);
     }
 
 #if USE_RGENGC
@@ -2195,197 +2195,197 @@ obj_free(rb_objspace_t *objspace, VALUE obj)
 
 #if RGENGC_CHECK_MODE
 #define CHECK(x) if (x(obj) != FALSE) rb_bug("obj_free: " #x "(%s) != FALSE", obj_info(obj))
-	CHECK(RVALUE_WB_UNPROTECTED);
-	CHECK(RVALUE_MARKED);
-	CHECK(RVALUE_MARKING);
-	CHECK(RVALUE_UNCOLLECTIBLE);
+        CHECK(RVALUE_WB_UNPROTECTED);
+        CHECK(RVALUE_MARKED);
+        CHECK(RVALUE_MARKING);
+        CHECK(RVALUE_UNCOLLECTIBLE);
 #undef CHECK
 #endif
 #endif
 
     switch (BUILTIN_TYPE(obj)) {
       case T_OBJECT:
-	if (!(RANY(obj)->as.basic.flags & ROBJECT_EMBED) &&
+        if (!(RANY(obj)->as.basic.flags & ROBJECT_EMBED) &&
             RANY(obj)->as.object.as.heap.ivptr) {
-	    xfree(RANY(obj)->as.object.as.heap.ivptr);
-	    RB_DEBUG_COUNTER_INC(obj_obj_ptr);
-	}
-	else {
-	    RB_DEBUG_COUNTER_INC(obj_obj_embed);
-	}
-	break;
+            xfree(RANY(obj)->as.object.as.heap.ivptr);
+            RB_DEBUG_COUNTER_INC(obj_obj_ptr);
+        }
+        else {
+            RB_DEBUG_COUNTER_INC(obj_obj_embed);
+        }
+        break;
       case T_MODULE:
       case T_CLASS:
         mjit_remove_class_serial(RCLASS_SERIAL(obj));
-	rb_id_table_free(RCLASS_M_TBL(obj));
-	if (RCLASS_IV_TBL(obj)) {
-	    st_free_table(RCLASS_IV_TBL(obj));
-	}
-	if (RCLASS_CONST_TBL(obj)) {
-	    rb_free_const_table(RCLASS_CONST_TBL(obj));
-	}
-	if (RCLASS_IV_INDEX_TBL(obj)) {
-	    st_free_table(RCLASS_IV_INDEX_TBL(obj));
-	}
-	if (RCLASS_EXT(obj)->subclasses) {
-	    if (BUILTIN_TYPE(obj) == T_MODULE) {
-		rb_class_detach_module_subclasses(obj);
-	    }
-	    else {
-		rb_class_detach_subclasses(obj);
-	    }
-	    RCLASS_EXT(obj)->subclasses = NULL;
-	}
-	rb_class_remove_from_module_subclasses(obj);
-	rb_class_remove_from_super_subclasses(obj);
-	if (RANY(obj)->as.klass.ptr)
-	    xfree(RANY(obj)->as.klass.ptr);
-	RANY(obj)->as.klass.ptr = NULL;
-	break;
+        rb_id_table_free(RCLASS_M_TBL(obj));
+        if (RCLASS_IV_TBL(obj)) {
+            st_free_table(RCLASS_IV_TBL(obj));
+        }
+        if (RCLASS_CONST_TBL(obj)) {
+            rb_free_const_table(RCLASS_CONST_TBL(obj));
+        }
+        if (RCLASS_IV_INDEX_TBL(obj)) {
+            st_free_table(RCLASS_IV_INDEX_TBL(obj));
+        }
+        if (RCLASS_EXT(obj)->subclasses) {
+            if (BUILTIN_TYPE(obj) == T_MODULE) {
+                rb_class_detach_module_subclasses(obj);
+            }
+            else {
+                rb_class_detach_subclasses(obj);
+            }
+            RCLASS_EXT(obj)->subclasses = NULL;
+        }
+        rb_class_remove_from_module_subclasses(obj);
+        rb_class_remove_from_super_subclasses(obj);
+        if (RANY(obj)->as.klass.ptr)
+            xfree(RANY(obj)->as.klass.ptr);
+        RANY(obj)->as.klass.ptr = NULL;
+        break;
       case T_STRING:
-	rb_str_free(obj);
-	break;
+        rb_str_free(obj);
+        break;
       case T_ARRAY:
-	rb_ary_free(obj);
-	break;
+        rb_ary_free(obj);
+        break;
       case T_HASH:
-	if (RANY(obj)->as.hash.ntbl) {
-	    st_free_table(RANY(obj)->as.hash.ntbl);
-	}
-	break;
+        if (RANY(obj)->as.hash.ntbl) {
+            st_free_table(RANY(obj)->as.hash.ntbl);
+        }
+        break;
       case T_REGEXP:
-	if (RANY(obj)->as.regexp.ptr) {
-	    onig_free(RANY(obj)->as.regexp.ptr);
-	}
-	break;
+        if (RANY(obj)->as.regexp.ptr) {
+            onig_free(RANY(obj)->as.regexp.ptr);
+        }
+        break;
       case T_DATA:
-	if (DATA_PTR(obj)) {
-	    int free_immediately = FALSE;
-	    void (*dfree)(void *);
-	    void *data = DATA_PTR(obj);
+        if (DATA_PTR(obj)) {
+            int free_immediately = FALSE;
+            void (*dfree)(void *);
+            void *data = DATA_PTR(obj);
 
-	    if (RTYPEDDATA_P(obj)) {
-		free_immediately = (RANY(obj)->as.typeddata.type->flags & RUBY_TYPED_FREE_IMMEDIATELY) != 0;
-		dfree = RANY(obj)->as.typeddata.type->function.dfree;
-		if (0 && free_immediately == 0) {
-		    /* to expose non-free-immediate T_DATA */
-		    fprintf(stderr, "not immediate -> %s\n", RANY(obj)->as.typeddata.type->wrap_struct_name);
-		}
-	    }
-	    else {
-		dfree = RANY(obj)->as.data.dfree;
-	    }
+            if (RTYPEDDATA_P(obj)) {
+                free_immediately = (RANY(obj)->as.typeddata.type->flags & RUBY_TYPED_FREE_IMMEDIATELY) != 0;
+                dfree = RANY(obj)->as.typeddata.type->function.dfree;
+                if (0 && free_immediately == 0) {
+                    /* to expose non-free-immediate T_DATA */
+                    fprintf(stderr, "not immediate -> %s\n", RANY(obj)->as.typeddata.type->wrap_struct_name);
+                }
+            }
+            else {
+                dfree = RANY(obj)->as.data.dfree;
+            }
 
-	    if (dfree) {
-		if (dfree == RUBY_DEFAULT_FREE) {
-		    xfree(data);
-		}
-		else if (free_immediately) {
-		    (*dfree)(data);
-		}
-		else {
-		    make_zombie(objspace, obj, dfree, data);
-		    return 1;
-		}
-	    }
-	}
-	break;
+            if (dfree) {
+                if (dfree == RUBY_DEFAULT_FREE) {
+                    xfree(data);
+                }
+                else if (free_immediately) {
+                    (*dfree)(data);
+                }
+                else {
+                    make_zombie(objspace, obj, dfree, data);
+                    return 1;
+                }
+            }
+        }
+        break;
       case T_MATCH:
-	if (RANY(obj)->as.match.rmatch) {
+        if (RANY(obj)->as.match.rmatch) {
             struct rmatch *rm = RANY(obj)->as.match.rmatch;
-	    onig_region_free(&rm->regs, 0);
+            onig_region_free(&rm->regs, 0);
             if (rm->char_offset)
-		xfree(rm->char_offset);
-	    xfree(rm);
-	}
-	break;
+                xfree(rm->char_offset);
+            xfree(rm);
+        }
+        break;
       case T_FILE:
-	if (RANY(obj)->as.file.fptr) {
-	    make_io_zombie(objspace, obj);
-	    return 1;
-	}
-	break;
+        if (RANY(obj)->as.file.fptr) {
+            make_io_zombie(objspace, obj);
+            return 1;
+        }
+        break;
       case T_RATIONAL:
       case T_COMPLEX:
-	break;
+        break;
       case T_ICLASS:
-	/* Basically , T_ICLASS shares table with the module */
-	if (FL_TEST(obj, RICLASS_IS_ORIGIN)) {
-	    rb_id_table_free(RCLASS_M_TBL(obj));
-	}
-	if (RCLASS_CALLABLE_M_TBL(obj) != NULL) {
-	    rb_id_table_free(RCLASS_CALLABLE_M_TBL(obj));
-	}
-	if (RCLASS_EXT(obj)->subclasses) {
-	    rb_class_detach_subclasses(obj);
-	    RCLASS_EXT(obj)->subclasses = NULL;
-	}
-	rb_class_remove_from_module_subclasses(obj);
-	rb_class_remove_from_super_subclasses(obj);
-	xfree(RANY(obj)->as.klass.ptr);
-	RANY(obj)->as.klass.ptr = NULL;
-	break;
+        /* Basically , T_ICLASS shares table with the module */
+        if (FL_TEST(obj, RICLASS_IS_ORIGIN)) {
+            rb_id_table_free(RCLASS_M_TBL(obj));
+        }
+        if (RCLASS_CALLABLE_M_TBL(obj) != NULL) {
+            rb_id_table_free(RCLASS_CALLABLE_M_TBL(obj));
+        }
+        if (RCLASS_EXT(obj)->subclasses) {
+            rb_class_detach_subclasses(obj);
+            RCLASS_EXT(obj)->subclasses = NULL;
+        }
+        rb_class_remove_from_module_subclasses(obj);
+        rb_class_remove_from_super_subclasses(obj);
+        xfree(RANY(obj)->as.klass.ptr);
+        RANY(obj)->as.klass.ptr = NULL;
+        break;
 
       case T_FLOAT:
-	break;
+        break;
 
       case T_BIGNUM:
-	if (!(RBASIC(obj)->flags & BIGNUM_EMBED_FLAG) && BIGNUM_DIGITS(obj)) {
-	    xfree(BIGNUM_DIGITS(obj));
-	}
-	break;
+        if (!(RBASIC(obj)->flags & BIGNUM_EMBED_FLAG) && BIGNUM_DIGITS(obj)) {
+            xfree(BIGNUM_DIGITS(obj));
+        }
+        break;
 
       case T_NODE:
-	UNEXPECTED_NODE(obj_free);
-	break;
+        UNEXPECTED_NODE(obj_free);
+        break;
 
       case T_STRUCT:
-	if ((RBASIC(obj)->flags & RSTRUCT_EMBED_LEN_MASK) == 0 &&
-	    RANY(obj)->as.rstruct.as.heap.ptr) {
-	    xfree((void *)RANY(obj)->as.rstruct.as.heap.ptr);
-	}
-	break;
+        if ((RBASIC(obj)->flags & RSTRUCT_EMBED_LEN_MASK) == 0 &&
+            RANY(obj)->as.rstruct.as.heap.ptr) {
+            xfree((void *)RANY(obj)->as.rstruct.as.heap.ptr);
+        }
+        break;
 
       case T_SYMBOL:
-	{
+        {
             rb_gc_free_dsymbol(obj);
-	}
-	break;
+        }
+        break;
 
       case T_IMEMO:
-	switch (imemo_type(obj)) {
-	  case imemo_ment:
-	    rb_free_method_entry(&RANY(obj)->as.imemo.ment);
-	    break;
-	  case imemo_iseq:
-	    rb_iseq_free(&RANY(obj)->as.imemo.iseq);
-	    break;
-	  case imemo_env:
-	    GC_ASSERT(VM_ENV_ESCAPED_P(RANY(obj)->as.imemo.env.ep));
-	    xfree((VALUE *)RANY(obj)->as.imemo.env.env);
-	    break;
-	  case imemo_tmpbuf:
-	    xfree(RANY(obj)->as.imemo.alloc.ptr);
-	    break;
-	  case imemo_ast:
-	    rb_ast_free(&RANY(obj)->as.imemo.ast);
-	    break;
-	  default:
-	    break;
-	}
-	return 0;
+        switch (imemo_type(obj)) {
+          case imemo_ment:
+            rb_free_method_entry(&RANY(obj)->as.imemo.ment);
+            break;
+          case imemo_iseq:
+            rb_iseq_free(&RANY(obj)->as.imemo.iseq);
+            break;
+          case imemo_env:
+            GC_ASSERT(VM_ENV_ESCAPED_P(RANY(obj)->as.imemo.env.ep));
+            xfree((VALUE *)RANY(obj)->as.imemo.env.env);
+            break;
+          case imemo_tmpbuf:
+            xfree(RANY(obj)->as.imemo.alloc.ptr);
+            break;
+          case imemo_ast:
+            rb_ast_free(&RANY(obj)->as.imemo.ast);
+            break;
+          default:
+            break;
+        }
+        return 0;
 
       default:
-	rb_bug("gc_sweep(): unknown data type 0x%x(%p) 0x%"PRIxVALUE,
-	       BUILTIN_TYPE(obj), (void*)obj, RBASIC(obj)->flags);
+        rb_bug("gc_sweep(): unknown data type 0x%x(%p) 0x%"PRIxVALUE,
+               BUILTIN_TYPE(obj), (void*)obj, RBASIC(obj)->flags);
     }
 
     if (FL_TEST(obj, FL_FINALIZE)) {
-	make_zombie(objspace, obj, 0, 0);
-	return 1;
+        make_zombie(objspace, obj, 0, 0);
+        return 1;
     }
     else {
-	return 0;
+        return 0;
     }
 }
 
@@ -2425,18 +2425,18 @@ objspace_each_objects(VALUE arg)
 
     i = 0;
     while (i < heap_allocated_pages) {
-	while (0 < i && pstart < heap_pages_sorted[i-1]->start)              i--;
-	while (i < heap_allocated_pages && heap_pages_sorted[i]->start <= pstart) i++;
-	if (heap_allocated_pages <= i) break;
+        while (0 < i && pstart < heap_pages_sorted[i-1]->start)              i--;
+        while (i < heap_allocated_pages && heap_pages_sorted[i]->start <= pstart) i++;
+        if (heap_allocated_pages <= i) break;
 
-	page = heap_pages_sorted[i];
+        page = heap_pages_sorted[i];
 
-	pstart = page->start;
-	pend = pstart + page->total_slots;
+        pstart = page->start;
+        pend = pstart + page->total_slots;
 
-	if ((*args->callback)(pstart, pend, sizeof(RVALUE), args->data)) {
-	    break;
-	}
+        if ((*args->callback)(pstart, pend, sizeof(RVALUE), args->data)) {
+            break;
+        }
     }
 
     return Qnil;
@@ -2501,10 +2501,10 @@ rb_objspace_each_objects(each_obj_callback *callback, void *data)
     args.data = data;
 
     if (prev_dont_incremental) {
-	objspace_each_objects((VALUE)&args);
+        objspace_each_objects((VALUE)&args);
     }
     else {
-	rb_ensure(objspace_each_objects, (VALUE)&args, incremental_enable, Qnil);
+        rb_ensure(objspace_each_objects, (VALUE)&args, incremental_enable, Qnil);
     }
 }
 
@@ -2529,25 +2529,25 @@ internal_object_p(VALUE obj)
     RVALUE *p = (RVALUE *)obj;
 
     if (p->as.basic.flags) {
-	switch (BUILTIN_TYPE(p)) {
-	  case T_NODE:
-	    UNEXPECTED_NODE(internal_object_p);
-	    break;
-	  case T_NONE:
-	  case T_IMEMO:
-	  case T_ICLASS:
-	  case T_ZOMBIE:
-	    break;
-	  case T_CLASS:
-	    if (!p->as.basic.klass) break;
-	    if (FL_TEST(obj, FL_SINGLETON)) {
-		return rb_singleton_class_internal_p(obj);
-	    }
-	    return 0;
-	  default:
-	    if (!p->as.basic.klass) break;
-	    return 0;
-	}
+        switch (BUILTIN_TYPE(p)) {
+          case T_NODE:
+            UNEXPECTED_NODE(internal_object_p);
+            break;
+          case T_NONE:
+          case T_IMEMO:
+          case T_ICLASS:
+          case T_ZOMBIE:
+            break;
+          case T_CLASS:
+            if (!p->as.basic.klass) break;
+            if (FL_TEST(obj, FL_SINGLETON)) {
+                return rb_singleton_class_internal_p(obj);
+            }
+            return 0;
+          default:
+            if (!p->as.basic.klass) break;
+            return 0;
+        }
     }
     return 1;
 }
@@ -2565,13 +2565,13 @@ os_obj_of_i(void *vstart, void *vend, size_t stride, void *data)
     RVALUE *p = (RVALUE *)vstart, *pend = (RVALUE *)vend;
 
     for (; p != pend; p++) {
-	volatile VALUE v = (VALUE)p;
-	if (!internal_object_p(v)) {
-	    if (!oes->of || rb_obj_is_kind_of(v, oes->of)) {
-		rb_yield(v);
-		oes->num++;
-	    }
-	}
+        volatile VALUE v = (VALUE)p;
+        if (!internal_object_p(v)) {
+            if (!oes->of || rb_obj_is_kind_of(v, oes->of)) {
+                rb_yield(v);
+                oes->num++;
+            }
+        }
     }
 
     return 0;
@@ -2630,10 +2630,10 @@ os_each_obj(int argc, VALUE *argv, VALUE os)
     VALUE of;
 
     if (argc == 0) {
-	of = 0;
+        of = 0;
     }
     else {
-	rb_scan_args(argc, argv, "01", &of);
+        rb_scan_args(argc, argv, "01", &of);
     }
     RETURN_ENUMERATOR(os, 1, &of);
     return os_obj_of(of);
@@ -2668,16 +2668,16 @@ static void
 should_be_callable(VALUE block)
 {
     if (!rb_obj_respond_to(block, idCall, TRUE)) {
-	rb_raise(rb_eArgError, "wrong type argument %"PRIsVALUE" (should be callable)",
-		 rb_obj_class(block));
+        rb_raise(rb_eArgError, "wrong type argument %"PRIsVALUE" (should be callable)",
+                 rb_obj_class(block));
     }
 }
 static void
 should_be_finalizable(VALUE obj)
 {
     if (!FL_ABLE(obj)) {
-	rb_raise(rb_eArgError, "cannot define finalizer for %s",
-		 rb_obj_classname(obj));
+        rb_raise(rb_eArgError, "cannot define finalizer for %s",
+                 rb_obj_classname(obj));
     }
     rb_check_frozen(obj);
 }
@@ -2701,10 +2701,10 @@ define_final(int argc, VALUE *argv, VALUE os)
     rb_scan_args(argc, argv, "11", &obj, &block);
     should_be_finalizable(obj);
     if (argc == 1) {
-	block = rb_block_proc();
+        block = rb_block_proc();
     }
     else {
-	should_be_callable(block);
+        should_be_callable(block);
     }
 
     return define_final0(obj, block);
@@ -2723,27 +2723,27 @@ define_final0(VALUE obj, VALUE block)
     OBJ_FREEZE(block);
 
     if (st_lookup(finalizer_table, obj, &data)) {
-	table = (VALUE)data;
+        table = (VALUE)data;
 
-	/* avoid duplicate block, table is usually small */
-	{
-	    const VALUE *ptr = RARRAY_CONST_PTR(table);
-	    long len = RARRAY_LEN(table);
-	    long i;
+        /* avoid duplicate block, table is usually small */
+        {
+            const VALUE *ptr = RARRAY_CONST_PTR(table);
+            long len = RARRAY_LEN(table);
+            long i;
 
-	    for (i = 0; i < len; i++, ptr++) {
-		if (rb_funcall(*ptr, idEq, 1, block)) {
-		    return *ptr;
-		}
-	    }
-	}
+            for (i = 0; i < len; i++, ptr++) {
+                if (rb_funcall(*ptr, idEq, 1, block)) {
+                    return *ptr;
+                }
+            }
+        }
 
-	rb_ary_push(table, block);
+        rb_ary_push(table, block);
     }
     else {
-	table = rb_ary_new3(1, block);
-	RBASIC_CLEAR_CLASS(table);
-	st_add_direct(finalizer_table, obj, table);
+        table = rb_ary_new3(1, block);
+        RBASIC_CLEAR_CLASS(table);
+        st_add_direct(finalizer_table, obj, table);
     }
     return block;
 }
@@ -2765,8 +2765,8 @@ rb_gc_copy_finalizer(VALUE dest, VALUE obj)
 
     if (!FL_TEST(obj, FL_FINALIZE)) return;
     if (st_lookup(finalizer_table, obj, &data)) {
-	table = (VALUE)data;
-	st_insert(finalizer_table, dest, table);
+        table = (VALUE)data;
+        st_insert(finalizer_table, dest, table);
     }
     FL_SET(dest, FL_FINALIZE);
 }
@@ -2776,7 +2776,7 @@ run_single_final(VALUE final, VALUE objid)
 {
     const VALUE cmd = RARRAY_AREF(final, 1);
     const int level = OBJ_TAINTED(cmd) ?
-	RUBY_SAFE_LEVEL_MAX : FIX2INT(RARRAY_AREF(final, 0));
+        RUBY_SAFE_LEVEL_MAX : FIX2INT(RARRAY_AREF(final, 0));
 
     rb_set_safe_level_force(level);
     return rb_check_funcall(cmd, idCall, 1, &objid);
@@ -2788,17 +2788,17 @@ run_finalizer(rb_objspace_t *objspace, VALUE obj, VALUE table)
     long i;
     enum ruby_tag_type state;
     volatile struct {
-	VALUE errinfo;
-	VALUE objid;
-	rb_control_frame_t *cfp;
-	long finished;
-	int safe;
+        VALUE errinfo;
+        VALUE objid;
+        rb_control_frame_t *cfp;
+        long finished;
+        int safe;
     } saved;
     rb_execution_context_t * volatile ec = GET_EC();
 #define RESTORE_FINALIZER() (\
-	ec->cfp = saved.cfp, \
-	rb_set_safe_level_force(saved.safe), \
-	rb_set_errinfo(saved.errinfo))
+        ec->cfp = saved.cfp, \
+        rb_set_safe_level_force(saved.safe), \
+        rb_set_errinfo(saved.errinfo))
 
     saved.safe = rb_safe_level();
     saved.errinfo = rb_errinfo();
@@ -2809,12 +2809,12 @@ run_finalizer(rb_objspace_t *objspace, VALUE obj, VALUE table)
     EC_PUSH_TAG(ec);
     state = EC_EXEC_TAG();
     if (state != TAG_NONE) {
-	++saved.finished;	/* skip failed finalizer */
+        ++saved.finished;        /* skip failed finalizer */
     }
     for (i = saved.finished;
-	 RESTORE_FINALIZER(), i<RARRAY_LEN(table);
-	 saved.finished = ++i) {
-	run_single_final(RARRAY_AREF(table, i), saved.objid);
+         RESTORE_FINALIZER(), i<RARRAY_LEN(table);
+         saved.finished = ++i) {
+        run_single_final(RARRAY_AREF(table, i), saved.objid);
     }
     EC_POP_TAG();
 #undef RESTORE_FINALIZER
@@ -2826,12 +2826,12 @@ run_final(rb_objspace_t *objspace, VALUE zombie)
     st_data_t key, table;
 
     if (RZOMBIE(zombie)->dfree) {
-	RZOMBIE(zombie)->dfree(RZOMBIE(zombie)->data);
+        RZOMBIE(zombie)->dfree(RZOMBIE(zombie)->data);
     }
 
     key = (st_data_t)zombie;
     if (st_delete(finalizer_table, &key, &table)) {
-	run_finalizer(objspace, zombie, (VALUE)table);
+        run_finalizer(objspace, zombie, (VALUE)table);
     }
 }
 
@@ -2839,20 +2839,20 @@ static void
 finalize_list(rb_objspace_t *objspace, VALUE zombie)
 {
     while (zombie) {
-	VALUE next_zombie = RZOMBIE(zombie)->next;
-	struct heap_page *page = GET_HEAP_PAGE(zombie);
+        VALUE next_zombie = RZOMBIE(zombie)->next;
+        struct heap_page *page = GET_HEAP_PAGE(zombie);
 
-	run_final(objspace, zombie);
+        run_final(objspace, zombie);
 
-	RZOMBIE(zombie)->basic.flags = 0;
-	heap_pages_final_slots--;
-	page->final_slots--;
-	page->free_slots++;
-	heap_page_add_freeobj(objspace, GET_HEAP_PAGE(zombie), zombie);
+        RZOMBIE(zombie)->basic.flags = 0;
+        heap_pages_final_slots--;
+        page->final_slots--;
+        page->free_slots++;
+        heap_page_add_freeobj(objspace, GET_HEAP_PAGE(zombie), zombie);
 
-	objspace->profile.total_freed_objects++;
+        objspace->profile.total_freed_objects++;
 
-	zombie = next_zombie;
+        zombie = next_zombie;
     }
 }
 
@@ -2862,7 +2862,7 @@ finalize_deferred(rb_objspace_t *objspace)
     VALUE zombie;
 
     while ((zombie = ATOMIC_VALUE_EXCHANGE(heap_pages_deferred_final, 0)) != 0) {
-	finalize_list(objspace, zombie);
+        finalize_list(objspace, zombie);
     }
 }
 
@@ -2886,7 +2886,7 @@ static void
 gc_finalize_deferred_register(rb_objspace_t *objspace)
 {
     if (rb_postponed_job_register_one(0, gc_finalize_deferred, objspace) == 0) {
-	rb_bug("gc_finalize_deferred_register: can't register finalizer.");
+        rb_bug("gc_finalize_deferred_register: can't register finalizer.");
     }
 }
 
@@ -2937,16 +2937,16 @@ rb_objspace_call_finalizer(rb_objspace_t *objspace)
 
     /* force to run finalizer */
     while (finalizer_table->num_entries) {
-	struct force_finalize_list *list = 0;
-	st_foreach(finalizer_table, force_chain_object, (st_data_t)&list);
-	while (list) {
-	    struct force_finalize_list *curr = list;
-	    st_data_t obj = (st_data_t)curr->obj;
-	    run_finalizer(objspace, curr->obj, curr->table);
-	    st_delete(finalizer_table, &obj, 0);
-	    list = curr->next;
-	    xfree(curr);
-	}
+        struct force_finalize_list *list = 0;
+        st_foreach(finalizer_table, force_chain_object, (st_data_t)&list);
+        while (list) {
+            struct force_finalize_list *curr = list;
+            st_data_t obj = (st_data_t)curr->obj;
+            run_finalizer(objspace, curr->obj, curr->table);
+            st_delete(finalizer_table, &obj, 0);
+            list = curr->next;
+            xfree(curr);
+        }
     }
 
     /* prohibit GC because force T_DATA finalizers can break an object graph consistency */
@@ -2957,39 +2957,39 @@ rb_objspace_call_finalizer(rb_objspace_t *objspace)
 
     /* run data/file object's finalizers */
     for (i = 0; i < heap_allocated_pages; i++) {
-	p = heap_pages_sorted[i]->start; pend = p + heap_pages_sorted[i]->total_slots;
-	while (p < pend) {
-	    switch (BUILTIN_TYPE(p)) {
-	      case T_DATA:
-		if (!DATA_PTR(p) || !RANY(p)->as.data.dfree) break;
-		if (rb_obj_is_thread((VALUE)p)) break;
-		if (rb_obj_is_mutex((VALUE)p)) break;
-		if (rb_obj_is_fiber((VALUE)p)) break;
-		p->as.free.flags = 0;
-		if (RTYPEDDATA_P(p)) {
-		    RDATA(p)->dfree = RANY(p)->as.typeddata.type->function.dfree;
-		}
-		if (RANY(p)->as.data.dfree == RUBY_DEFAULT_FREE) {
-		    xfree(DATA_PTR(p));
-		}
-		else if (RANY(p)->as.data.dfree) {
-		    make_zombie(objspace, (VALUE)p, RANY(p)->as.data.dfree, RANY(p)->as.data.data);
-		}
-		break;
-	      case T_FILE:
-		if (RANY(p)->as.file.fptr) {
-		    make_io_zombie(objspace, (VALUE)p);
-		}
-		break;
-	    }
-	    p++;
-	}
+        p = heap_pages_sorted[i]->start; pend = p + heap_pages_sorted[i]->total_slots;
+        while (p < pend) {
+            switch (BUILTIN_TYPE(p)) {
+              case T_DATA:
+                if (!DATA_PTR(p) || !RANY(p)->as.data.dfree) break;
+                if (rb_obj_is_thread((VALUE)p)) break;
+                if (rb_obj_is_mutex((VALUE)p)) break;
+                if (rb_obj_is_fiber((VALUE)p)) break;
+                p->as.free.flags = 0;
+                if (RTYPEDDATA_P(p)) {
+                    RDATA(p)->dfree = RANY(p)->as.typeddata.type->function.dfree;
+                }
+                if (RANY(p)->as.data.dfree == RUBY_DEFAULT_FREE) {
+                    xfree(DATA_PTR(p));
+                }
+                else if (RANY(p)->as.data.dfree) {
+                    make_zombie(objspace, (VALUE)p, RANY(p)->as.data.dfree, RANY(p)->as.data.data);
+                }
+                break;
+              case T_FILE:
+                if (RANY(p)->as.file.fptr) {
+                    make_io_zombie(objspace, (VALUE)p);
+                }
+                break;
+            }
+            p++;
+        }
     }
 
     gc_exit(objspace, "rb_objspace_call_finalizer");
 
     if (heap_pages_deferred_final) {
-	finalize_list(objspace, heap_pages_deferred_final);
+        finalize_list(objspace, heap_pages_deferred_final);
     }
 
     st_free_table(finalizer_table);
@@ -3018,10 +3018,10 @@ static inline int
 is_swept_object(rb_objspace_t *objspace, VALUE ptr)
 {
     if (heap_is_swept_object(objspace, heap_eden, ptr)) {
-	return TRUE;
+        return TRUE;
     }
     else {
-	return FALSE;
+        return FALSE;
     }
 }
 
@@ -3030,13 +3030,13 @@ static inline int
 is_garbage_object(rb_objspace_t *objspace, VALUE ptr)
 {
     if (!is_lazy_sweeping(heap_eden) ||
-	is_swept_object(objspace, ptr) ||
-	MARKED_IN_BITMAP(GET_HEAP_MARK_BITS(ptr), ptr)) {
+        is_swept_object(objspace, ptr) ||
+        MARKED_IN_BITMAP(GET_HEAP_MARK_BITS(ptr), ptr)) {
 
-	return FALSE;
+        return FALSE;
     }
     else {
-	return TRUE;
+        return TRUE;
     }
 }
 
@@ -3046,14 +3046,14 @@ is_live_object(rb_objspace_t *objspace, VALUE ptr)
     switch (BUILTIN_TYPE(ptr)) {
       case T_NONE:
       case T_ZOMBIE:
-	return FALSE;
+        return FALSE;
     }
 
     if (!is_garbage_object(objspace, ptr)) {
-	return TRUE;
+        return TRUE;
     }
     else {
-	return FALSE;
+        return FALSE;
     }
 }
 
@@ -3117,18 +3117,18 @@ id2ref(VALUE obj, VALUE objid)
     if ((ptr % sizeof(RVALUE)) == (4 << 2)) {
         ID symid = ptr / sizeof(RVALUE);
         if (rb_id2str(symid) == 0)
-	    rb_raise(rb_eRangeError, "%p is not symbol id value", p0);
-	return ID2SYM(symid);
+            rb_raise(rb_eRangeError, "%p is not symbol id value", p0);
+        return ID2SYM(symid);
     }
 
     if (!is_id_value(objspace, ptr)) {
-	rb_raise(rb_eRangeError, "%p is not id value", p0);
+        rb_raise(rb_eRangeError, "%p is not id value", p0);
     }
     if (!is_live_object(objspace, ptr)) {
-	rb_raise(rb_eRangeError, "%p is recycled object", p0);
+        rb_raise(rb_eRangeError, "%p is recycled object", p0);
     }
     if (RBASIC(ptr)->klass == 0) {
-	rb_raise(rb_eRangeError, "%p is internal object", p0);
+        rb_raise(rb_eRangeError, "%p is internal object", p0);
     }
     return (VALUE)ptr;
 }
@@ -3194,13 +3194,13 @@ rb_obj_id(VALUE obj)
     }
     else if (FLONUM_P(obj)) {
 #if SIZEOF_LONG == SIZEOF_VOIDP
-	return LONG2NUM((SIGNED_VALUE)obj);
+        return LONG2NUM((SIGNED_VALUE)obj);
 #else
-	return LL2NUM((SIGNED_VALUE)obj);
+        return LL2NUM((SIGNED_VALUE)obj);
 #endif
     }
     else if (SPECIAL_CONST_P(obj)) {
-	return LONG2NUM((SIGNED_VALUE)obj);
+        return LONG2NUM((SIGNED_VALUE)obj);
     }
     return nonspecial_obj_id(obj);
 }
@@ -3213,115 +3213,115 @@ obj_memsize_of(VALUE obj, int use_all_types)
     size_t size = 0;
 
     if (SPECIAL_CONST_P(obj)) {
-	return 0;
+        return 0;
     }
 
     if (FL_TEST(obj, FL_EXIVAR)) {
-	size += rb_generic_ivar_memsize(obj);
+        size += rb_generic_ivar_memsize(obj);
     }
 
     switch (BUILTIN_TYPE(obj)) {
       case T_OBJECT:
-	if (!(RBASIC(obj)->flags & ROBJECT_EMBED) &&
-	    ROBJECT(obj)->as.heap.ivptr) {
-	    size += ROBJECT(obj)->as.heap.numiv * sizeof(VALUE);
-	}
-	break;
+        if (!(RBASIC(obj)->flags & ROBJECT_EMBED) &&
+            ROBJECT(obj)->as.heap.ivptr) {
+            size += ROBJECT(obj)->as.heap.numiv * sizeof(VALUE);
+        }
+        break;
       case T_MODULE:
       case T_CLASS:
-	if (RCLASS_M_TBL(obj)) {
-	    size += rb_id_table_memsize(RCLASS_M_TBL(obj));
-	}
-	if (RCLASS_EXT(obj)) {
-	    if (RCLASS_IV_TBL(obj)) {
-		size += st_memsize(RCLASS_IV_TBL(obj));
-	    }
-	    if (RCLASS_IV_INDEX_TBL(obj)) {
-		size += st_memsize(RCLASS_IV_INDEX_TBL(obj));
-	    }
-	    if (RCLASS(obj)->ptr->iv_tbl) {
-		size += st_memsize(RCLASS(obj)->ptr->iv_tbl);
-	    }
-	    if (RCLASS(obj)->ptr->const_tbl) {
-		size += rb_id_table_memsize(RCLASS(obj)->ptr->const_tbl);
-	    }
-	    size += sizeof(rb_classext_t);
-	}
-	break;
+        if (RCLASS_M_TBL(obj)) {
+            size += rb_id_table_memsize(RCLASS_M_TBL(obj));
+        }
+        if (RCLASS_EXT(obj)) {
+            if (RCLASS_IV_TBL(obj)) {
+                size += st_memsize(RCLASS_IV_TBL(obj));
+            }
+            if (RCLASS_IV_INDEX_TBL(obj)) {
+                size += st_memsize(RCLASS_IV_INDEX_TBL(obj));
+            }
+            if (RCLASS(obj)->ptr->iv_tbl) {
+                size += st_memsize(RCLASS(obj)->ptr->iv_tbl);
+            }
+            if (RCLASS(obj)->ptr->const_tbl) {
+                size += rb_id_table_memsize(RCLASS(obj)->ptr->const_tbl);
+            }
+            size += sizeof(rb_classext_t);
+        }
+        break;
       case T_ICLASS:
-	if (FL_TEST(obj, RICLASS_IS_ORIGIN)) {
-	    if (RCLASS_M_TBL(obj)) {
-		size += rb_id_table_memsize(RCLASS_M_TBL(obj));
-	    }
-	}
-	break;
+        if (FL_TEST(obj, RICLASS_IS_ORIGIN)) {
+            if (RCLASS_M_TBL(obj)) {
+                size += rb_id_table_memsize(RCLASS_M_TBL(obj));
+            }
+        }
+        break;
       case T_STRING:
-	size += rb_str_memsize(obj);
-	break;
+        size += rb_str_memsize(obj);
+        break;
       case T_ARRAY:
-	size += rb_ary_memsize(obj);
-	break;
+        size += rb_ary_memsize(obj);
+        break;
       case T_HASH:
-	if (RHASH(obj)->ntbl) {
-	    size += st_memsize(RHASH(obj)->ntbl);
-	}
-	break;
+        if (RHASH(obj)->ntbl) {
+            size += st_memsize(RHASH(obj)->ntbl);
+        }
+        break;
       case T_REGEXP:
-	if (RREGEXP_PTR(obj)) {
-	    size += onig_memsize(RREGEXP_PTR(obj));
-	}
-	break;
+        if (RREGEXP_PTR(obj)) {
+            size += onig_memsize(RREGEXP_PTR(obj));
+        }
+        break;
       case T_DATA:
-	if (use_all_types) size += rb_objspace_data_type_memsize(obj);
-	break;
+        if (use_all_types) size += rb_objspace_data_type_memsize(obj);
+        break;
       case T_MATCH:
-	if (RMATCH(obj)->rmatch) {
+        if (RMATCH(obj)->rmatch) {
             struct rmatch *rm = RMATCH(obj)->rmatch;
-	    size += onig_region_memsize(&rm->regs);
-	    size += sizeof(struct rmatch_offset) * rm->char_offset_num_allocated;
-	    size += sizeof(struct rmatch);
-	}
-	break;
+            size += onig_region_memsize(&rm->regs);
+            size += sizeof(struct rmatch_offset) * rm->char_offset_num_allocated;
+            size += sizeof(struct rmatch);
+        }
+        break;
       case T_FILE:
-	if (RFILE(obj)->fptr) {
-	    size += rb_io_memsize(RFILE(obj)->fptr);
-	}
-	break;
+        if (RFILE(obj)->fptr) {
+            size += rb_io_memsize(RFILE(obj)->fptr);
+        }
+        break;
       case T_RATIONAL:
       case T_COMPLEX:
       case T_IMEMO:
-	if (imemo_type_p(obj, imemo_tmpbuf)) {
-	    size += RANY(obj)->as.imemo.alloc.cnt * sizeof(VALUE);
-	}
-	break;
+        if (imemo_type_p(obj, imemo_tmpbuf)) {
+            size += RANY(obj)->as.imemo.alloc.cnt * sizeof(VALUE);
+        }
+        break;
 
       case T_FLOAT:
       case T_SYMBOL:
-	break;
+        break;
 
       case T_BIGNUM:
-	if (!(RBASIC(obj)->flags & BIGNUM_EMBED_FLAG) && BIGNUM_DIGITS(obj)) {
-	    size += BIGNUM_LEN(obj) * sizeof(BDIGIT);
-	}
-	break;
+        if (!(RBASIC(obj)->flags & BIGNUM_EMBED_FLAG) && BIGNUM_DIGITS(obj)) {
+            size += BIGNUM_LEN(obj) * sizeof(BDIGIT);
+        }
+        break;
 
       case T_NODE:
-	UNEXPECTED_NODE(obj_memsize_of);
-	break;
+        UNEXPECTED_NODE(obj_memsize_of);
+        break;
 
       case T_STRUCT:
-	if ((RBASIC(obj)->flags & RSTRUCT_EMBED_LEN_MASK) == 0 &&
-	    RSTRUCT(obj)->as.heap.ptr) {
-	    size += sizeof(VALUE) * RSTRUCT_LEN(obj);
-	}
-	break;
+        if ((RBASIC(obj)->flags & RSTRUCT_EMBED_LEN_MASK) == 0 &&
+            RSTRUCT(obj)->as.heap.ptr) {
+            size += sizeof(VALUE) * RSTRUCT_LEN(obj);
+        }
+        break;
 
       case T_ZOMBIE:
-	break;
+        break;
 
       default:
-	rb_bug("objspace/memsize_of(): unknown data type 0x%x(%p)",
-	       BUILTIN_TYPE(obj), (void*)obj);
+        rb_bug("objspace/memsize_of(): unknown data type 0x%x(%p)",
+               BUILTIN_TYPE(obj), (void*)obj);
     }
 
     return size + sizeof(RVALUE);
@@ -3349,13 +3349,13 @@ set_zero(st_data_t key, st_data_t val, st_data_t arg)
  *  Counts all objects grouped by type.
  *
  *  It returns a hash, such as:
- *	{
- *	  :TOTAL=>10000,
- *	  :FREE=>3011,
- *	  :T_OBJECT=>6,
- *	  :T_CLASS=>404,
- *	  # ...
- *	}
+ *        {
+ *          :TOTAL=>10000,
+ *          :FREE=>3011,
+ *          :T_OBJECT=>6,
+ *          :T_CLASS=>404,
+ *          # ...
+ *        }
  *
  *  The contents of the returned hash are implementation specific.
  *  It may be changed in future.
@@ -3397,19 +3397,19 @@ count_objects(int argc, VALUE *argv, VALUE os)
     }
 
     for (i = 0; i < heap_allocated_pages; i++) {
-	struct heap_page *page = heap_pages_sorted[i];
-	RVALUE *p, *pend;
+        struct heap_page *page = heap_pages_sorted[i];
+        RVALUE *p, *pend;
 
-	p = page->start; pend = p + page->total_slots;
-	for (;p < pend; p++) {
-	    if (p->as.basic.flags) {
-		counts[BUILTIN_TYPE(p)]++;
-	    }
-	    else {
-		freed++;
-	    }
-	}
-	total += page->total_slots;
+        p = page->start; pend = p + page->total_slots;
+        for (;p < pend; p++) {
+            if (p->as.basic.flags) {
+                counts[BUILTIN_TYPE(p)]++;
+            }
+            else {
+                freed++;
+            }
+        }
+        total += page->total_slots;
     }
 
     if (hash == Qnil) {
@@ -3425,31 +3425,31 @@ count_objects(int argc, VALUE *argv, VALUE os)
         VALUE type;
         switch (i) {
 #define COUNT_TYPE(t) case (t): type = ID2SYM(rb_intern(#t)); break;
-	    COUNT_TYPE(T_NONE);
-	    COUNT_TYPE(T_OBJECT);
-	    COUNT_TYPE(T_CLASS);
-	    COUNT_TYPE(T_MODULE);
-	    COUNT_TYPE(T_FLOAT);
-	    COUNT_TYPE(T_STRING);
-	    COUNT_TYPE(T_REGEXP);
-	    COUNT_TYPE(T_ARRAY);
-	    COUNT_TYPE(T_HASH);
-	    COUNT_TYPE(T_STRUCT);
-	    COUNT_TYPE(T_BIGNUM);
-	    COUNT_TYPE(T_FILE);
-	    COUNT_TYPE(T_DATA);
-	    COUNT_TYPE(T_MATCH);
-	    COUNT_TYPE(T_COMPLEX);
-	    COUNT_TYPE(T_RATIONAL);
-	    COUNT_TYPE(T_NIL);
-	    COUNT_TYPE(T_TRUE);
-	    COUNT_TYPE(T_FALSE);
-	    COUNT_TYPE(T_SYMBOL);
-	    COUNT_TYPE(T_FIXNUM);
-	    COUNT_TYPE(T_IMEMO);
-	    COUNT_TYPE(T_UNDEF);
-	    COUNT_TYPE(T_ICLASS);
-	    COUNT_TYPE(T_ZOMBIE);
+            COUNT_TYPE(T_NONE);
+            COUNT_TYPE(T_OBJECT);
+            COUNT_TYPE(T_CLASS);
+            COUNT_TYPE(T_MODULE);
+            COUNT_TYPE(T_FLOAT);
+            COUNT_TYPE(T_STRING);
+            COUNT_TYPE(T_REGEXP);
+            COUNT_TYPE(T_ARRAY);
+            COUNT_TYPE(T_HASH);
+            COUNT_TYPE(T_STRUCT);
+            COUNT_TYPE(T_BIGNUM);
+            COUNT_TYPE(T_FILE);
+            COUNT_TYPE(T_DATA);
+            COUNT_TYPE(T_MATCH);
+            COUNT_TYPE(T_COMPLEX);
+            COUNT_TYPE(T_RATIONAL);
+            COUNT_TYPE(T_NIL);
+            COUNT_TYPE(T_TRUE);
+            COUNT_TYPE(T_FALSE);
+            COUNT_TYPE(T_SYMBOL);
+            COUNT_TYPE(T_FIXNUM);
+            COUNT_TYPE(T_IMEMO);
+            COUNT_TYPE(T_UNDEF);
+            COUNT_TYPE(T_ICLASS);
+            COUNT_TYPE(T_ZOMBIE);
 #undef COUNT_TYPE
           default:              type = INT2NUM(i); break;
         }
@@ -3517,60 +3517,60 @@ gc_page_sweep(rb_objspace_t *objspace, rb_heap_t *heap, struct heap_page *sweep_
     bits[BITMAP_INDEX(pend)] |= ~(BITMAP_BIT(pend) - 1);
 
     for (i=0; i < HEAP_PAGE_BITMAP_LIMIT; i++) {
-	bitset = ~bits[i];
-	if (bitset) {
-	    p = offset  + i * BITS_BITLENGTH;
-	    do {
-		if (bitset & 1) {
-		    switch (BUILTIN_TYPE(p)) {
-		      default: { /* majority case */
-			  gc_report(2, objspace, "page_sweep: free %p\n", (void *)p);
+        bitset = ~bits[i];
+        if (bitset) {
+            p = offset  + i * BITS_BITLENGTH;
+            do {
+                if (bitset & 1) {
+                    switch (BUILTIN_TYPE(p)) {
+                      default: { /* majority case */
+                          gc_report(2, objspace, "page_sweep: free %p\n", (void *)p);
 #if USE_RGENGC && RGENGC_CHECK_MODE
-			  if (!is_full_marking(objspace)) {
-			      if (RVALUE_OLD_P((VALUE)p)) rb_bug("page_sweep: %p - old while minor GC.", (void *)p);
-			      if (rgengc_remembered(objspace, (VALUE)p)) rb_bug("page_sweep: %p - remembered.", (void *)p);
-			  }
+                          if (!is_full_marking(objspace)) {
+                              if (RVALUE_OLD_P((VALUE)p)) rb_bug("page_sweep: %p - old while minor GC.", (void *)p);
+                              if (rgengc_remembered(objspace, (VALUE)p)) rb_bug("page_sweep: %p - remembered.", (void *)p);
+                          }
 #endif
-			  if (obj_free(objspace, (VALUE)p)) {
-			      final_slots++;
-			  }
-			  else {
-			      (void)VALGRIND_MAKE_MEM_UNDEFINED((void*)p, sizeof(RVALUE));
-			      heap_page_add_freeobj(objspace, sweep_page, (VALUE)p);
-			      gc_report(3, objspace, "page_sweep: %s is added to freelist\n", obj_info((VALUE)p));
-			      freed_slots++;
-			  }
-			  break;
-		      }
+                          if (obj_free(objspace, (VALUE)p)) {
+                              final_slots++;
+                          }
+                          else {
+                              (void)VALGRIND_MAKE_MEM_UNDEFINED((void*)p, sizeof(RVALUE));
+                              heap_page_add_freeobj(objspace, sweep_page, (VALUE)p);
+                              gc_report(3, objspace, "page_sweep: %s is added to freelist\n", obj_info((VALUE)p));
+                              freed_slots++;
+                          }
+                          break;
+                      }
 
-			/* minor cases */
-		      case T_ZOMBIE:
-			/* already counted */
-			break;
-		      case T_NONE:
-			empty_slots++; /* already freed */
-			break;
-		    }
-		}
-		p++;
-		bitset >>= 1;
-	    } while (bitset);
-	}
+                        /* minor cases */
+                      case T_ZOMBIE:
+                        /* already counted */
+                        break;
+                      case T_NONE:
+                        empty_slots++; /* already freed */
+                        break;
+                    }
+                }
+                p++;
+                bitset >>= 1;
+            } while (bitset);
+        }
     }
 
     gc_setup_mark_bits(sweep_page);
 
 #if GC_PROFILE_MORE_DETAIL
     if (gc_prof_enabled(objspace)) {
-	gc_profile_record *record = gc_prof_record(objspace);
-	record->removing_objects += final_slots + freed_slots;
-	record->empty_objects += empty_slots;
+        gc_profile_record *record = gc_prof_record(objspace);
+        record->removing_objects += final_slots + freed_slots;
+        record->empty_objects += empty_slots;
     }
 #endif
     if (0) fprintf(stderr, "gc_page_sweep(%d): total_slots: %d, freed_slots: %d, empty_slots: %d, final_slots: %d\n",
-		   (int)rb_gc_count(),
-		   (int)sweep_page->total_slots,
-		   freed_slots, empty_slots, final_slots);
+                   (int)rb_gc_count(),
+                   (int)sweep_page->total_slots,
+                   freed_slots, empty_slots, final_slots);
 
     sweep_page->free_slots = freed_slots + empty_slots;
     objspace->profile.total_freed_objects += freed_slots;
@@ -3580,7 +3580,7 @@ gc_page_sweep(rb_objspace_t *objspace, rb_heap_t *heap, struct heap_page *sweep_
     if (heap_pages_deferred_final && !finalizing) {
         rb_thread_t *th = GET_THREAD();
         if (th) {
-	    gc_finalize_deferred_register(objspace);
+            gc_finalize_deferred_register(objspace);
         }
     }
 
@@ -3594,11 +3594,11 @@ static void
 gc_heap_prepare_minimum_pages(rb_objspace_t *objspace, rb_heap_t *heap)
 {
     if (!heap->free_pages && heap_increment(objspace, heap) == FALSE) {
-	/* there is no free after page_sweep() */
-	heap_set_increment(objspace, 1);
-	if (!heap_increment(objspace, heap)) { /* can't allocate additional free objects */
-	    rb_memerror();
-	}
+        /* there is no free after page_sweep() */
+        heap_set_increment(objspace, 1);
+        if (!heap_increment(objspace, heap)) { /* can't allocate additional free objects */
+            rb_memerror();
+        }
     }
 }
 
@@ -3638,12 +3638,12 @@ gc_sweep_start_heap(rb_objspace_t *objspace, rb_heap_t *heap)
     objspace->rincgc.pooled_slots = 0;
 #endif
     if (heap->using_page) {
-	RVALUE **p = &heap->using_page->freelist;
-	while (*p) {
-	    p = &(*p)->as.free.next;
-	}
-	*p = heap->freelist;
-	heap->using_page = NULL;
+        RVALUE **p = &heap->using_page->freelist;
+        while (*p) {
+            p = &(*p)->as.free.next;
+        }
+        *p = heap->freelist;
+        heap->using_page = NULL;
     }
     heap->freelist = NULL;
 }
@@ -3668,7 +3668,7 @@ gc_sweep_finish(rb_objspace_t *objspace)
 
     /* if heap_pages has unused pages, then assign them to increment */
     if (heap_allocatable_pages < heap_tomb->total_pages) {
-	heap_allocatable_pages_set(objspace, heap_tomb->total_pages);
+        heap_allocatable_pages_set(objspace, heap_tomb->total_pages);
     }
 
     gc_event_hook(objspace, RUBY_INTERNAL_EVENT_GC_END_SWEEP, 0);
@@ -3699,41 +3699,41 @@ gc_sweep_step(rb_objspace_t *objspace, rb_heap_t *heap)
 #endif
 
     do {
-	int free_slots = gc_page_sweep(objspace, heap, sweep_page);
-	heap->sweeping_page = list_next(&heap->pages, sweep_page, page_node);
+        int free_slots = gc_page_sweep(objspace, heap, sweep_page);
+        heap->sweeping_page = list_next(&heap->pages, sweep_page, page_node);
 
-	if (sweep_page->final_slots + free_slots == sweep_page->total_slots &&
-	    heap_pages_freeable_pages > 0 &&
-	    unlink_limit > 0) {
-	    heap_pages_freeable_pages--;
-	    unlink_limit--;
-	    /* there are no living objects -> move this page to tomb heap */
-	    heap_unlink_page(objspace, heap, sweep_page);
-	    heap_add_page(objspace, heap_tomb, sweep_page);
-	}
-	else if (free_slots > 0) {
+        if (sweep_page->final_slots + free_slots == sweep_page->total_slots &&
+            heap_pages_freeable_pages > 0 &&
+            unlink_limit > 0) {
+            heap_pages_freeable_pages--;
+            unlink_limit--;
+            /* there are no living objects -> move this page to tomb heap */
+            heap_unlink_page(objspace, heap, sweep_page);
+            heap_add_page(objspace, heap_tomb, sweep_page);
+        }
+        else if (free_slots > 0) {
 #if GC_ENABLE_INCREMENTAL_MARK
-	    if (need_pool) {
-		if (heap_add_poolpage(objspace, heap, sweep_page)) {
-		    need_pool = FALSE;
-		}
-	    }
-	    else {
-		heap_add_freepage(objspace, heap, sweep_page);
-		break;
-	    }
+            if (need_pool) {
+                if (heap_add_poolpage(objspace, heap, sweep_page)) {
+                    need_pool = FALSE;
+                }
+            }
+            else {
+                heap_add_freepage(objspace, heap, sweep_page);
+                break;
+            }
 #else
-	    heap_add_freepage(objspace, heap, sweep_page);
-	    break;
+            heap_add_freepage(objspace, heap, sweep_page);
+            break;
 #endif
-	}
-	else {
-	    sweep_page->free_next = NULL;
-	}
+        }
+        else {
+            sweep_page->free_next = NULL;
+        }
     } while ((sweep_page = heap->sweeping_page));
 
     if (!heap->sweeping_page) {
-	gc_sweep_finish(objspace);
+        gc_sweep_finish(objspace);
     }
 
 #if GC_ENABLE_LAZY_SWEEP
@@ -3749,7 +3749,7 @@ gc_sweep_rest(rb_objspace_t *objspace)
     rb_heap_t *heap = heap_eden; /* lazy sweep only for eden */
 
     while (has_sweeping_pages(heap)) {
-	gc_sweep_step(objspace, heap);
+        gc_sweep_step(objspace, heap);
     }
 }
 
@@ -3762,7 +3762,7 @@ gc_sweep_continue(rb_objspace_t *objspace, rb_heap_t *heap)
     gc_enter(objspace, "sweep_continue");
 #if USE_RGENGC
     if (objspace->rgengc.need_major_gc == GPR_FLAG_NONE && heap_increment(objspace, heap)) {
-	gc_report(3, objspace, "gc_sweep_continue: success heap_increment().\n");
+        gc_report(3, objspace, "gc_sweep_continue: success heap_increment().\n");
     }
 #endif
     gc_sweep_step(objspace, heap);
@@ -3778,22 +3778,22 @@ gc_sweep(rb_objspace_t *objspace)
 
     if (immediate_sweep) {
 #if !GC_ENABLE_LAZY_SWEEP
-	gc_prof_sweep_timer_start(objspace);
+        gc_prof_sweep_timer_start(objspace);
 #endif
-	gc_sweep_start(objspace);
-	gc_sweep_rest(objspace);
+        gc_sweep_start(objspace);
+        gc_sweep_rest(objspace);
 #if !GC_ENABLE_LAZY_SWEEP
-	gc_prof_sweep_timer_stop(objspace);
+        gc_prof_sweep_timer_stop(objspace);
 #endif
     }
     else {
-	struct heap_page *page = NULL;
-	gc_sweep_start(objspace);
+        struct heap_page *page = NULL;
+        gc_sweep_start(objspace);
 
         list_for_each(&heap_eden->pages, page, page_node) {
             page->flags.before_sweep = TRUE;
         }
-	gc_sweep_step(objspace, heap_eden);
+        gc_sweep_step(objspace, heap_eden);
     }
 
     gc_heap_prepare_minimum_pages(objspace, heap_eden);
@@ -3826,8 +3826,8 @@ mark_stack_size(mark_stack_t *stack)
     stack_chunk_t *chunk = stack->chunk ? stack->chunk->next : NULL;
 
     while (chunk) {
-	size += stack->limit;
-	chunk = chunk->next;
+        size += stack->limit;
+        chunk = chunk->next;
     }
     return size;
 }
@@ -3921,7 +3921,7 @@ pop_mark_stack(mark_stack_t *stack, VALUE *data)
         pop_mark_stack_chunk(stack);
     }
     else {
-	*data = stack->chunk->data[--stack->index];
+        *data = stack->chunk->data[--stack->index];
     }
     return TRUE;
 }
@@ -3932,10 +3932,10 @@ invalidate_mark_stack_chunk(stack_chunk_t *chunk, int limit, VALUE obj)
 {
     int i;
     for (i=0; i<limit; i++) {
-	if (chunk->data[i] == obj) {
-	    chunk->data[i] = Qundef;
-	    return TRUE;
-	}
+        if (chunk->data[i] == obj) {
+            chunk->data[i] = Qundef;
+            return TRUE;
+        }
     }
     return FALSE;
 }
@@ -3947,9 +3947,9 @@ invalidate_mark_stack(mark_stack_t *stack, VALUE obj)
     int limit = stack->index;
 
     while (chunk) {
-	if (invalidate_mark_stack_chunk(chunk, limit, obj)) return;
-	chunk = chunk->next;
-	limit = stack->limit;
+        if (invalidate_mark_stack_chunk(chunk, limit, obj)) return;
+        chunk = chunk->next;
+        limit = stack->limit;
     }
     rb_bug("invalid_mark_stack: unreachable");
 }
@@ -3993,7 +3993,7 @@ init_mark_stack(mark_stack_t *stack)
 # define STACK_LENGTH  (size_t)(STACK_END - STACK_START + 1)
 #else
 # define STACK_LENGTH  ((STACK_END < STACK_START) ? (size_t)(STACK_START - STACK_END) \
-			: (size_t)(STACK_END - STACK_START + 1))
+                        : (size_t)(STACK_END - STACK_START + 1))
 #endif
 #if !STACK_GROW_DIRECTION
 int ruby_stack_grow_direction;
@@ -4035,7 +4035,7 @@ stack_check(rb_execution_context_t *ec, int water_mark)
 #ifdef __ia64
     if (!ret) {
         ret = (VALUE*)rb_ia64_bsp() - ec->machine.register_stack_start >
-	    ec->machine.register_stack_maxsize/sizeof(VALUE) - water_mark;
+            ec->machine.register_stack_maxsize/sizeof(VALUE) - water_mark;
     }
 #endif
     return ret;
@@ -4065,8 +4065,8 @@ mark_locations_array(rb_objspace_t *objspace, register const VALUE *x, register 
     VALUE v;
     while (n--) {
         v = *x;
-	gc_mark_maybe(objspace, v);
-	x++;
+        gc_mark_maybe(objspace, v);
+        x++;
     }
 }
 
@@ -4092,7 +4092,7 @@ gc_mark_values(rb_objspace_t *objspace, long n, const VALUE *values)
     long i;
 
     for (i=0; i<n; i++) {
-	gc_mark(objspace, values[i]);
+        gc_mark(objspace, values[i]);
     }
 }
 
@@ -4171,33 +4171,33 @@ mark_method_entry(rb_objspace_t *objspace, const rb_method_entry_t *me)
     gc_mark(objspace, me->defined_class);
 
     if (def) {
-	switch (def->type) {
-	  case VM_METHOD_TYPE_ISEQ:
-	    if (def->body.iseq.iseqptr) gc_mark(objspace, (VALUE)def->body.iseq.iseqptr);
-	    gc_mark(objspace, (VALUE)def->body.iseq.cref);
-	    break;
-	  case VM_METHOD_TYPE_ATTRSET:
-	  case VM_METHOD_TYPE_IVAR:
-	    gc_mark(objspace, def->body.attr.location);
-	    break;
-	  case VM_METHOD_TYPE_BMETHOD:
-	    gc_mark(objspace, def->body.proc);
-	    break;
-	  case VM_METHOD_TYPE_ALIAS:
-	    gc_mark(objspace, (VALUE)def->body.alias.original_me);
-	    return;
-	  case VM_METHOD_TYPE_REFINED:
-	    gc_mark(objspace, (VALUE)def->body.refined.orig_me);
-	    gc_mark(objspace, (VALUE)def->body.refined.owner);
-	    break;
-	  case VM_METHOD_TYPE_CFUNC:
-	  case VM_METHOD_TYPE_ZSUPER:
-	  case VM_METHOD_TYPE_MISSING:
-	  case VM_METHOD_TYPE_OPTIMIZED:
-	  case VM_METHOD_TYPE_UNDEF:
-	  case VM_METHOD_TYPE_NOTIMPLEMENTED:
-	    break;
-	}
+        switch (def->type) {
+          case VM_METHOD_TYPE_ISEQ:
+            if (def->body.iseq.iseqptr) gc_mark(objspace, (VALUE)def->body.iseq.iseqptr);
+            gc_mark(objspace, (VALUE)def->body.iseq.cref);
+            break;
+          case VM_METHOD_TYPE_ATTRSET:
+          case VM_METHOD_TYPE_IVAR:
+            gc_mark(objspace, def->body.attr.location);
+            break;
+          case VM_METHOD_TYPE_BMETHOD:
+            gc_mark(objspace, def->body.proc);
+            break;
+          case VM_METHOD_TYPE_ALIAS:
+            gc_mark(objspace, (VALUE)def->body.alias.original_me);
+            return;
+          case VM_METHOD_TYPE_REFINED:
+            gc_mark(objspace, (VALUE)def->body.refined.orig_me);
+            gc_mark(objspace, (VALUE)def->body.refined.owner);
+            break;
+          case VM_METHOD_TYPE_CFUNC:
+          case VM_METHOD_TYPE_ZSUPER:
+          case VM_METHOD_TYPE_MISSING:
+          case VM_METHOD_TYPE_OPTIMIZED:
+          case VM_METHOD_TYPE_UNDEF:
+          case VM_METHOD_TYPE_NOTIMPLEMENTED:
+            break;
+        }
     }
 }
 
@@ -4214,7 +4214,7 @@ static void
 mark_m_tbl(rb_objspace_t *objspace, struct rb_id_table *tbl)
 {
     if (tbl) {
-	rb_id_table_foreach_values(tbl, mark_method_entry_i, objspace);
+        rb_id_table_foreach_values(tbl, mark_method_entry_i, objspace);
     }
 }
 
@@ -4247,14 +4247,14 @@ mark_const_tbl(rb_objspace_t *objspace, struct rb_id_table *tbl)
 #endif
 
 static void mark_stack_locations(rb_objspace_t *objspace, const rb_execution_context_t *ec,
-				 const VALUE *stack_start, const VALUE *stack_end);
+                                 const VALUE *stack_start, const VALUE *stack_end);
 
 static void
 mark_current_machine_context(rb_objspace_t *objspace, rb_execution_context_t *ec)
 {
     union {
-	rb_jmp_buf j;
-	VALUE v[sizeof(rb_jmp_buf) / sizeof(VALUE)];
+        rb_jmp_buf j;
+        VALUE v[sizeof(rb_jmp_buf) / sizeof(VALUE)];
     } save_regs_gc_mark;
     VALUE *stack_start, *stack_end;
 
@@ -4285,19 +4285,19 @@ rb_gc_mark_machine_stack(const rb_execution_context_t *ec)
 
 static void
 mark_stack_locations(rb_objspace_t *objspace, const rb_execution_context_t *ec,
-		     const VALUE *stack_start, const VALUE *stack_end)
+                     const VALUE *stack_start, const VALUE *stack_end)
 {
 
     gc_mark_locations(objspace, stack_start, stack_end);
 #ifdef __ia64
     gc_mark_locations(objspace,
-		      ec->machine.register_stack_start,
-		      ec->machine.register_stack_end);
+                      ec->machine.register_stack_start,
+                      ec->machine.register_stack_end);
 #endif
 #if defined(__mc68000__)
     gc_mark_locations(objspace,
-		      (VALUE*)((char*)stack_start + 2),
-		      (VALUE*)((char*)stack_end - 2));
+                      (VALUE*)((char*)stack_start + 2),
+                      (VALUE*)((char*)stack_end - 2));
 #endif
 }
 
@@ -4312,10 +4312,10 @@ gc_mark_maybe(rb_objspace_t *objspace, VALUE obj)
 {
     (void)VALGRIND_MAKE_MEM_DEFINED(&obj, sizeof(obj));
     if (is_pointer_to_heap(objspace, (void *)obj)) {
-	int type = BUILTIN_TYPE(obj);
-	if (type != T_ZOMBIE && type != T_NONE) {
-	    gc_mark_ptr(objspace, obj);
-	}
+        int type = BUILTIN_TYPE(obj);
+        if (type != T_ZOMBIE && type != T_NONE) {
+            gc_mark_ptr(objspace, obj);
+        }
     }
 }
 
@@ -4341,20 +4341,20 @@ gc_remember_unprotected(rb_objspace_t *objspace, VALUE obj)
     bits_t *uncollectible_bits = &page->uncollectible_bits[0];
 
     if (!MARKED_IN_BITMAP(uncollectible_bits, obj)) {
-	page->flags.has_uncollectible_shady_objects = TRUE;
-	MARK_IN_BITMAP(uncollectible_bits, obj);
-	objspace->rgengc.uncollectible_wb_unprotected_objects++;
+        page->flags.has_uncollectible_shady_objects = TRUE;
+        MARK_IN_BITMAP(uncollectible_bits, obj);
+        objspace->rgengc.uncollectible_wb_unprotected_objects++;
 
 #if RGENGC_PROFILE > 0
-	objspace->profile.total_remembered_shady_object_count++;
+        objspace->profile.total_remembered_shady_object_count++;
 #if RGENGC_PROFILE >= 2
-	objspace->profile.remembered_shady_object_count_types[BUILTIN_TYPE(obj)]++;
+        objspace->profile.remembered_shady_object_count_types[BUILTIN_TYPE(obj)]++;
 #endif
 #endif
-	return TRUE;
+        return TRUE;
     }
     else {
-	return FALSE;
+        return FALSE;
     }
 }
 #endif
@@ -4366,32 +4366,32 @@ rgengc_check_relation(rb_objspace_t *objspace, VALUE obj)
     const VALUE old_parent = objspace->rgengc.parent_object;
 
     if (old_parent) { /* parent object is old */
-	if (RVALUE_WB_UNPROTECTED(obj)) {
-	    if (gc_remember_unprotected(objspace, obj)) {
-		gc_report(2, objspace, "relation: (O->S) %s -> %s\n", obj_info(old_parent), obj_info(obj));
-	    }
-	}
-	else {
-	    if (!RVALUE_OLD_P(obj)) {
-		if (RVALUE_MARKED(obj)) {
-		    /* An object pointed from an OLD object should be OLD. */
-		    gc_report(2, objspace, "relation: (O->unmarked Y) %s -> %s\n", obj_info(old_parent), obj_info(obj));
-		    RVALUE_AGE_SET_OLD(objspace, obj);
-		    if (is_incremental_marking(objspace)) {
-			if (!RVALUE_MARKING(obj)) {
-			    gc_grey(objspace, obj);
-			}
-		    }
-		    else {
-			rgengc_remember(objspace, obj);
-		    }
-		}
-		else {
-		    gc_report(2, objspace, "relation: (O->Y) %s -> %s\n", obj_info(old_parent), obj_info(obj));
-		    RVALUE_AGE_SET_CANDIDATE(objspace, obj);
-		}
-	    }
-	}
+        if (RVALUE_WB_UNPROTECTED(obj)) {
+            if (gc_remember_unprotected(objspace, obj)) {
+                gc_report(2, objspace, "relation: (O->S) %s -> %s\n", obj_info(old_parent), obj_info(obj));
+            }
+        }
+        else {
+            if (!RVALUE_OLD_P(obj)) {
+                if (RVALUE_MARKED(obj)) {
+                    /* An object pointed from an OLD object should be OLD. */
+                    gc_report(2, objspace, "relation: (O->unmarked Y) %s -> %s\n", obj_info(old_parent), obj_info(obj));
+                    RVALUE_AGE_SET_OLD(objspace, obj);
+                    if (is_incremental_marking(objspace)) {
+                        if (!RVALUE_MARKING(obj)) {
+                            gc_grey(objspace, obj);
+                        }
+                    }
+                    else {
+                        rgengc_remember(objspace, obj);
+                    }
+                }
+                else {
+                    gc_report(2, objspace, "relation: (O->Y) %s -> %s\n", obj_info(old_parent), obj_info(obj));
+                    RVALUE_AGE_SET_CANDIDATE(objspace, obj);
+                }
+            }
+        }
     }
 
     GC_ASSERT(old_parent == objspace->rgengc.parent_object);
@@ -4408,7 +4408,7 @@ gc_grey(rb_objspace_t *objspace, VALUE obj)
 
 #if GC_ENABLE_INCREMENTAL_MARK
     if (is_incremental_marking(objspace)) {
-	MARK_IN_BITMAP(GET_HEAP_MARKING_BITS(obj), obj);
+        MARK_IN_BITMAP(GET_HEAP_MARKING_BITS(obj), obj);
     }
 #endif
 
@@ -4425,14 +4425,14 @@ gc_aging(rb_objspace_t *objspace, VALUE obj)
     check_rvalue_consistency(obj);
 
     if (!RVALUE_PAGE_WB_UNPROTECTED(page, obj)) {
-	if (!RVALUE_OLD_P(obj)) {
-	    gc_report(3, objspace, "gc_aging: YOUNG: %s\n", obj_info(obj));
-	    RVALUE_AGE_INC(objspace, obj);
-	}
-	else if (is_full_marking(objspace)) {
-	    GC_ASSERT(RVALUE_PAGE_UNCOLLECTIBLE(page, obj) == FALSE);
-	    RVALUE_PAGE_OLD_UNCOLLECTIBLE_SET(objspace, page, obj);
-	}
+        if (!RVALUE_OLD_P(obj)) {
+            gc_report(3, objspace, "gc_aging: YOUNG: %s\n", obj_info(obj));
+            RVALUE_AGE_INC(objspace, obj);
+        }
+        else if (is_full_marking(objspace)) {
+            GC_ASSERT(RVALUE_PAGE_UNCOLLECTIBLE(page, obj) == FALSE);
+            RVALUE_PAGE_OLD_UNCOLLECTIBLE_SET(objspace, page, obj);
+        }
     }
     check_rvalue_consistency(obj);
 #endif /* USE_RGENGC */
@@ -4446,13 +4446,13 @@ static void
 gc_mark_ptr(rb_objspace_t *objspace, VALUE obj)
 {
     if (LIKELY(objspace->mark_func_data == NULL)) {
-	rgengc_check_relation(objspace, obj);
-	if (!gc_mark_set(objspace, obj)) return; /* already marked */
-	gc_aging(objspace, obj);
-	gc_grey(objspace, obj);
+        rgengc_check_relation(objspace, obj);
+        if (!gc_mark_set(objspace, obj)) return; /* already marked */
+        gc_aging(objspace, obj);
+        gc_grey(objspace, obj);
     }
     else {
-	objspace->mark_func_data->mark_func(obj, objspace->mark_func_data->data);
+        objspace->mark_func_data->mark_func(obj, objspace->mark_func_data->data);
     }
 }
 
@@ -4484,10 +4484,10 @@ gc_mark_set_parent(rb_objspace_t *objspace, VALUE obj)
 {
 #if USE_RGENGC
     if (RVALUE_OLD_P(obj)) {
-	objspace->rgengc.parent_object = obj;
+        objspace->rgengc.parent_object = obj;
     }
     else {
-	objspace->rgengc.parent_object = Qfalse;
+        objspace->rgengc.parent_object = Qfalse;
     }
 #endif
 }
@@ -4497,60 +4497,60 @@ gc_mark_imemo(rb_objspace_t *objspace, VALUE obj)
 {
     switch (imemo_type(obj)) {
       case imemo_env:
-	{
-	    const rb_env_t *env = (const rb_env_t *)obj;
-	    GC_ASSERT(VM_ENV_ESCAPED_P(env->ep));
-	    gc_mark_values(objspace, (long)env->env_size, env->env);
-	    VM_ENV_FLAGS_SET(env->ep, VM_ENV_FLAG_WB_REQUIRED);
-	    gc_mark(objspace, (VALUE)rb_vm_env_prev_env(env));
-	    gc_mark(objspace, (VALUE)env->iseq);
-	}
-	return;
+        {
+            const rb_env_t *env = (const rb_env_t *)obj;
+            GC_ASSERT(VM_ENV_ESCAPED_P(env->ep));
+            gc_mark_values(objspace, (long)env->env_size, env->env);
+            VM_ENV_FLAGS_SET(env->ep, VM_ENV_FLAG_WB_REQUIRED);
+            gc_mark(objspace, (VALUE)rb_vm_env_prev_env(env));
+            gc_mark(objspace, (VALUE)env->iseq);
+        }
+        return;
       case imemo_cref:
-	gc_mark(objspace, RANY(obj)->as.imemo.cref.klass);
-	gc_mark(objspace, (VALUE)RANY(obj)->as.imemo.cref.next);
-	gc_mark(objspace, RANY(obj)->as.imemo.cref.refinements);
-	return;
+        gc_mark(objspace, RANY(obj)->as.imemo.cref.klass);
+        gc_mark(objspace, (VALUE)RANY(obj)->as.imemo.cref.next);
+        gc_mark(objspace, RANY(obj)->as.imemo.cref.refinements);
+        return;
       case imemo_svar:
-	gc_mark(objspace, RANY(obj)->as.imemo.svar.cref_or_me);
-	gc_mark(objspace, RANY(obj)->as.imemo.svar.lastline);
-	gc_mark(objspace, RANY(obj)->as.imemo.svar.backref);
-	gc_mark(objspace, RANY(obj)->as.imemo.svar.others);
-	return;
+        gc_mark(objspace, RANY(obj)->as.imemo.svar.cref_or_me);
+        gc_mark(objspace, RANY(obj)->as.imemo.svar.lastline);
+        gc_mark(objspace, RANY(obj)->as.imemo.svar.backref);
+        gc_mark(objspace, RANY(obj)->as.imemo.svar.others);
+        return;
       case imemo_throw_data:
-	gc_mark(objspace, RANY(obj)->as.imemo.throw_data.throw_obj);
-	return;
+        gc_mark(objspace, RANY(obj)->as.imemo.throw_data.throw_obj);
+        return;
       case imemo_ifunc:
-	gc_mark_maybe(objspace, (VALUE)RANY(obj)->as.imemo.ifunc.data);
-	return;
+        gc_mark_maybe(objspace, (VALUE)RANY(obj)->as.imemo.ifunc.data);
+        return;
       case imemo_memo:
-	gc_mark(objspace, RANY(obj)->as.imemo.memo.v1);
-	gc_mark(objspace, RANY(obj)->as.imemo.memo.v2);
-	gc_mark_maybe(objspace, RANY(obj)->as.imemo.memo.u3.value);
-	return;
+        gc_mark(objspace, RANY(obj)->as.imemo.memo.v1);
+        gc_mark(objspace, RANY(obj)->as.imemo.memo.v2);
+        gc_mark_maybe(objspace, RANY(obj)->as.imemo.memo.u3.value);
+        return;
       case imemo_ment:
-	mark_method_entry(objspace, &RANY(obj)->as.imemo.ment);
-	return;
+        mark_method_entry(objspace, &RANY(obj)->as.imemo.ment);
+        return;
       case imemo_iseq:
-	rb_iseq_mark((rb_iseq_t *)obj);
-	return;
+        rb_iseq_mark((rb_iseq_t *)obj);
+        return;
       case imemo_tmpbuf:
-	{
-	    const rb_imemo_tmpbuf_t *m = &RANY(obj)->as.imemo.alloc;
-	    do {
-		rb_gc_mark_locations(m->ptr, m->ptr + m->cnt);
-	    } while ((m = m->next) != NULL);
-	}
-	return;
+        {
+            const rb_imemo_tmpbuf_t *m = &RANY(obj)->as.imemo.alloc;
+            do {
+                rb_gc_mark_locations(m->ptr, m->ptr + m->cnt);
+            } while ((m = m->next) != NULL);
+        }
+        return;
       case imemo_ast:
-	rb_ast_mark(&RANY(obj)->as.imemo.ast);
-	return;
+        rb_ast_mark(&RANY(obj)->as.imemo.ast);
+        return;
       case imemo_parser_strterm:
-	rb_strterm_mark(obj);
-	return;
+        rb_strterm_mark(obj);
+        return;
 #if VM_CHECK_MODE > 0
       default:
-	VM_UNREACHABLE(gc_mark_imemo);
+        VM_UNREACHABLE(gc_mark_imemo);
 #endif
     }
 }
@@ -4562,22 +4562,22 @@ gc_mark_children(rb_objspace_t *objspace, VALUE obj)
     gc_mark_set_parent(objspace, obj);
 
     if (FL_TEST(obj, FL_EXIVAR)) {
-	rb_mark_generic_ivar(obj);
+        rb_mark_generic_ivar(obj);
     }
 
     switch (BUILTIN_TYPE(obj)) {
       case T_NIL:
       case T_FIXNUM:
-	rb_bug("rb_gc_mark() called for broken object");
-	break;
+        rb_bug("rb_gc_mark() called for broken object");
+        break;
 
       case T_NODE:
-	UNEXPECTED_NODE(rb_gc_mark);
-	break;
+        UNEXPECTED_NODE(rb_gc_mark);
+        break;
 
       case T_IMEMO:
-	gc_mark_imemo(objspace, obj);
-	return;
+        gc_mark_imemo(objspace, obj);
+        return;
     }
 
     gc_mark(objspace, any->as.basic.klass);
@@ -4585,67 +4585,67 @@ gc_mark_children(rb_objspace_t *objspace, VALUE obj)
     switch (BUILTIN_TYPE(obj)) {
       case T_CLASS:
       case T_MODULE:
-	mark_m_tbl(objspace, RCLASS_M_TBL(obj));
-	if (!RCLASS_EXT(obj)) break;
-	mark_tbl(objspace, RCLASS_IV_TBL(obj));
-	mark_const_tbl(objspace, RCLASS_CONST_TBL(obj));
-	gc_mark(objspace, RCLASS_SUPER((VALUE)obj));
-	break;
+        mark_m_tbl(objspace, RCLASS_M_TBL(obj));
+        if (!RCLASS_EXT(obj)) break;
+        mark_tbl(objspace, RCLASS_IV_TBL(obj));
+        mark_const_tbl(objspace, RCLASS_CONST_TBL(obj));
+        gc_mark(objspace, RCLASS_SUPER((VALUE)obj));
+        break;
 
       case T_ICLASS:
-	if (FL_TEST(obj, RICLASS_IS_ORIGIN)) {
-	    mark_m_tbl(objspace, RCLASS_M_TBL(obj));
-	}
-	if (!RCLASS_EXT(obj)) break;
-	mark_m_tbl(objspace, RCLASS_CALLABLE_M_TBL(obj));
-	gc_mark(objspace, RCLASS_SUPER((VALUE)obj));
-	break;
+        if (FL_TEST(obj, RICLASS_IS_ORIGIN)) {
+            mark_m_tbl(objspace, RCLASS_M_TBL(obj));
+        }
+        if (!RCLASS_EXT(obj)) break;
+        mark_m_tbl(objspace, RCLASS_CALLABLE_M_TBL(obj));
+        gc_mark(objspace, RCLASS_SUPER((VALUE)obj));
+        break;
 
       case T_ARRAY:
-	if (FL_TEST(obj, ELTS_SHARED)) {
-	    gc_mark(objspace, any->as.array.as.heap.aux.shared);
-	}
-	else {
-	    long i, len = RARRAY_LEN(obj);
-	    const VALUE *ptr = RARRAY_CONST_PTR(obj);
-	    for (i=0; i < len; i++) {
-		gc_mark(objspace, *ptr++);
-	    }
-	}
-	break;
+        if (FL_TEST(obj, ELTS_SHARED)) {
+            gc_mark(objspace, any->as.array.as.heap.aux.shared);
+        }
+        else {
+            long i, len = RARRAY_LEN(obj);
+            const VALUE *ptr = RARRAY_CONST_PTR(obj);
+            for (i=0; i < len; i++) {
+                gc_mark(objspace, *ptr++);
+            }
+        }
+        break;
 
       case T_HASH:
-	mark_hash(objspace, any->as.hash.ntbl);
-	gc_mark(objspace, any->as.hash.ifnone);
-	break;
+        mark_hash(objspace, any->as.hash.ntbl);
+        gc_mark(objspace, any->as.hash.ifnone);
+        break;
 
       case T_STRING:
-	if (STR_SHARED_P(obj)) {
-	    gc_mark(objspace, any->as.string.as.heap.aux.shared);
-	}
-	break;
+        if (STR_SHARED_P(obj)) {
+            gc_mark(objspace, any->as.string.as.heap.aux.shared);
+        }
+        break;
 
       case T_DATA:
-	{
-	    void *const ptr = DATA_PTR(obj);
-	    if (ptr) {
-		RUBY_DATA_FUNC mark_func = RTYPEDDATA_P(obj) ?
-		    any->as.typeddata.type->function.dmark :
-		    any->as.data.dmark;
-		if (mark_func) (*mark_func)(ptr);
-	    }
-	}
-	break;
+        {
+            void *const ptr = DATA_PTR(obj);
+            if (ptr) {
+                RUBY_DATA_FUNC mark_func = RTYPEDDATA_P(obj) ?
+                    any->as.typeddata.type->function.dmark :
+                    any->as.data.dmark;
+                if (mark_func) (*mark_func)(ptr);
+            }
+        }
+        break;
 
       case T_OBJECT:
         {
             uint32_t i, len = ROBJECT_NUMIV(obj);
-	    VALUE *ptr = ROBJECT_IVPTR(obj);
+            VALUE *ptr = ROBJECT_IVPTR(obj);
             for (i  = 0; i < len; i++) {
-		gc_mark(objspace, *ptr++);
+                gc_mark(objspace, *ptr++);
             }
         }
-	break;
+        break;
 
       case T_FILE:
         if (any->as.file.fptr) {
@@ -4660,50 +4660,50 @@ gc_mark_children(rb_objspace_t *objspace, VALUE obj)
 
       case T_REGEXP:
         gc_mark(objspace, any->as.regexp.src);
-	break;
+        break;
 
       case T_FLOAT:
       case T_BIGNUM:
       case T_SYMBOL:
-	break;
+        break;
 
       case T_MATCH:
-	gc_mark(objspace, any->as.match.regexp);
-	if (any->as.match.str) {
-	    gc_mark(objspace, any->as.match.str);
-	}
-	break;
+        gc_mark(objspace, any->as.match.regexp);
+        if (any->as.match.str) {
+            gc_mark(objspace, any->as.match.str);
+        }
+        break;
 
       case T_RATIONAL:
-	gc_mark(objspace, any->as.rational.num);
-	gc_mark(objspace, any->as.rational.den);
-	break;
+        gc_mark(objspace, any->as.rational.num);
+        gc_mark(objspace, any->as.rational.den);
+        break;
 
       case T_COMPLEX:
-	gc_mark(objspace, any->as.complex.real);
-	gc_mark(objspace, any->as.complex.imag);
-	break;
+        gc_mark(objspace, any->as.complex.real);
+        gc_mark(objspace, any->as.complex.imag);
+        break;
 
       case T_STRUCT:
-	{
-	    long len = RSTRUCT_LEN(obj);
-	    const VALUE *ptr = RSTRUCT_CONST_PTR(obj);
+        {
+            long len = RSTRUCT_LEN(obj);
+            const VALUE *ptr = RSTRUCT_CONST_PTR(obj);
 
-	    while (len--) {
-		gc_mark(objspace, *ptr++);
-	    }
-	}
-	break;
+            while (len--) {
+                gc_mark(objspace, *ptr++);
+            }
+        }
+        break;
 
       default:
 #if GC_DEBUG
-	rb_gcdebug_print_obj_condition((VALUE)obj);
+        rb_gcdebug_print_obj_condition((VALUE)obj);
 #endif
-	if (BUILTIN_TYPE(obj) == T_NONE)   rb_bug("rb_gc_mark(): %p is T_NONE", (void *)obj);
-	if (BUILTIN_TYPE(obj) == T_ZOMBIE) rb_bug("rb_gc_mark(): %p is T_ZOMBIE", (void *)obj);
-	rb_bug("rb_gc_mark(): unknown data type 0x%x(%p) %s",
-	       BUILTIN_TYPE(obj), (void *)any,
-	       is_pointer_to_heap(objspace, any) ? "corrupted object" : "non object");
+        if (BUILTIN_TYPE(obj) == T_NONE)   rb_bug("rb_gc_mark(): %p is T_NONE", (void *)obj);
+        if (BUILTIN_TYPE(obj) == T_ZOMBIE) rb_bug("rb_gc_mark(): %p is T_ZOMBIE", (void *)obj);
+        rb_bug("rb_gc_mark(): unknown data type 0x%x(%p) %s",
+               BUILTIN_TYPE(obj), (void *)any,
+               is_pointer_to_heap(objspace, any) ? "corrupted object" : "non object");
     }
 }
 
@@ -4722,39 +4722,39 @@ gc_mark_stacked_objects(rb_objspace_t *objspace, int incremental, size_t count)
 #endif
 
     while (pop_mark_stack(mstack, &obj)) {
-	if (obj == Qundef) continue; /* skip */
+        if (obj == Qundef) continue; /* skip */
 
-	if (RGENGC_CHECK_MODE && !RVALUE_MARKED(obj)) {
-	    rb_bug("gc_mark_stacked_objects: %s is not marked.", obj_info(obj));
-	}
+        if (RGENGC_CHECK_MODE && !RVALUE_MARKED(obj)) {
+            rb_bug("gc_mark_stacked_objects: %s is not marked.", obj_info(obj));
+        }
         gc_mark_children(objspace, obj);
 
 #if GC_ENABLE_INCREMENTAL_MARK
-	if (incremental) {
-	    if (RGENGC_CHECK_MODE && !RVALUE_MARKING(obj)) {
-		rb_bug("gc_mark_stacked_objects: incremental, but marking bit is 0");
-	    }
-	    CLEAR_IN_BITMAP(GET_HEAP_MARKING_BITS(obj), obj);
-	    popped_count++;
+        if (incremental) {
+            if (RGENGC_CHECK_MODE && !RVALUE_MARKING(obj)) {
+                rb_bug("gc_mark_stacked_objects: incremental, but marking bit is 0");
+            }
+            CLEAR_IN_BITMAP(GET_HEAP_MARKING_BITS(obj), obj);
+            popped_count++;
 
-	    if (popped_count + (objspace->marked_slots - marked_slots_at_the_beginning) > count) {
-		break;
-	    }
-	}
-	else {
-	    /* just ignore marking bits */
-	}
+            if (popped_count + (objspace->marked_slots - marked_slots_at_the_beginning) > count) {
+                break;
+            }
+        }
+        else {
+            /* just ignore marking bits */
+        }
 #endif
     }
 
     if (RGENGC_CHECK_MODE >= 3) gc_verify_internal_consistency(Qnil);
 
     if (is_mark_stack_empty(mstack)) {
-	shrink_stack_chunk_cache(mstack);
-	return TRUE;
+        shrink_stack_chunk_cache(mstack);
+        return TRUE;
     }
     else {
-	return FALSE;
+        return FALSE;
     }
 }
 
@@ -4781,13 +4781,13 @@ show_mark_ticks(void)
     int i;
     fprintf(stderr, "mark ticks result:\n");
     for (i=0; i<MAX_TICKS; i++) {
-	const char *category = mark_ticks_categories[i];
-	if (category) {
-	    fprintf(stderr, "%s\t%8lu\n", category, (unsigned long)mark_ticks[i]);
-	}
-	else {
-	    break;
-	}
+        const char *category = mark_ticks_categories[i];
+        if (category) {
+            fprintf(stderr, "%s\t%8lu\n", category, (unsigned long)mark_ticks[i]);
+        }
+        else {
+            break;
+        }
     }
 }
 
@@ -4806,7 +4806,7 @@ gc_mark_roots(rb_objspace_t *objspace, const char **categoryp)
     const char *prev_category = 0;
 
     if (mark_ticks_categories[0] == 0) {
-	atexit(show_mark_ticks);
+        atexit(show_mark_ticks);
     }
 #endif
 
@@ -4819,10 +4819,10 @@ gc_mark_roots(rb_objspace_t *objspace, const char **categoryp)
 #if PRINT_ROOT_TICKS
 #define MARK_CHECKPOINT_PRINT_TICK(category) do { \
     if (prev_category) { \
-	tick_t t = tick(); \
-	mark_ticks[tick_count] = t - start_tick; \
-	mark_ticks_categories[tick_count] = prev_category; \
-	tick_count++; \
+        tick_t t = tick(); \
+        mark_ticks[tick_count] = t - start_tick; \
+        mark_ticks_categories[tick_count] = prev_category; \
+        tick_count++; \
     } \
     prev_category = category; \
     start_tick = tick(); \
@@ -4850,7 +4850,7 @@ gc_mark_roots(rb_objspace_t *objspace, const char **categoryp)
     /* mark protected global variables */
     MARK_CHECKPOINT("global_list");
     for (list = global_list; list; list = list->next) {
-	rb_gc_mark_maybe(*list->varptr);
+        rb_gc_mark_maybe(*list->varptr);
     }
 
     MARK_CHECKPOINT("end_proc");
@@ -4899,8 +4899,8 @@ static void
 reflist_add(struct reflist *refs, VALUE obj)
 {
     if (refs->pos == refs->size) {
-	refs->size *= 2;
-	SIZED_REALLOC_N(refs->list, VALUE, refs->size, refs->size/2);
+        refs->size *= 2;
+        SIZED_REALLOC_N(refs->list, VALUE, refs->size, refs->size/2);
     }
 
     refs->list[refs->pos++] = obj;
@@ -4911,14 +4911,14 @@ reflist_dump(struct reflist *refs)
 {
     int i;
     for (i=0; i<refs->pos; i++) {
-	VALUE obj = refs->list[i];
-	if (IS_ROOTSIG(obj)) { /* root */
-	    fprintf(stderr, "<root@%s>", GET_ROOTSIG(obj));
-	}
-	else {
-	    fprintf(stderr, "<%s>", obj_info(obj));
-	}
-	if (i+1 < refs->pos) fprintf(stderr, ", ");
+        VALUE obj = refs->list[i];
+        if (IS_ROOTSIG(obj)) { /* root */
+            fprintf(stderr, "<root@%s>", GET_ROOTSIG(obj));
+        }
+        else {
+            fprintf(stderr, "<%s>", obj_info(obj));
+        }
+        if (i+1 < refs->pos) fprintf(stderr, ", ");
     }
 }
 
@@ -4927,8 +4927,8 @@ reflist_referred_from_machine_context(struct reflist *refs)
 {
     int i;
     for (i=0; i<refs->pos; i++) {
-	VALUE obj = refs->list[i];
-	if (IS_ROOTSIG(obj) && strcmp(GET_ROOTSIG(obj), "machine_context") == 0) return 1;
+        VALUE obj = refs->list[i];
+        if (IS_ROOTSIG(obj) && strcmp(GET_ROOTSIG(obj), "machine_context") == 0) return 1;
     }
     return 0;
 }
@@ -4954,13 +4954,13 @@ allrefs_add(struct allrefs *data, VALUE obj)
     struct reflist *refs;
 
     if (st_lookup(data->references, obj, (st_data_t *)&refs)) {
-	reflist_add(refs, data->root_obj);
-	return 0;
+        reflist_add(refs, data->root_obj);
+        return 0;
     }
     else {
-	refs = reflist_create(data->root_obj);
-	st_insert(data->references, obj, (st_data_t)refs);
-	return 1;
+        refs = reflist_create(data->root_obj);
+        st_insert(data->references, obj, (st_data_t)refs);
+        return 1;
     }
 }
 
@@ -4970,7 +4970,7 @@ allrefs_i(VALUE obj, void *ptr)
     struct allrefs *data = (struct allrefs *)ptr;
 
     if (allrefs_add(data, obj)) {
-	push_mark_stack(&data->mark_stack, obj);
+        push_mark_stack(&data->mark_stack, obj);
     }
 }
 
@@ -4982,7 +4982,7 @@ allrefs_roots_i(VALUE obj, void *ptr)
     data->root_obj = MAKE_ROOTSIG(data->category);
 
     if (allrefs_add(data, obj)) {
-	push_mark_stack(&data->mark_stack, obj);
+        push_mark_stack(&data->mark_stack, obj);
     }
 }
 
@@ -5010,7 +5010,7 @@ objspace_allrefs(rb_objspace_t *objspace)
 
     /* traverse rest objects reachable from root objects */
     while (pop_mark_stack(&data.mark_stack, &obj)) {
-	rb_objspace_reachable_objects_from(data.root_obj = obj, allrefs_i, &data);
+        rb_objspace_reachable_objects_from(data.root_obj = obj, allrefs_i, &data);
     }
     free_stack_chunks(&data.mark_stack);
 
@@ -5062,18 +5062,18 @@ gc_check_after_marks_i(st_data_t k, st_data_t v, void *ptr)
 
     /* object should be marked or oldgen */
     if (!MARKED_IN_BITMAP(GET_HEAP_MARK_BITS(obj), obj)) {
-	fprintf(stderr, "gc_check_after_marks_i: %s is not marked and not oldgen.\n", obj_info(obj));
-	fprintf(stderr, "gc_check_after_marks_i: %p is referred from ", (void *)obj);
-	reflist_dump(refs);
+        fprintf(stderr, "gc_check_after_marks_i: %s is not marked and not oldgen.\n", obj_info(obj));
+        fprintf(stderr, "gc_check_after_marks_i: %p is referred from ", (void *)obj);
+        reflist_dump(refs);
 
-	if (reflist_referred_from_machine_context(refs)) {
-	    fprintf(stderr, " (marked from machine stack).\n");
-	    /* marked from machine context can be false positive */
-	}
-	else {
-	    objspace->rgengc.error_count++;
-	    fprintf(stderr, "\n");
-	}
+        if (reflist_referred_from_machine_context(refs)) {
+            fprintf(stderr, " (marked from machine stack).\n");
+            /* marked from machine context can be false positive */
+        }
+        else {
+            objspace->rgengc.error_count++;
+            fprintf(stderr, "\n");
+        }
     }
     return ST_CONTINUE;
 }
@@ -5090,14 +5090,14 @@ gc_marks_check(rb_objspace_t *objspace, int (*checker_func)(ANYARGS), const char
     objspace->rgengc.allrefs_table = objspace_allrefs(objspace);
 
     if (checker_func) {
-	st_foreach(objspace->rgengc.allrefs_table, checker_func, (st_data_t)objspace);
+        st_foreach(objspace->rgengc.allrefs_table, checker_func, (st_data_t)objspace);
     }
 
     if (objspace->rgengc.error_count > 0) {
 #if RGENGC_CHECK_MODE >= 5
-	allrefs_dump(objspace);
+        allrefs_dump(objspace);
 #endif
-	if (checker_name) rb_bug("%s: GC has problem.", checker_name);
+        if (checker_name) rb_bug("%s: GC has problem.", checker_name);
     }
 
     objspace_allrefs_destruct(objspace->rgengc.allrefs_table);
@@ -5134,12 +5134,12 @@ check_generation_i(const VALUE child, void *ptr)
     if (RGENGC_CHECK_MODE) GC_ASSERT(RVALUE_OLD_P(parent));
 
     if (!RVALUE_OLD_P(child)) {
-	if (!RVALUE_REMEMBERED(parent) &&
-	    !RVALUE_REMEMBERED(child) &&
-	    !RVALUE_UNCOLLECTIBLE(child)) {
-	    fprintf(stderr, "verify_internal_consistency_reachable_i: WB miss (O->Y) %s -> %s\n", obj_info(parent), obj_info(child));
-	    data->err_count++;
-	}
+        if (!RVALUE_REMEMBERED(parent) &&
+            !RVALUE_REMEMBERED(child) &&
+            !RVALUE_UNCOLLECTIBLE(child)) {
+            fprintf(stderr, "verify_internal_consistency_reachable_i: WB miss (O->Y) %s -> %s\n", obj_info(parent), obj_info(child));
+            data->err_count++;
+        }
     }
 }
 
@@ -5150,9 +5150,9 @@ check_color_i(const VALUE child, void *ptr)
     const VALUE parent = data->parent;
 
     if (!RVALUE_WB_UNPROTECTED(parent) && RVALUE_WHITE_P(child)) {
-	fprintf(stderr, "verify_internal_consistency_reachable_i: WB miss (B->W) - %s -> %s\n",
-		obj_info(parent), obj_info(child));
-	data->err_count++;
+        fprintf(stderr, "verify_internal_consistency_reachable_i: WB miss (B->W) - %s -> %s\n",
+                obj_info(parent), obj_info(child));
+        data->err_count++;
     }
 }
 #endif
@@ -5171,40 +5171,40 @@ verify_internal_consistency_i(void *page_start, void *page_end, size_t stride, v
     rb_objspace_t *objspace = data->objspace;
 
     for (obj = (VALUE)page_start; obj != (VALUE)page_end; obj += stride) {
-	if (is_live_object(objspace, obj)) {
-	    /* count objects */
-	    data->live_object_count++;
+        if (is_live_object(objspace, obj)) {
+            /* count objects */
+            data->live_object_count++;
 
-	    rb_objspace_reachable_objects_from(obj, check_children_i, (void *)data);
+            rb_objspace_reachable_objects_from(obj, check_children_i, (void *)data);
 
 #if USE_RGENGC
-	    /* check health of children */
-	    data->parent = obj;
+            /* check health of children */
+            data->parent = obj;
 
-	    if (RVALUE_OLD_P(obj)) data->old_object_count++;
-	    if (RVALUE_WB_UNPROTECTED(obj) && RVALUE_UNCOLLECTIBLE(obj)) data->remembered_shady_count++;
+            if (RVALUE_OLD_P(obj)) data->old_object_count++;
+            if (RVALUE_WB_UNPROTECTED(obj) && RVALUE_UNCOLLECTIBLE(obj)) data->remembered_shady_count++;
 
-	    if (!is_marking(objspace) && RVALUE_OLD_P(obj)) {
-		/* reachable objects from an oldgen object should be old or (young with remember) */
-		data->parent = obj;
-		rb_objspace_reachable_objects_from(obj, check_generation_i, (void *)data);
-	    }
+            if (!is_marking(objspace) && RVALUE_OLD_P(obj)) {
+                /* reachable objects from an oldgen object should be old or (young with remember) */
+                data->parent = obj;
+                rb_objspace_reachable_objects_from(obj, check_generation_i, (void *)data);
+            }
 
-	    if (is_incremental_marking(objspace)) {
-		if (RVALUE_BLACK_P(obj)) {
-		    /* reachable objects from black objects should be black or grey objects */
-		    data->parent = obj;
-		    rb_objspace_reachable_objects_from(obj, check_color_i, (void *)data);
-		}
-	    }
+            if (is_incremental_marking(objspace)) {
+                if (RVALUE_BLACK_P(obj)) {
+                    /* reachable objects from black objects should be black or grey objects */
+                    data->parent = obj;
+                    rb_objspace_reachable_objects_from(obj, check_color_i, (void *)data);
+                }
+            }
 #endif
-	}
-	else {
-	    if (BUILTIN_TYPE(obj) == T_ZOMBIE) {
-		GC_ASSERT(RBASIC(obj)->flags == T_ZOMBIE);
-		data->zombie_object_count++;
-	    }
-	}
+        }
+        else {
+            if (BUILTIN_TYPE(obj) == T_ZOMBIE) {
+                GC_ASSERT(RBASIC(obj)->flags == T_ZOMBIE);
+                data->zombie_object_count++;
+            }
+        }
     }
 
     return 0;
@@ -5222,44 +5222,44 @@ gc_verify_heap_page(rb_objspace_t *objspace, struct heap_page *page, VALUE obj)
     int zombie_objects = 0;
 
     for (i=0; i<page->total_slots; i++) {
-	VALUE val = (VALUE)&page->start[i];
-	if (RBASIC(val) == 0) free_objects++;
-	if (BUILTIN_TYPE(val) == T_ZOMBIE) zombie_objects++;
-	if (RVALUE_PAGE_UNCOLLECTIBLE(page, val) && RVALUE_PAGE_WB_UNPROTECTED(page, val)) {
-	    has_remembered_shady = TRUE;
-	}
-	if (RVALUE_PAGE_MARKING(page, val)) {
-	    has_remembered_old = TRUE;
-	    remembered_old_objects++;
-	}
+        VALUE val = (VALUE)&page->start[i];
+        if (RBASIC(val) == 0) free_objects++;
+        if (BUILTIN_TYPE(val) == T_ZOMBIE) zombie_objects++;
+        if (RVALUE_PAGE_UNCOLLECTIBLE(page, val) && RVALUE_PAGE_WB_UNPROTECTED(page, val)) {
+            has_remembered_shady = TRUE;
+        }
+        if (RVALUE_PAGE_MARKING(page, val)) {
+            has_remembered_old = TRUE;
+            remembered_old_objects++;
+        }
     }
 
     if (!is_incremental_marking(objspace) &&
-	page->flags.has_remembered_objects == FALSE && has_remembered_old == TRUE) {
+        page->flags.has_remembered_objects == FALSE && has_remembered_old == TRUE) {
 
-	for (i=0; i<page->total_slots; i++) {
-	    VALUE val = (VALUE)&page->start[i];
-	    if (RVALUE_PAGE_MARKING(page, val)) {
-		fprintf(stderr, "marking -> %s\n", obj_info(val));
-	    }
-	}
-	rb_bug("page %p's has_remembered_objects should be false, but there are remembered old objects (%d). %s",
-	       (void *)page, remembered_old_objects, obj ? obj_info(obj) : "");
+        for (i=0; i<page->total_slots; i++) {
+            VALUE val = (VALUE)&page->start[i];
+            if (RVALUE_PAGE_MARKING(page, val)) {
+                fprintf(stderr, "marking -> %s\n", obj_info(val));
+            }
+        }
+        rb_bug("page %p's has_remembered_objects should be false, but there are remembered old objects (%d). %s",
+               (void *)page, remembered_old_objects, obj ? obj_info(obj) : "");
     }
 
     if (page->flags.has_uncollectible_shady_objects == FALSE && has_remembered_shady == TRUE) {
-	rb_bug("page %p's has_remembered_shady should be false, but there are remembered shady objects. %s",
-	       (void *)page, obj ? obj_info(obj) : "");
+        rb_bug("page %p's has_remembered_shady should be false, but there are remembered shady objects. %s",
+               (void *)page, obj ? obj_info(obj) : "");
     }
 
     if (0) {
-	/* free_slots may not equal to free_objects */
-	if (page->free_slots != free_objects) {
-	    rb_bug("page %p's free_slots should be %d, but %d\n", (void *)page, (int)page->free_slots, free_objects);
-	}
+        /* free_slots may not equal to free_objects */
+        if (page->free_slots != free_objects) {
+            rb_bug("page %p's free_slots should be %d, but %d\n", (void *)page, (int)page->free_slots, free_objects);
+        }
     }
     if (page->final_slots != zombie_objects) {
-	rb_bug("page %p's final_slots should be %d, but %d\n", (void *)page, (int)page->final_slots, zombie_objects);
+        rb_bug("page %p's final_slots should be %d, but %d\n", (void *)page, (int)page->final_slots, zombie_objects);
     }
 
     return remembered_old_objects;
@@ -5275,9 +5275,9 @@ gc_verify_heap_pages_(rb_objspace_t *objspace, struct list_head *head)
     struct heap_page *page = 0;
 
     list_for_each(head, page, page_node) {
-	if (page->flags.has_remembered_objects == FALSE) {
-	    remembered_old_objects += gc_verify_heap_page(objspace, page, Qfalse);
-	}
+        if (page->flags.has_remembered_objects == FALSE) {
+            remembered_old_objects += gc_verify_heap_page(objspace, page, Qfalse);
+        }
     }
 
     return remembered_old_objects;
@@ -5320,11 +5320,11 @@ gc_verify_internal_consistency(VALUE dummy)
 
     if (data.err_count != 0) {
 #if RGENGC_CHECK_MODE >= 5
-	objspace->rgengc.error_count = data.err_count;
-	gc_marks_check(objspace, NULL, NULL);
-	allrefs_dump(objspace);
+        objspace->rgengc.error_count = data.err_count;
+        gc_marks_check(objspace, NULL, NULL);
+        allrefs_dump(objspace);
 #endif
-	rb_bug("gc_verify_internal_consistency: found internal inconsistency.");
+        rb_bug("gc_verify_internal_consistency: found internal inconsistency.");
     }
 
     /* check heap_page status */
@@ -5333,46 +5333,46 @@ gc_verify_internal_consistency(VALUE dummy)
     /* check counters */
 
     if (!is_lazy_sweeping(heap_eden) && !finalizing) {
-	if (objspace_live_slots(objspace) != data.live_object_count) {
-	    fprintf(stderr, "heap_pages_final_slots: %d, objspace->profile.total_freed_objects: %d\n",
-		    (int)heap_pages_final_slots, (int)objspace->profile.total_freed_objects);
-	    rb_bug("inconsistent live slot number: expect %"PRIuSIZE", but %"PRIuSIZE".", objspace_live_slots(objspace), data.live_object_count);
-	}
+        if (objspace_live_slots(objspace) != data.live_object_count) {
+            fprintf(stderr, "heap_pages_final_slots: %d, objspace->profile.total_freed_objects: %d\n",
+                    (int)heap_pages_final_slots, (int)objspace->profile.total_freed_objects);
+            rb_bug("inconsistent live slot number: expect %"PRIuSIZE", but %"PRIuSIZE".", objspace_live_slots(objspace), data.live_object_count);
+        }
     }
 
 #if USE_RGENGC
     if (!is_marking(objspace)) {
-	if (objspace->rgengc.old_objects != data.old_object_count) {
-	    rb_bug("inconsistent old slot number: expect %"PRIuSIZE", but %"PRIuSIZE".", objspace->rgengc.old_objects, data.old_object_count);
-	}
-	if (objspace->rgengc.uncollectible_wb_unprotected_objects != data.remembered_shady_count) {
-	    rb_bug("inconsistent old slot number: expect %"PRIuSIZE", but %"PRIuSIZE".", objspace->rgengc.uncollectible_wb_unprotected_objects, data.remembered_shady_count);
-	}
+        if (objspace->rgengc.old_objects != data.old_object_count) {
+            rb_bug("inconsistent old slot number: expect %"PRIuSIZE", but %"PRIuSIZE".", objspace->rgengc.old_objects, data.old_object_count);
+        }
+        if (objspace->rgengc.uncollectible_wb_unprotected_objects != data.remembered_shady_count) {
+            rb_bug("inconsistent old slot number: expect %"PRIuSIZE", but %"PRIuSIZE".", objspace->rgengc.uncollectible_wb_unprotected_objects, data.remembered_shady_count);
+        }
     }
 #endif
 
     if (!finalizing) {
-	size_t list_count = 0;
+        size_t list_count = 0;
 
-	{
-	    VALUE z = heap_pages_deferred_final;
-	    while (z) {
-		list_count++;
-		z = RZOMBIE(z)->next;
-	    }
-	}
+        {
+            VALUE z = heap_pages_deferred_final;
+            while (z) {
+                list_count++;
+                z = RZOMBIE(z)->next;
+            }
+        }
 
-	if (heap_pages_final_slots != data.zombie_object_count ||
-	    heap_pages_final_slots != list_count) {
+        if (heap_pages_final_slots != data.zombie_object_count ||
+            heap_pages_final_slots != list_count) {
 
-	    rb_bug("inconsistent finalizing object count:\n"
-		   "  expect %"PRIuSIZE"\n"
-		   "  but    %"PRIuSIZE" zombies\n"
-		   "  heap_pages_deferred_final list has %"PRIuSIZE" items.",
-		   heap_pages_final_slots,
-		   data.zombie_object_count,
-		   list_count);
-	}
+            rb_bug("inconsistent finalizing object count:\n"
+                   "  expect %"PRIuSIZE"\n"
+                   "  but    %"PRIuSIZE" zombies\n"
+                   "  heap_pages_deferred_final list has %"PRIuSIZE" items.",
+                   heap_pages_final_slots,
+                   data.zombie_object_count,
+                   list_count);
+        }
     }
 
     gc_report(5, objspace, "gc_verify_internal_consistency: OK\n");
@@ -5398,25 +5398,25 @@ gc_marks_start(rb_objspace_t *objspace, int full_mark)
 #if USE_RGENGC
     if (full_mark) {
 #if GC_ENABLE_INCREMENTAL_MARK
-	objspace->rincgc.step_slots = (objspace->marked_slots * 2) / ((objspace->rincgc.pooled_slots / HEAP_PAGE_OBJ_LIMIT) + 1);
+        objspace->rincgc.step_slots = (objspace->marked_slots * 2) / ((objspace->rincgc.pooled_slots / HEAP_PAGE_OBJ_LIMIT) + 1);
 
-	if (0) fprintf(stderr, "objspace->marked_slots: %d, objspace->rincgc.pooled_page_num: %d, objspace->rincgc.step_slots: %d, \n",
-		       (int)objspace->marked_slots, (int)objspace->rincgc.pooled_slots, (int)objspace->rincgc.step_slots);
+        if (0) fprintf(stderr, "objspace->marked_slots: %d, objspace->rincgc.pooled_page_num: %d, objspace->rincgc.step_slots: %d, \n",
+                       (int)objspace->marked_slots, (int)objspace->rincgc.pooled_slots, (int)objspace->rincgc.step_slots);
 #endif
-	objspace->flags.during_minor_gc = FALSE;
-	objspace->profile.major_gc_count++;
-	objspace->rgengc.uncollectible_wb_unprotected_objects = 0;
-	objspace->rgengc.old_objects = 0;
-	objspace->rgengc.last_major_gc = objspace->profile.count;
-	objspace->marked_slots = 0;
-	rgengc_mark_and_rememberset_clear(objspace, heap_eden);
+        objspace->flags.during_minor_gc = FALSE;
+        objspace->profile.major_gc_count++;
+        objspace->rgengc.uncollectible_wb_unprotected_objects = 0;
+        objspace->rgengc.old_objects = 0;
+        objspace->rgengc.last_major_gc = objspace->profile.count;
+        objspace->marked_slots = 0;
+        rgengc_mark_and_rememberset_clear(objspace, heap_eden);
     }
     else {
-	objspace->flags.during_minor_gc = TRUE;
-	objspace->marked_slots =
-	  objspace->rgengc.old_objects + objspace->rgengc.uncollectible_wb_unprotected_objects; /* uncollectible objects are marked already */
-	objspace->profile.minor_gc_count++;
-	rgengc_rememberset_mark(objspace, heap_eden);
+        objspace->flags.during_minor_gc = TRUE;
+        objspace->marked_slots =
+          objspace->rgengc.old_objects + objspace->rgengc.uncollectible_wb_unprotected_objects; /* uncollectible objects are marked already */
+        objspace->profile.minor_gc_count++;
+        rgengc_rememberset_mark(objspace, heap_eden);
     }
 #endif
 
@@ -5432,30 +5432,30 @@ gc_marks_wb_unprotected_objects(rb_objspace_t *objspace)
     struct heap_page *page = 0;
 
     list_for_each(&heap_eden->pages, page, page_node) {
-	bits_t *mark_bits = page->mark_bits;
-	bits_t *wbun_bits = page->wb_unprotected_bits;
-	RVALUE *p = page->start;
-	RVALUE *offset = p - NUM_IN_PAGE(p);
-	size_t j;
+        bits_t *mark_bits = page->mark_bits;
+        bits_t *wbun_bits = page->wb_unprotected_bits;
+        RVALUE *p = page->start;
+        RVALUE *offset = p - NUM_IN_PAGE(p);
+        size_t j;
 
-	for (j=0; j<HEAP_PAGE_BITMAP_LIMIT; j++) {
-	    bits_t bits = mark_bits[j] & wbun_bits[j];
+        for (j=0; j<HEAP_PAGE_BITMAP_LIMIT; j++) {
+            bits_t bits = mark_bits[j] & wbun_bits[j];
 
-	    if (bits) {
-		p = offset  + j * BITS_BITLENGTH;
+            if (bits) {
+                p = offset  + j * BITS_BITLENGTH;
 
-		do {
-		    if (bits & 1) {
-			gc_report(2, objspace, "gc_marks_wb_unprotected_objects: marked shady: %s\n", obj_info((VALUE)p));
-			GC_ASSERT(RVALUE_WB_UNPROTECTED((VALUE)p));
-			GC_ASSERT(RVALUE_MARKED((VALUE)p));
-			gc_mark_children(objspace, (VALUE)p);
-		    }
-		    p++;
-		    bits >>= 1;
-		} while (bits);
-	    }
-	}
+                do {
+                    if (bits & 1) {
+                        gc_report(2, objspace, "gc_marks_wb_unprotected_objects: marked shady: %s\n", obj_info((VALUE)p));
+                        GC_ASSERT(RVALUE_WB_UNPROTECTED((VALUE)p));
+                        GC_ASSERT(RVALUE_MARKED((VALUE)p));
+                        gc_mark_children(objspace, (VALUE)p);
+                    }
+                    p++;
+                    bits >>= 1;
+                } while (bits);
+            }
+        }
     }
 
     gc_mark_stacked_objects_all(objspace);
@@ -5467,9 +5467,9 @@ heap_move_pooled_pages_to_free_pages(rb_heap_t *heap)
     struct heap_page *page = heap->pooled_pages;
 
     if (page) {
-	heap->pooled_pages = page->free_next;
-	page->free_next = heap->free_pages;
-	heap->free_pages = page;
+        heap->pooled_pages = page->free_next;
+        page->free_next = heap->free_pages;
+        heap->free_pages = page;
     }
 
     return page;
@@ -5482,32 +5482,32 @@ gc_marks_finish(rb_objspace_t *objspace)
 #if GC_ENABLE_INCREMENTAL_MARK
     /* finish incremental GC */
     if (is_incremental_marking(objspace)) {
-	if (heap_eden->pooled_pages) {
-	    heap_move_pooled_pages_to_free_pages(heap_eden);
-	    gc_report(1, objspace, "gc_marks_finish: pooled pages are exists. retry.\n");
-	    return FALSE; /* continue marking phase */
-	}
+        if (heap_eden->pooled_pages) {
+            heap_move_pooled_pages_to_free_pages(heap_eden);
+            gc_report(1, objspace, "gc_marks_finish: pooled pages are exists. retry.\n");
+            return FALSE; /* continue marking phase */
+        }
 
-	if (RGENGC_CHECK_MODE && is_mark_stack_empty(&objspace->mark_stack) == 0) {
-	    rb_bug("gc_marks_finish: mark stack is not empty (%d).", (int)mark_stack_size(&objspace->mark_stack));
-	}
+        if (RGENGC_CHECK_MODE && is_mark_stack_empty(&objspace->mark_stack) == 0) {
+            rb_bug("gc_marks_finish: mark stack is not empty (%d).", (int)mark_stack_size(&objspace->mark_stack));
+        }
 
-	gc_mark_roots(objspace, 0);
+        gc_mark_roots(objspace, 0);
 
-	if (is_mark_stack_empty(&objspace->mark_stack) == FALSE) {
-	    gc_report(1, objspace, "gc_marks_finish: not empty (%d). retry.\n", (int)mark_stack_size(&objspace->mark_stack));
-	    return FALSE;
-	}
+        if (is_mark_stack_empty(&objspace->mark_stack) == FALSE) {
+            gc_report(1, objspace, "gc_marks_finish: not empty (%d). retry.\n", (int)mark_stack_size(&objspace->mark_stack));
+            return FALSE;
+        }
 
 #if RGENGC_CHECK_MODE >= 2
-	if (gc_verify_heap_pages(objspace) != 0) {
-	    rb_bug("gc_marks_finish (incremental): there are remembered old objects.");
-	}
+        if (gc_verify_heap_pages(objspace) != 0) {
+            rb_bug("gc_marks_finish (incremental): there are remembered old objects.");
+        }
 #endif
 
-	objspace->flags.during_incremental_marking = FALSE;
-	/* check children of all marked wb-unprotected objects */
-	gc_marks_wb_unprotected_objects(objspace);
+        objspace->flags.during_incremental_marking = FALSE;
+        /* check children of all marked wb-unprotected objects */
+        gc_marks_wb_unprotected_objects(objspace);
     }
 #endif /* GC_ENABLE_INCREMENTAL_MARK */
 
@@ -5517,10 +5517,10 @@ gc_marks_finish(rb_objspace_t *objspace)
 
 #if USE_RGENGC
     if (is_full_marking(objspace)) {
-	/* See the comment about RUBY_GC_HEAP_OLDOBJECT_LIMIT_FACTOR */
-	const double r = gc_params.oldobject_limit_factor;
-	objspace->rgengc.uncollectible_wb_unprotected_objects_limit = (size_t)(objspace->rgengc.uncollectible_wb_unprotected_objects * r);
-	objspace->rgengc.old_objects_limit = (size_t)(objspace->rgengc.old_objects * r);
+        /* See the comment about RUBY_GC_HEAP_OLDOBJECT_LIMIT_FACTOR */
+        const double r = gc_params.oldobject_limit_factor;
+        objspace->rgengc.uncollectible_wb_unprotected_objects_limit = (size_t)(objspace->rgengc.uncollectible_wb_unprotected_objects * r);
+        objspace->rgengc.old_objects_limit = (size_t)(objspace->rgengc.old_objects * r);
     }
 #endif
 
@@ -5529,76 +5529,76 @@ gc_marks_finish(rb_objspace_t *objspace)
 #endif
 
     {
-	/* decide full GC is needed or not */
-	rb_heap_t *heap = heap_eden;
-	size_t total_slots = heap_allocatable_pages * HEAP_PAGE_OBJ_LIMIT + heap->total_slots;
-	size_t sweep_slots = total_slots - objspace->marked_slots; /* will be swept slots */
-	size_t max_free_slots = (size_t)(total_slots * gc_params.heap_free_slots_max_ratio);
-	size_t min_free_slots = (size_t)(total_slots * gc_params.heap_free_slots_min_ratio);
-	int full_marking = is_full_marking(objspace);
+        /* decide full GC is needed or not */
+        rb_heap_t *heap = heap_eden;
+        size_t total_slots = heap_allocatable_pages * HEAP_PAGE_OBJ_LIMIT + heap->total_slots;
+        size_t sweep_slots = total_slots - objspace->marked_slots; /* will be swept slots */
+        size_t max_free_slots = (size_t)(total_slots * gc_params.heap_free_slots_max_ratio);
+        size_t min_free_slots = (size_t)(total_slots * gc_params.heap_free_slots_min_ratio);
+        int full_marking = is_full_marking(objspace);
 
-	GC_ASSERT(heap->total_slots >= objspace->marked_slots);
+        GC_ASSERT(heap->total_slots >= objspace->marked_slots);
 
-	/* setup free-able page counts */
-	if (max_free_slots < gc_params.heap_init_slots) max_free_slots = gc_params.heap_init_slots;
+        /* setup free-able page counts */
+        if (max_free_slots < gc_params.heap_init_slots) max_free_slots = gc_params.heap_init_slots;
 
-	if (sweep_slots > max_free_slots) {
-	    heap_pages_freeable_pages = (sweep_slots - max_free_slots) / HEAP_PAGE_OBJ_LIMIT;
-	}
-	else {
-	    heap_pages_freeable_pages = 0;
-	}
+        if (sweep_slots > max_free_slots) {
+            heap_pages_freeable_pages = (sweep_slots - max_free_slots) / HEAP_PAGE_OBJ_LIMIT;
+        }
+        else {
+            heap_pages_freeable_pages = 0;
+        }
 
-	/* check free_min */
-	if (min_free_slots < gc_params.heap_free_slots) min_free_slots = gc_params.heap_free_slots;
+        /* check free_min */
+        if (min_free_slots < gc_params.heap_free_slots) min_free_slots = gc_params.heap_free_slots;
 
 #if USE_RGENGC
-	if (sweep_slots < min_free_slots) {
-	    if (!full_marking) {
-		if (objspace->profile.count - objspace->rgengc.last_major_gc < RVALUE_OLD_AGE) {
-		    full_marking = TRUE;
-		    /* do not update last_major_gc, because full marking is not done. */
-		    goto increment;
-		}
-		else {
-		    gc_report(1, objspace, "gc_marks_finish: next is full GC!!)\n");
-		    objspace->rgengc.need_major_gc |= GPR_FLAG_MAJOR_BY_NOFREE;
-		}
-	    }
-	    else {
-	      increment:
-		gc_report(1, objspace, "gc_marks_finish: heap_set_increment!!\n");
-		heap_set_increment(objspace, heap_extend_pages(objspace, sweep_slots, total_slots));
-		heap_increment(objspace, heap);
-	    }
-	}
+        if (sweep_slots < min_free_slots) {
+            if (!full_marking) {
+                if (objspace->profile.count - objspace->rgengc.last_major_gc < RVALUE_OLD_AGE) {
+                    full_marking = TRUE;
+                    /* do not update last_major_gc, because full marking is not done. */
+                    goto increment;
+                }
+                else {
+                    gc_report(1, objspace, "gc_marks_finish: next is full GC!!)\n");
+                    objspace->rgengc.need_major_gc |= GPR_FLAG_MAJOR_BY_NOFREE;
+                }
+            }
+            else {
+              increment:
+                gc_report(1, objspace, "gc_marks_finish: heap_set_increment!!\n");
+                heap_set_increment(objspace, heap_extend_pages(objspace, sweep_slots, total_slots));
+                heap_increment(objspace, heap);
+            }
+        }
 
-	if (full_marking) {
-	    /* See the comment about RUBY_GC_HEAP_OLDOBJECT_LIMIT_FACTOR */
-	    const double r = gc_params.oldobject_limit_factor;
-	    objspace->rgengc.uncollectible_wb_unprotected_objects_limit = (size_t)(objspace->rgengc.uncollectible_wb_unprotected_objects * r);
-	    objspace->rgengc.old_objects_limit = (size_t)(objspace->rgengc.old_objects * r);
-	}
+        if (full_marking) {
+            /* See the comment about RUBY_GC_HEAP_OLDOBJECT_LIMIT_FACTOR */
+            const double r = gc_params.oldobject_limit_factor;
+            objspace->rgengc.uncollectible_wb_unprotected_objects_limit = (size_t)(objspace->rgengc.uncollectible_wb_unprotected_objects * r);
+            objspace->rgengc.old_objects_limit = (size_t)(objspace->rgengc.old_objects * r);
+        }
 
-	if (objspace->rgengc.uncollectible_wb_unprotected_objects > objspace->rgengc.uncollectible_wb_unprotected_objects_limit) {
-	    objspace->rgengc.need_major_gc |= GPR_FLAG_MAJOR_BY_SHADY;
-	}
-	if (objspace->rgengc.old_objects > objspace->rgengc.old_objects_limit) {
-	    objspace->rgengc.need_major_gc |= GPR_FLAG_MAJOR_BY_OLDGEN;
-	}
-	if (RGENGC_FORCE_MAJOR_GC) {
-	    objspace->rgengc.need_major_gc = GPR_FLAG_MAJOR_BY_FORCE;
-	}
+        if (objspace->rgengc.uncollectible_wb_unprotected_objects > objspace->rgengc.uncollectible_wb_unprotected_objects_limit) {
+            objspace->rgengc.need_major_gc |= GPR_FLAG_MAJOR_BY_SHADY;
+        }
+        if (objspace->rgengc.old_objects > objspace->rgengc.old_objects_limit) {
+            objspace->rgengc.need_major_gc |= GPR_FLAG_MAJOR_BY_OLDGEN;
+        }
+        if (RGENGC_FORCE_MAJOR_GC) {
+            objspace->rgengc.need_major_gc = GPR_FLAG_MAJOR_BY_FORCE;
+        }
 
-	gc_report(1, objspace, "gc_marks_finish (marks %d objects, old %d objects, total %d slots, sweep %d slots, increment: %d, next GC: %s)\n",
-		  (int)objspace->marked_slots, (int)objspace->rgengc.old_objects, (int)heap->total_slots, (int)sweep_slots, (int)heap_allocatable_pages,
-		  objspace->rgengc.need_major_gc ? "major" : "minor");
+        gc_report(1, objspace, "gc_marks_finish (marks %d objects, old %d objects, total %d slots, sweep %d slots, increment: %d, next GC: %s)\n",
+                  (int)objspace->marked_slots, (int)objspace->rgengc.old_objects, (int)heap->total_slots, (int)sweep_slots, (int)heap_allocatable_pages,
+                  objspace->rgengc.need_major_gc ? "major" : "minor");
 #else /* USE_RGENGC */
-	if (sweep_slots < min_free_slots) {
-	    gc_report(1, objspace, "gc_marks_finish: heap_set_increment!!\n");
-	    heap_set_increment(objspace, heap_extend_pages(objspace, sweep_slot, total_slot));
-	    heap_increment(objspace, heap);
-	}
+        if (sweep_slots < min_free_slots) {
+            gc_report(1, objspace, "gc_marks_finish: heap_set_increment!!\n");
+            heap_set_increment(objspace, heap_extend_pages(objspace, sweep_slot, total_slot));
+            heap_increment(objspace, heap);
+        }
 #endif
     }
 
@@ -5614,10 +5614,10 @@ gc_marks_step(rb_objspace_t *objspace, int slots)
     GC_ASSERT(is_marking(objspace));
 
     if (gc_mark_stacked_objects_incremental(objspace, slots)) {
-	if (gc_marks_finish(objspace)) {
-	    /* finish */
-	    gc_sweep(objspace);
-	}
+        if (gc_marks_finish(objspace)) {
+            /* finish */
+            gc_sweep(objspace);
+        }
     }
     if (0) fprintf(stderr, "objspace->marked_slots: %d\n", (int)objspace->marked_slots);
 #endif
@@ -5633,13 +5633,13 @@ gc_marks_rest(rb_objspace_t *objspace)
 #endif
 
     if (is_incremental_marking(objspace)) {
-	do {
-	    while (gc_mark_stacked_objects_incremental(objspace, INT_MAX) == FALSE);
-	} while (gc_marks_finish(objspace) == FALSE);
+        do {
+            while (gc_mark_stacked_objects_incremental(objspace, INT_MAX) == FALSE);
+        } while (gc_marks_finish(objspace) == FALSE);
     }
     else {
-	gc_mark_stacked_objects_all(objspace);
-	gc_marks_finish(objspace);
+        gc_mark_stacked_objects_all(objspace);
+        gc_marks_finish(objspace);
     }
 
     /* move to sweep */
@@ -5659,26 +5659,26 @@ gc_marks_continue(rb_objspace_t *objspace, rb_heap_t *heap)
         int slots = 0;
         const char *from;
 
-	if (heap->pooled_pages) {
-	    while (heap->pooled_pages && slots < HEAP_PAGE_OBJ_LIMIT) {
-		struct heap_page *page = heap_move_pooled_pages_to_free_pages(heap);
-		slots += page->free_slots;
-	    }
-	    from = "pooled-pages";
-	}
-	else if (heap_increment(objspace, heap)) {
-	    slots = heap->free_pages->free_slots;
-	    from = "incremented-pages";
-	}
+        if (heap->pooled_pages) {
+            while (heap->pooled_pages && slots < HEAP_PAGE_OBJ_LIMIT) {
+                struct heap_page *page = heap_move_pooled_pages_to_free_pages(heap);
+                slots += page->free_slots;
+            }
+            from = "pooled-pages";
+        }
+        else if (heap_increment(objspace, heap)) {
+            slots = heap->free_pages->free_slots;
+            from = "incremented-pages";
+        }
 
-	if (slots > 0) {
-	    gc_report(2, objspace, "gc_marks_continue: provide %d slots from %s.\n", slots, from);
-	    gc_marks_step(objspace, (int)objspace->rincgc.step_slots);
-	}
-	else {
-	    gc_report(2, objspace, "gc_marks_continue: no more pooled pages (stack depth: %d).\n", (int)mark_stack_size(&objspace->mark_stack));
-	    gc_marks_rest(objspace);
-	}
+        if (slots > 0) {
+            gc_report(2, objspace, "gc_marks_continue: provide %d slots from %s.\n", slots, from);
+            gc_marks_step(objspace, (int)objspace->rincgc.step_slots);
+        }
+        else {
+            gc_report(2, objspace, "gc_marks_continue: no more pooled pages (stack depth: %d).\n", (int)mark_stack_size(&objspace->mark_stack));
+            gc_marks_rest(objspace);
+        }
     }
     POP_MARK_FUNC_DATA();
 
@@ -5693,24 +5693,24 @@ gc_marks(rb_objspace_t *objspace, int full_mark)
 
     PUSH_MARK_FUNC_DATA(NULL);
     {
-	/* setup marking */
+        /* setup marking */
 
 #if USE_RGENGC
-	gc_marks_start(objspace, full_mark);
-	if (!is_incremental_marking(objspace)) {
-	    gc_marks_rest(objspace);
-	}
+        gc_marks_start(objspace, full_mark);
+        if (!is_incremental_marking(objspace)) {
+            gc_marks_rest(objspace);
+        }
 
 #if RGENGC_PROFILE > 0
-	if (gc_prof_record(objspace)) {
-	    gc_profile_record *record = gc_prof_record(objspace);
-	    record->old_objects = objspace->rgengc.old_objects;
-	}
+        if (gc_prof_record(objspace)) {
+            gc_profile_record *record = gc_prof_record(objspace);
+            record->old_objects = objspace->rgengc.old_objects;
+        }
 #endif
 
 #else /* USE_RGENGC */
-	gc_marks_start(objspace, TRUE);
-	gc_marks_rest(objspace);
+        gc_marks_start(objspace, TRUE);
+        gc_marks_rest(objspace);
 #endif
     }
     POP_MARK_FUNC_DATA();
@@ -5723,31 +5723,31 @@ static void
 gc_report_body(int level, rb_objspace_t *objspace, const char *fmt, ...)
 {
     if (level <= RGENGC_DEBUG) {
-	char buf[1024];
-	FILE *out = stderr;
-	va_list args;
-	const char *status = " ";
+        char buf[1024];
+        FILE *out = stderr;
+        va_list args;
+        const char *status = " ";
 
 #if USE_RGENGC
-	if (during_gc) {
-	    status = is_full_marking(objspace) ? "+" : "-";
-	}
-	else {
-	    if (is_lazy_sweeping(heap_eden)) {
-		status = "S";
-	    }
-	    if (is_incremental_marking(objspace)) {
-		status = "M";
-	    }
-	}
+        if (during_gc) {
+            status = is_full_marking(objspace) ? "+" : "-";
+        }
+        else {
+            if (is_lazy_sweeping(heap_eden)) {
+                status = "S";
+            }
+            if (is_incremental_marking(objspace)) {
+                status = "M";
+            }
+        }
 #endif
 
-	va_start(args, fmt);
-	vsnprintf(buf, 1024, fmt, args);
-	va_end(args);
+        va_start(args, fmt);
+        vsnprintf(buf, 1024, fmt, args);
+        va_end(args);
 
-	fprintf(out, "%s|", status);
-	fputs(buf, out);
+        fprintf(out, "%s|", status);
+        fputs(buf, out);
     }
 }
 
@@ -5770,12 +5770,12 @@ rgengc_remembersetbits_set(rb_objspace_t *objspace, VALUE obj)
     GC_ASSERT(!is_incremental_marking(objspace));
 
     if (MARKED_IN_BITMAP(bits, obj)) {
-	return FALSE;
+        return FALSE;
     }
     else {
-	page->flags.has_remembered_objects = TRUE;
-	MARK_IN_BITMAP(bits, obj);
-	return TRUE;
+        page->flags.has_remembered_objects = TRUE;
+        MARK_IN_BITMAP(bits, obj);
+        return TRUE;
     }
 }
 
@@ -5786,22 +5786,22 @@ static int
 rgengc_remember(rb_objspace_t *objspace, VALUE obj)
 {
     gc_report(6, objspace, "rgengc_remember: %s %s\n", obj_info(obj),
-	      rgengc_remembersetbits_get(objspace, obj) ? "was already remembered" : "is remembered now");
+              rgengc_remembersetbits_get(objspace, obj) ? "was already remembered" : "is remembered now");
 
     check_rvalue_consistency(obj);
 
     if (RGENGC_CHECK_MODE) {
-	if (RVALUE_WB_UNPROTECTED(obj)) rb_bug("rgengc_remember: %s is not wb protected.", obj_info(obj));
+        if (RVALUE_WB_UNPROTECTED(obj)) rb_bug("rgengc_remember: %s is not wb protected.", obj_info(obj));
     }
 
 #if RGENGC_PROFILE > 0
     if (!rgengc_remembered(objspace, obj)) {
-	if (RVALUE_WB_UNPROTECTED(obj) == 0) {
-	    objspace->profile.total_remembered_normal_object_count++;
+        if (RVALUE_WB_UNPROTECTED(obj) == 0) {
+            objspace->profile.total_remembered_normal_object_count++;
 #if RGENGC_PROFILE >= 2
-	    objspace->profile.remembered_normal_object_count_types[BUILTIN_TYPE(obj)]++;
+            objspace->profile.remembered_normal_object_count_types[BUILTIN_TYPE(obj)]++;
 #endif
-	}
+        }
     }
 #endif /* RGENGC_PROFILE > 0 */
 
@@ -5832,49 +5832,49 @@ rgengc_rememberset_mark(rb_objspace_t *objspace, rb_heap_t *heap)
     gc_report(1, objspace, "rgengc_rememberset_mark: start\n");
 
     list_for_each(&heap->pages, page, page_node) {
-	if (page->flags.has_remembered_objects | page->flags.has_uncollectible_shady_objects) {
-	    RVALUE *p = page->start;
-	    RVALUE *offset = p - NUM_IN_PAGE(p);
-	    bits_t bitset, bits[HEAP_PAGE_BITMAP_LIMIT];
-	    bits_t *marking_bits = page->marking_bits;
-	    bits_t *uncollectible_bits = page->uncollectible_bits;
-	    bits_t *wb_unprotected_bits = page->wb_unprotected_bits;
+        if (page->flags.has_remembered_objects | page->flags.has_uncollectible_shady_objects) {
+            RVALUE *p = page->start;
+            RVALUE *offset = p - NUM_IN_PAGE(p);
+            bits_t bitset, bits[HEAP_PAGE_BITMAP_LIMIT];
+            bits_t *marking_bits = page->marking_bits;
+            bits_t *uncollectible_bits = page->uncollectible_bits;
+            bits_t *wb_unprotected_bits = page->wb_unprotected_bits;
 #if PROFILE_REMEMBERSET_MARK
-	    if (page->flags.has_remembered_objects && page->flags.has_uncollectible_shady_objects) has_both++;
-	    else if (page->flags.has_remembered_objects) has_old++;
-	    else if (page->flags.has_uncollectible_shady_objects) has_shady++;
+            if (page->flags.has_remembered_objects && page->flags.has_uncollectible_shady_objects) has_both++;
+            else if (page->flags.has_remembered_objects) has_old++;
+            else if (page->flags.has_uncollectible_shady_objects) has_shady++;
 #endif
-	    for (j=0; j<HEAP_PAGE_BITMAP_LIMIT; j++) {
-		bits[j] = marking_bits[j] | (uncollectible_bits[j] & wb_unprotected_bits[j]);
-		marking_bits[j] = 0;
-	    }
-	    page->flags.has_remembered_objects = FALSE;
+            for (j=0; j<HEAP_PAGE_BITMAP_LIMIT; j++) {
+                bits[j] = marking_bits[j] | (uncollectible_bits[j] & wb_unprotected_bits[j]);
+                marking_bits[j] = 0;
+            }
+            page->flags.has_remembered_objects = FALSE;
 
-	    for (j=0; j < HEAP_PAGE_BITMAP_LIMIT; j++) {
-		bitset = bits[j];
+            for (j=0; j < HEAP_PAGE_BITMAP_LIMIT; j++) {
+                bitset = bits[j];
 
-		if (bitset) {
-		    p = offset  + j * BITS_BITLENGTH;
+                if (bitset) {
+                    p = offset  + j * BITS_BITLENGTH;
 
-		    do {
-			if (bitset & 1) {
-			    VALUE obj = (VALUE)p;
-			    gc_report(2, objspace, "rgengc_rememberset_mark: mark %s\n", obj_info(obj));
-			    GC_ASSERT(RVALUE_UNCOLLECTIBLE(obj));
-			    GC_ASSERT(RVALUE_OLD_P(obj) || RVALUE_WB_UNPROTECTED(obj));
+                    do {
+                        if (bitset & 1) {
+                            VALUE obj = (VALUE)p;
+                            gc_report(2, objspace, "rgengc_rememberset_mark: mark %s\n", obj_info(obj));
+                            GC_ASSERT(RVALUE_UNCOLLECTIBLE(obj));
+                            GC_ASSERT(RVALUE_OLD_P(obj) || RVALUE_WB_UNPROTECTED(obj));
 
-			    gc_mark_children(objspace, obj);
-			}
-			p++;
-			bitset >>= 1;
-		    } while (bitset);
-		}
-	    }
-	}
+                            gc_mark_children(objspace, obj);
+                        }
+                        p++;
+                        bitset >>= 1;
+                    } while (bitset);
+                }
+            }
+        }
 #if PROFILE_REMEMBERSET_MARK
-	else {
-	    skip++;
-	}
+        else {
+            skip++;
+        }
 #endif
     }
 
@@ -5890,11 +5890,11 @@ rgengc_mark_and_rememberset_clear(rb_objspace_t *objspace, rb_heap_t *heap)
     struct heap_page *page = 0;
 
     list_for_each(&heap->pages, page, page_node) {
-	memset(&page->mark_bits[0],       0, HEAP_PAGE_BITMAP_SIZE);
-	memset(&page->marking_bits[0],    0, HEAP_PAGE_BITMAP_SIZE);
-	memset(&page->uncollectible_bits[0], 0, HEAP_PAGE_BITMAP_SIZE);
-	page->flags.has_uncollectible_shady_objects = FALSE;
-	page->flags.has_remembered_objects = FALSE;
+        memset(&page->mark_bits[0],       0, HEAP_PAGE_BITMAP_SIZE);
+        memset(&page->marking_bits[0],    0, HEAP_PAGE_BITMAP_SIZE);
+        memset(&page->uncollectible_bits[0], 0, HEAP_PAGE_BITMAP_SIZE);
+        page->flags.has_uncollectible_shady_objects = FALSE;
+        page->flags.has_remembered_objects = FALSE;
     }
 }
 
@@ -5906,26 +5906,26 @@ static void
 gc_writebarrier_generational(VALUE a, VALUE b, rb_objspace_t *objspace)
 {
     if (RGENGC_CHECK_MODE) {
-	if (!RVALUE_OLD_P(a)) rb_bug("gc_writebarrier_generational: %s is not an old object.", obj_info(a));
-	if ( RVALUE_OLD_P(b)) rb_bug("gc_writebarrier_generational: %s is an old object.", obj_info(b));
-	if (is_incremental_marking(objspace)) rb_bug("gc_writebarrier_generational: called while incremental marking: %s -> %s", obj_info(a), obj_info(b));
+        if (!RVALUE_OLD_P(a)) rb_bug("gc_writebarrier_generational: %s is not an old object.", obj_info(a));
+        if ( RVALUE_OLD_P(b)) rb_bug("gc_writebarrier_generational: %s is an old object.", obj_info(b));
+        if (is_incremental_marking(objspace)) rb_bug("gc_writebarrier_generational: called while incremental marking: %s -> %s", obj_info(a), obj_info(b));
     }
 
 #if 1
     /* mark `a' and remember (default behavior) */
     if (!rgengc_remembered(objspace, a)) {
-	rgengc_remember(objspace, a);
-	gc_report(1, objspace, "gc_writebarrier_generational: %s (remembered) -> %s\n", obj_info(a), obj_info(b));
+        rgengc_remember(objspace, a);
+        gc_report(1, objspace, "gc_writebarrier_generational: %s (remembered) -> %s\n", obj_info(a), obj_info(b));
     }
 #else
     /* mark `b' and remember */
     MARK_IN_BITMAP(GET_HEAP_MARK_BITS(b), b);
     if (RVALUE_WB_UNPROTECTED(b)) {
-	gc_remember_unprotected(objspace, b);
+        gc_remember_unprotected(objspace, b);
     }
     else {
-	RVALUE_AGE_SET_OLD(objspace, b);
-	rgengc_remember(objspace, b);
+        RVALUE_AGE_SET_OLD(objspace, b);
+        rgengc_remember(objspace, b);
     }
 
     gc_report(1, objspace, "gc_writebarrier_generational: %s -> %s (remembered)\n", obj_info(a), obj_info(b));
@@ -5954,26 +5954,26 @@ gc_writebarrier_incremental(VALUE a, VALUE b, rb_objspace_t *objspace)
     gc_report(2, objspace, "gc_writebarrier_incremental: [LG] %p -> %s\n", (void *)a, obj_info(b));
 
     if (RVALUE_BLACK_P(a)) {
-	if (RVALUE_WHITE_P(b)) {
-	    if (!RVALUE_WB_UNPROTECTED(a)) {
-		gc_report(2, objspace, "gc_writebarrier_incremental: [IN] %p -> %s\n", (void *)a, obj_info(b));
-		gc_mark_from(objspace, b, a);
-	    }
-	}
-	else if (RVALUE_OLD_P(a) && !RVALUE_OLD_P(b)) {
-	    if (!RVALUE_WB_UNPROTECTED(b)) {
-		gc_report(1, objspace, "gc_writebarrier_incremental: [GN] %p -> %s\n", (void *)a, obj_info(b));
-		RVALUE_AGE_SET_OLD(objspace, b);
+        if (RVALUE_WHITE_P(b)) {
+            if (!RVALUE_WB_UNPROTECTED(a)) {
+                gc_report(2, objspace, "gc_writebarrier_incremental: [IN] %p -> %s\n", (void *)a, obj_info(b));
+                gc_mark_from(objspace, b, a);
+            }
+        }
+        else if (RVALUE_OLD_P(a) && !RVALUE_OLD_P(b)) {
+            if (!RVALUE_WB_UNPROTECTED(b)) {
+                gc_report(1, objspace, "gc_writebarrier_incremental: [GN] %p -> %s\n", (void *)a, obj_info(b));
+                RVALUE_AGE_SET_OLD(objspace, b);
 
-		if (RVALUE_BLACK_P(b)) {
-		    gc_grey(objspace, b);
-		}
-	    }
-	    else {
-		gc_report(1, objspace, "gc_writebarrier_incremental: [LL] %p -> %s\n", (void *)a, obj_info(b));
-		gc_remember_unprotected(objspace, b);
-	    }
-	}
+                if (RVALUE_BLACK_P(b)) {
+                    gc_grey(objspace, b);
+                }
+            }
+            else {
+                gc_report(1, objspace, "gc_writebarrier_incremental: [LL] %p -> %s\n", (void *)a, obj_info(b));
+                gc_remember_unprotected(objspace, b);
+            }
+        }
     }
 }
 #else
@@ -5989,15 +5989,15 @@ rb_gc_writebarrier(VALUE a, VALUE b)
     if (RGENGC_CHECK_MODE && SPECIAL_CONST_P(b)) rb_bug("rb_gc_writebarrier: b is special const");
 
     if (!is_incremental_marking(objspace)) {
-	if (!RVALUE_OLD_P(a) || RVALUE_OLD_P(b)) {
-	    return;
-	}
-	else {
-	    gc_writebarrier_generational(a, b, objspace);
-	}
+        if (!RVALUE_OLD_P(a) || RVALUE_OLD_P(b)) {
+            return;
+        }
+        else {
+            gc_writebarrier_generational(a, b, objspace);
+        }
     }
     else { /* slow path */
-	gc_writebarrier_incremental(a, b, objspace);
+        gc_writebarrier_incremental(a, b, objspace);
     }
 }
 
@@ -6005,32 +6005,32 @@ void
 rb_gc_writebarrier_unprotect(VALUE obj)
 {
     if (RVALUE_WB_UNPROTECTED(obj)) {
-	return;
+        return;
     }
     else {
-	rb_objspace_t *objspace = &rb_objspace;
+        rb_objspace_t *objspace = &rb_objspace;
 
-	gc_report(2, objspace, "rb_gc_writebarrier_unprotect: %s %s\n", obj_info(obj),
-		  rgengc_remembered(objspace, obj) ? " (already remembered)" : "");
+        gc_report(2, objspace, "rb_gc_writebarrier_unprotect: %s %s\n", obj_info(obj),
+                  rgengc_remembered(objspace, obj) ? " (already remembered)" : "");
 
-	if (RVALUE_OLD_P(obj)) {
-	    gc_report(1, objspace, "rb_gc_writebarrier_unprotect: %s\n", obj_info(obj));
-	    RVALUE_DEMOTE(objspace, obj);
-	    gc_mark_set(objspace, obj);
-	    gc_remember_unprotected(objspace, obj);
+        if (RVALUE_OLD_P(obj)) {
+            gc_report(1, objspace, "rb_gc_writebarrier_unprotect: %s\n", obj_info(obj));
+            RVALUE_DEMOTE(objspace, obj);
+            gc_mark_set(objspace, obj);
+            gc_remember_unprotected(objspace, obj);
 
 #if RGENGC_PROFILE
-	    objspace->profile.total_shade_operation_count++;
+            objspace->profile.total_shade_operation_count++;
 #if RGENGC_PROFILE >= 2
-	    objspace->profile.shade_operation_count_types[BUILTIN_TYPE(obj)]++;
+            objspace->profile.shade_operation_count_types[BUILTIN_TYPE(obj)]++;
 #endif /* RGENGC_PROFILE >= 2 */
 #endif /* RGENGC_PROFILE */
-	}
-	else {
-	    RVALUE_AGE_RESET(obj);
-	}
+        }
+        else {
+            RVALUE_AGE_RESET(obj);
+        }
 
-	MARK_IN_BITMAP(GET_HEAP_WB_UNPROTECTED_BITS(obj), obj);
+        MARK_IN_BITMAP(GET_HEAP_WB_UNPROTECTED_BITS(obj), obj);
     }
 }
 
@@ -6045,14 +6045,14 @@ rb_gc_writebarrier_remember(VALUE obj)
     gc_report(1, objspace, "rb_gc_writebarrier_remember: %s\n", obj_info(obj));
 
     if (is_incremental_marking(objspace)) {
-	if (RVALUE_BLACK_P(obj)) {
-	    gc_grey(objspace, obj);
-	}
+        if (RVALUE_BLACK_P(obj)) {
+            gc_grey(objspace, obj);
+        }
     }
     else {
-	if (RVALUE_OLD_P(obj)) {
-	    rgengc_remember(objspace, obj);
-	}
+        if (RVALUE_OLD_P(obj)) {
+            rgengc_remember(objspace, obj);
+        }
     }
 }
 
@@ -6077,25 +6077,25 @@ rb_gc_unprotect_logging(void *objptr, const char *filename, int line)
     VALUE obj = (VALUE)objptr;
 
     if (rgengc_unprotect_logging_table == 0) {
-	rgengc_unprotect_logging_table = st_init_strtable();
-	atexit(rgengc_unprotect_logging_exit_func);
+        rgengc_unprotect_logging_table = st_init_strtable();
+        atexit(rgengc_unprotect_logging_exit_func);
     }
 
     if (RVALUE_WB_UNPROTECTED(obj) == 0) {
-	char buff[0x100];
-	st_data_t cnt = 1;
-	char *ptr = buff;
+        char buff[0x100];
+        st_data_t cnt = 1;
+        char *ptr = buff;
 
-	snprintf(ptr, 0x100 - 1, "%s|%s:%d", obj_info(obj), filename, line);
+        snprintf(ptr, 0x100 - 1, "%s|%s:%d", obj_info(obj), filename, line);
 
-	if (st_lookup(rgengc_unprotect_logging_table, (st_data_t)ptr, &cnt)) {
-	    cnt++;
-	}
-	else {
-	    ptr = (strdup)(buff);
-	    if (!ptr) rb_memerror();
-	}
-	st_insert(rgengc_unprotect_logging_table, (st_data_t)ptr, cnt);
+        if (st_lookup(rgengc_unprotect_logging_table, (st_data_t)ptr, &cnt)) {
+            cnt++;
+        }
+        else {
+            ptr = (strdup)(buff);
+            if (!ptr) rb_memerror();
+        }
+        st_insert(rgengc_unprotect_logging_table, (st_data_t)ptr, cnt);
     }
 }
 #endif /* USE_RGENGC */
@@ -6107,13 +6107,13 @@ rb_copy_wb_protected_attribute(VALUE dest, VALUE obj)
     rb_objspace_t *objspace = &rb_objspace;
 
     if (RVALUE_WB_UNPROTECTED(obj) && !RVALUE_WB_UNPROTECTED(dest)) {
-	if (!RVALUE_OLD_P(dest)) {
-	    MARK_IN_BITMAP(GET_HEAP_WB_UNPROTECTED_BITS(dest), dest);
-	    RVALUE_AGE_RESET_RAW(dest);
-	}
-	else {
-	    RVALUE_DEMOTE(objspace, dest);
-	}
+        if (!RVALUE_OLD_P(dest)) {
+            MARK_IN_BITMAP(GET_HEAP_WB_UNPROTECTED_BITS(dest), dest);
+            RVALUE_AGE_RESET_RAW(dest);
+        }
+        else {
+            RVALUE_DEMOTE(objspace, dest);
+        }
     }
 
     check_rvalue_consistency(dest);
@@ -6149,12 +6149,12 @@ rb_obj_gc_flags(VALUE obj, ID* flags, size_t max)
 
     if (!ID_marked) {
 #define I(s) ID_##s = rb_intern(#s);
-	I(marked);
+        I(marked);
 #if USE_RGENGC
-	I(wb_protected);
-	I(old);
-	I(marking);
-	I(uncollectible);
+        I(wb_protected);
+        I(old);
+        I(marking);
+        I(uncollectible);
 #endif
 #undef I
     }
@@ -6182,27 +6182,27 @@ rb_gc_force_recycle(VALUE obj)
     gc_report(2, objspace, "rb_gc_force_recycle: %s\n", obj_info(obj));
 
     if (is_old) {
-	if (RVALUE_MARKED(obj)) {
-	    objspace->rgengc.old_objects--;
-	}
+        if (RVALUE_MARKED(obj)) {
+            objspace->rgengc.old_objects--;
+        }
     }
     CLEAR_IN_BITMAP(GET_HEAP_UNCOLLECTIBLE_BITS(obj), obj);
     CLEAR_IN_BITMAP(GET_HEAP_WB_UNPROTECTED_BITS(obj), obj);
 
 #if GC_ENABLE_INCREMENTAL_MARK
     if (is_incremental_marking(objspace)) {
-	if (MARKED_IN_BITMAP(GET_HEAP_MARKING_BITS(obj), obj)) {
-	    invalidate_mark_stack(&objspace->mark_stack, obj);
-	    CLEAR_IN_BITMAP(GET_HEAP_MARKING_BITS(obj), obj);
-	}
-	CLEAR_IN_BITMAP(GET_HEAP_MARK_BITS(obj), obj);
+        if (MARKED_IN_BITMAP(GET_HEAP_MARKING_BITS(obj), obj)) {
+            invalidate_mark_stack(&objspace->mark_stack, obj);
+            CLEAR_IN_BITMAP(GET_HEAP_MARKING_BITS(obj), obj);
+        }
+        CLEAR_IN_BITMAP(GET_HEAP_MARK_BITS(obj), obj);
     }
     else {
 #endif
-	if (is_old || !GET_HEAP_PAGE(obj)->flags.before_sweep) {
-	    CLEAR_IN_BITMAP(GET_HEAP_MARK_BITS(obj), obj);
-	}
-	CLEAR_IN_BITMAP(GET_HEAP_MARKING_BITS(obj), obj);
+        if (is_old || !GET_HEAP_PAGE(obj)->flags.before_sweep) {
+            CLEAR_IN_BITMAP(GET_HEAP_MARK_BITS(obj), obj);
+        }
+        CLEAR_IN_BITMAP(GET_HEAP_MARKING_BITS(obj), obj);
 #if GC_ENABLE_INCREMENTAL_MARK
     }
 #endif
@@ -6230,8 +6230,8 @@ rb_gc_register_mark_object(VALUE obj)
     VALUE ary = rb_ary_last(0, 0, ary_ary);
 
     if (ary == Qnil || RARRAY_LEN(ary) >= MARK_OBJECT_ARY_BUCKET_SIZE) {
-	ary = rb_ary_tmp_new(MARK_OBJECT_ARY_BUCKET_SIZE);
-	rb_ary_push(ary_ary, ary);
+        ary = rb_ary_tmp_new(MARK_OBJECT_ARY_BUCKET_SIZE);
+        rb_ary_push(ary_ary, ary);
     }
 
     rb_ary_push(ary, obj);
@@ -6256,19 +6256,19 @@ rb_gc_unregister_address(VALUE *addr)
     struct gc_list *tmp = global_list;
 
     if (tmp->varptr == addr) {
-	global_list = tmp->next;
-	xfree(tmp);
-	return;
+        global_list = tmp->next;
+        xfree(tmp);
+        return;
     }
     while (tmp->next) {
-	if (tmp->next->varptr == addr) {
-	    struct gc_list *t = tmp->next;
+        if (tmp->next->varptr == addr) {
+            struct gc_list *t = tmp->next;
 
-	    tmp->next = tmp->next->next;
-	    xfree(t);
-	    break;
-	}
-	tmp = tmp->next;
+            tmp->next = tmp->next->next;
+            xfree(t);
+            break;
+        }
+        tmp = tmp->next;
     }
 }
 
@@ -6294,10 +6294,10 @@ static void
 heap_ready_to_gc(rb_objspace_t *objspace, rb_heap_t *heap)
 {
     if (!heap->freelist && !heap->free_pages) {
-	if (!heap_increment(objspace, heap)) {
-	    heap_set_increment(objspace, 1);
-	    heap_increment(objspace, heap);
-	}
+        if (!heap_increment(objspace, heap)) {
+            heap_set_increment(objspace, 1);
+            heap_increment(objspace, heap);
+        }
     }
 }
 
@@ -6305,11 +6305,11 @@ static int
 ready_to_gc(rb_objspace_t *objspace)
 {
     if (dont_gc || during_gc || ruby_disable_gc) {
-	heap_ready_to_gc(objspace, heap_eden);
-	return FALSE;
+        heap_ready_to_gc(objspace, heap_eden);
+        return FALSE;
     }
     else {
-	return TRUE;
+        return TRUE;
     }
 }
 
@@ -6318,65 +6318,65 @@ gc_reset_malloc_info(rb_objspace_t *objspace)
 {
     gc_prof_set_malloc_info(objspace);
     {
-	size_t inc = ATOMIC_SIZE_EXCHANGE(malloc_increase, 0);
-	size_t old_limit = malloc_limit;
+        size_t inc = ATOMIC_SIZE_EXCHANGE(malloc_increase, 0);
+        size_t old_limit = malloc_limit;
 
-	if (inc > malloc_limit) {
-	    malloc_limit = (size_t)(inc * gc_params.malloc_limit_growth_factor);
-	    if (malloc_limit > gc_params.malloc_limit_max) {
-		malloc_limit = gc_params.malloc_limit_max;
-	    }
-	}
-	else {
-	    malloc_limit = (size_t)(malloc_limit * 0.98); /* magic number */
-	    if (malloc_limit < gc_params.malloc_limit_min) {
-		malloc_limit = gc_params.malloc_limit_min;
-	    }
-	}
+        if (inc > malloc_limit) {
+            malloc_limit = (size_t)(inc * gc_params.malloc_limit_growth_factor);
+            if (malloc_limit > gc_params.malloc_limit_max) {
+                malloc_limit = gc_params.malloc_limit_max;
+            }
+        }
+        else {
+            malloc_limit = (size_t)(malloc_limit * 0.98); /* magic number */
+            if (malloc_limit < gc_params.malloc_limit_min) {
+                malloc_limit = gc_params.malloc_limit_min;
+            }
+        }
 
-	if (0) {
-	    if (old_limit != malloc_limit) {
-		fprintf(stderr, "[%"PRIuSIZE"] malloc_limit: %"PRIuSIZE" -> %"PRIuSIZE"\n",
-			rb_gc_count(), old_limit, malloc_limit);
-	    }
-	    else {
-		fprintf(stderr, "[%"PRIuSIZE"] malloc_limit: not changed (%"PRIuSIZE")\n",
-			rb_gc_count(), malloc_limit);
-	    }
-	}
+        if (0) {
+            if (old_limit != malloc_limit) {
+                fprintf(stderr, "[%"PRIuSIZE"] malloc_limit: %"PRIuSIZE" -> %"PRIuSIZE"\n",
+                        rb_gc_count(), old_limit, malloc_limit);
+            }
+            else {
+                fprintf(stderr, "[%"PRIuSIZE"] malloc_limit: not changed (%"PRIuSIZE")\n",
+                        rb_gc_count(), malloc_limit);
+            }
+        }
     }
 
     /* reset oldmalloc info */
 #if RGENGC_ESTIMATE_OLDMALLOC
     if (!is_full_marking(objspace)) {
-	if (objspace->rgengc.oldmalloc_increase > objspace->rgengc.oldmalloc_increase_limit) {
-	    objspace->rgengc.need_major_gc |= GPR_FLAG_MAJOR_BY_OLDMALLOC;
-	    objspace->rgengc.oldmalloc_increase_limit =
-	      (size_t)(objspace->rgengc.oldmalloc_increase_limit * gc_params.oldmalloc_limit_growth_factor);
+        if (objspace->rgengc.oldmalloc_increase > objspace->rgengc.oldmalloc_increase_limit) {
+            objspace->rgengc.need_major_gc |= GPR_FLAG_MAJOR_BY_OLDMALLOC;
+            objspace->rgengc.oldmalloc_increase_limit =
+              (size_t)(objspace->rgengc.oldmalloc_increase_limit * gc_params.oldmalloc_limit_growth_factor);
 
-	    if (objspace->rgengc.oldmalloc_increase_limit > gc_params.oldmalloc_limit_max) {
-		objspace->rgengc.oldmalloc_increase_limit = gc_params.oldmalloc_limit_max;
-	    }
-	}
+            if (objspace->rgengc.oldmalloc_increase_limit > gc_params.oldmalloc_limit_max) {
+                objspace->rgengc.oldmalloc_increase_limit = gc_params.oldmalloc_limit_max;
+            }
+        }
 
-	if (0) fprintf(stderr, "%d\t%d\t%u\t%u\t%d\n",
-		       (int)rb_gc_count(),
-		       (int)objspace->rgengc.need_major_gc,
-		       (unsigned int)objspace->rgengc.oldmalloc_increase,
-		       (unsigned int)objspace->rgengc.oldmalloc_increase_limit,
-		       (unsigned int)gc_params.oldmalloc_limit_max);
+        if (0) fprintf(stderr, "%d\t%d\t%u\t%u\t%d\n",
+                       (int)rb_gc_count(),
+                       (int)objspace->rgengc.need_major_gc,
+                       (unsigned int)objspace->rgengc.oldmalloc_increase,
+                       (unsigned int)objspace->rgengc.oldmalloc_increase_limit,
+                       (unsigned int)gc_params.oldmalloc_limit_max);
     }
     else {
-	/* major GC */
-	objspace->rgengc.oldmalloc_increase = 0;
+        /* major GC */
+        objspace->rgengc.oldmalloc_increase = 0;
 
-	if ((objspace->profile.latest_gc_info & GPR_FLAG_MAJOR_BY_OLDMALLOC) == 0) {
-	    objspace->rgengc.oldmalloc_increase_limit =
-	      (size_t)(objspace->rgengc.oldmalloc_increase_limit / ((gc_params.oldmalloc_limit_growth_factor - 1)/10 + 1));
-	    if (objspace->rgengc.oldmalloc_increase_limit < gc_params.oldmalloc_limit_min) {
-		objspace->rgengc.oldmalloc_increase_limit = gc_params.oldmalloc_limit_min;
-	    }
-	}
+        if ((objspace->profile.latest_gc_info & GPR_FLAG_MAJOR_BY_OLDMALLOC) == 0) {
+            objspace->rgengc.oldmalloc_increase_limit =
+              (size_t)(objspace->rgengc.oldmalloc_increase_limit / ((gc_params.oldmalloc_limit_growth_factor - 1)/10 + 1));
+            if (objspace->rgengc.oldmalloc_increase_limit < gc_params.oldmalloc_limit_min) {
+                objspace->rgengc.oldmalloc_increase_limit = gc_params.oldmalloc_limit_min;
+            }
+        }
     }
 #endif
 }
@@ -6419,51 +6419,51 @@ gc_start(rb_objspace_t *objspace, int reason)
     gc_enter(objspace, "gc_start");
 
     if (ruby_gc_stressful) {
-	int flag = FIXNUM_P(ruby_gc_stress_mode) ? FIX2INT(ruby_gc_stress_mode) : 0;
+        int flag = FIXNUM_P(ruby_gc_stress_mode) ? FIX2INT(ruby_gc_stress_mode) : 0;
 
-	if ((flag & (1<<gc_stress_no_major)) == 0) {
-	    do_full_mark = TRUE;
-	}
+        if ((flag & (1<<gc_stress_no_major)) == 0) {
+            do_full_mark = TRUE;
+        }
 
-	objspace->flags.immediate_sweep = !(flag & (1<<gc_stress_no_immediate_sweep));
+        objspace->flags.immediate_sweep = !(flag & (1<<gc_stress_no_immediate_sweep));
     }
     else {
 #if USE_RGENGC
-	if (objspace->rgengc.need_major_gc) {
-	    reason |= objspace->rgengc.need_major_gc;
-	    do_full_mark = TRUE;
-	}
-	else if (RGENGC_FORCE_MAJOR_GC) {
-	    reason = GPR_FLAG_MAJOR_BY_FORCE;
-	    do_full_mark = TRUE;
-	}
+        if (objspace->rgengc.need_major_gc) {
+            reason |= objspace->rgengc.need_major_gc;
+            do_full_mark = TRUE;
+        }
+        else if (RGENGC_FORCE_MAJOR_GC) {
+            reason = GPR_FLAG_MAJOR_BY_FORCE;
+            do_full_mark = TRUE;
+        }
 
-	objspace->rgengc.need_major_gc = GPR_FLAG_NONE;
+        objspace->rgengc.need_major_gc = GPR_FLAG_NONE;
 #endif
     }
 
     if (do_full_mark && (reason & GPR_FLAG_MAJOR_MASK) == 0) {
-	reason |= GPR_FLAG_MAJOR_BY_FORCE; /* GC by CAPI, METHOD, and so on. */
+        reason |= GPR_FLAG_MAJOR_BY_FORCE; /* GC by CAPI, METHOD, and so on. */
     }
 
 #if GC_ENABLE_INCREMENTAL_MARK
     if (!GC_ENABLE_INCREMENTAL_MARK || objspace->flags.dont_incremental || immediate_mark) {
-	objspace->flags.during_incremental_marking = FALSE;
+        objspace->flags.during_incremental_marking = FALSE;
     }
     else {
-	objspace->flags.during_incremental_marking = do_full_mark;
+        objspace->flags.during_incremental_marking = do_full_mark;
     }
 #endif
 
     if (!GC_ENABLE_LAZY_SWEEP || objspace->flags.dont_incremental) {
-	objspace->flags.immediate_sweep = TRUE;
+        objspace->flags.immediate_sweep = TRUE;
     }
 
     if (objspace->flags.immediate_sweep) reason |= GPR_FLAG_IMMEDIATE_SWEEP;
 
     gc_report(1, objspace, "gc_start(reason: %d) => %u, %d, %d\n",
-	      reason,
-	      do_full_mark, !is_incremental_marking(objspace), objspace->flags.immediate_sweep);
+              reason,
+              do_full_mark, !is_incremental_marking(objspace), objspace->flags.immediate_sweep);
 
     objspace->profile.count++;
     objspace->profile.latest_gc_info = reason;
@@ -6477,7 +6477,7 @@ gc_start(rb_objspace_t *objspace, int reason)
 
     gc_prof_timer_start(objspace);
     {
-	gc_marks(objspace, do_full_mark);
+        gc_marks(objspace, do_full_mark);
     }
     gc_prof_timer_stop(objspace);
 
@@ -6492,19 +6492,19 @@ gc_rest(rb_objspace_t *objspace)
     int sweeping = is_lazy_sweeping(heap_eden);
 
     if (marking || sweeping) {
-	gc_enter(objspace, "gc_rest");
+        gc_enter(objspace, "gc_rest");
 
-	if (RGENGC_CHECK_MODE >= 2) gc_verify_internal_consistency(Qnil);
+        if (RGENGC_CHECK_MODE >= 2) gc_verify_internal_consistency(Qnil);
 
-	if (is_incremental_marking(objspace)) {
-	    PUSH_MARK_FUNC_DATA(NULL);
-	    gc_marks_rest(objspace);
-	    POP_MARK_FUNC_DATA();
-	}
-	if (is_lazy_sweeping(heap_eden)) {
-	    gc_sweep_rest(objspace);
-	}
-	gc_exit(objspace, "gc_rest");
+        if (is_incremental_marking(objspace)) {
+            PUSH_MARK_FUNC_DATA(NULL);
+            gc_marks_rest(objspace);
+            POP_MARK_FUNC_DATA();
+        }
+        if (is_lazy_sweeping(heap_eden)) {
+            gc_sweep_rest(objspace);
+        }
+        gc_exit(objspace, "gc_rest");
     }
 }
 
@@ -6518,20 +6518,20 @@ gc_current_status_fill(rb_objspace_t *objspace, char *buff)
 {
     int i = 0;
     if (is_marking(objspace)) {
-	buff[i++] = 'M';
+        buff[i++] = 'M';
 #if USE_RGENGC
-	if (is_full_marking(objspace))        buff[i++] = 'F';
+        if (is_full_marking(objspace))        buff[i++] = 'F';
 #if GC_ENABLE_INCREMENTAL_MARK
-	if (is_incremental_marking(objspace)) buff[i++] = 'I';
+        if (is_incremental_marking(objspace)) buff[i++] = 'I';
 #endif
 #endif
     }
     else if (is_sweeping(objspace)) {
-	buff[i++] = 'S';
-	if (is_lazy_sweeping(heap_eden))      buff[i++] = 'L';
+        buff[i++] = 'S';
+        if (is_lazy_sweeping(heap_eden))      buff[i++] = 'L';
     }
     else {
-	buff[i++] = 'N';
+        buff[i++] = 'N';
     }
     buff[i] = '\0';
 }
@@ -6555,31 +6555,31 @@ static inline void
 gc_record(rb_objspace_t *objspace, int direction, const char *event)
 {
     if (direction == 0) { /* enter */
-	enter_count++;
-	enter_tick = tick();
-	gc_current_status_fill(objspace, last_gc_status);
+        enter_count++;
+        enter_tick = tick();
+        gc_current_status_fill(objspace, last_gc_status);
     }
     else { /* exit */
-	tick_t exit_tick = tick();
-	char current_gc_status[0x10];
-	gc_current_status_fill(objspace, current_gc_status);
+        tick_t exit_tick = tick();
+        char current_gc_status[0x10];
+        gc_current_status_fill(objspace, current_gc_status);
 #if 1
-	/* [last mutator time] [gc time] [event] */
-	fprintf(stderr, "%"PRItick"\t%"PRItick"\t%s\t[%s->%s|%c]\n",
-		enter_tick - last_exit_tick,
-		exit_tick - enter_tick,
-		event,
-		last_gc_status, current_gc_status,
-		(objspace->profile.latest_gc_info & GPR_FLAG_MAJOR_MASK) ? '+' : '-');
-	last_exit_tick = exit_tick;
+        /* [last mutator time] [gc time] [event] */
+        fprintf(stderr, "%"PRItick"\t%"PRItick"\t%s\t[%s->%s|%c]\n",
+                enter_tick - last_exit_tick,
+                exit_tick - enter_tick,
+                event,
+                last_gc_status, current_gc_status,
+                (objspace->profile.latest_gc_info & GPR_FLAG_MAJOR_MASK) ? '+' : '-');
+        last_exit_tick = exit_tick;
 #else
-	/* [enter_tick] [gc time] [event] */
-	fprintf(stderr, "%"PRItick"\t%"PRItick"\t%s\t[%s->%s|%c]\n",
-		enter_tick,
-		exit_tick - enter_tick,
-		event,
-		last_gc_status, current_gc_status,
-		(objspace->profile.latest_gc_info & GPR_FLAG_MAJOR_MASK) ? '+' : '-');
+        /* [enter_tick] [gc time] [event] */
+        fprintf(stderr, "%"PRItick"\t%"PRItick"\t%s\t[%s->%s|%c]\n",
+                enter_tick,
+                exit_tick - enter_tick,
+                event,
+                last_gc_status, current_gc_status,
+                (objspace->profile.latest_gc_info & GPR_FLAG_MAJOR_MASK) ? '+' : '-');
 #endif
     }
 }
@@ -6630,20 +6630,20 @@ garbage_collect_with_gvl(rb_objspace_t *objspace, int reason)
 {
     if (dont_gc) return TRUE;
     if (ruby_thread_has_gvl_p()) {
-	return garbage_collect(objspace, reason);
+        return garbage_collect(objspace, reason);
     }
     else {
-	if (ruby_native_thread_p()) {
-	    struct objspace_and_reason oar;
-	    oar.objspace = objspace;
-	    oar.reason = reason;
-	    return (int)(VALUE)rb_thread_call_with_gvl(gc_with_gvl, (void *)&oar);
-	}
-	else {
-	    /* no ruby thread */
-	    fprintf(stderr, "[FATAL] failed to allocate memory\n");
-	    exit(EXIT_FAILURE);
-	}
+        if (ruby_native_thread_p()) {
+            struct objspace_and_reason oar;
+            oar.objspace = objspace;
+            oar.reason = reason;
+            return (int)(VALUE)rb_thread_call_with_gvl(gc_with_gvl, (void *)&oar);
+        }
+        else {
+            /* no ruby thread */
+            fprintf(stderr, "[FATAL] failed to allocate memory\n");
+            exit(EXIT_FAILURE);
+        }
     }
 }
 
@@ -6690,23 +6690,23 @@ gc_start_internal(int argc, VALUE *argv, VALUE self)
     rb_scan_args(argc, argv, "0:", &opt);
 
     if (!NIL_P(opt)) {
-	VALUE kwvals[3];
+        VALUE kwvals[3];
 
-	if (!keyword_ids[0]) {
-	    keyword_ids[0] = rb_intern("full_mark");
-	    keyword_ids[1] = rb_intern("immediate_mark");
-	    keyword_ids[2] = rb_intern("immediate_sweep");
-	}
+        if (!keyword_ids[0]) {
+            keyword_ids[0] = rb_intern("full_mark");
+            keyword_ids[1] = rb_intern("immediate_mark");
+            keyword_ids[2] = rb_intern("immediate_sweep");
+        }
 
-	rb_get_kwargs(opt, keyword_ids, 0, 3, kwvals);
+        rb_get_kwargs(opt, keyword_ids, 0, 3, kwvals);
 
-	if (kwvals[0] != Qundef && !RTEST(kwvals[0])) {
+        if (kwvals[0] != Qundef && !RTEST(kwvals[0])) {
             reason &= ~GPR_FLAG_FULL_MARK;
         }
-	if (kwvals[1] != Qundef && !RTEST(kwvals[1])) {
+        if (kwvals[1] != Qundef && !RTEST(kwvals[1])) {
             reason &= ~GPR_FLAG_IMMEDIATE_MARK;
         }
-	if (kwvals[2] != Qundef && !RTEST(kwvals[2])) {
+        if (kwvals[2] != Qundef && !RTEST(kwvals[2])) {
             reason &= ~GPR_FLAG_IMMEDIATE_SWEEP;
         }
     }
@@ -6751,8 +6751,8 @@ gc_count_add_each_types(VALUE hash, const char *name, const size_t *types)
     VALUE result = rb_hash_new_with_size(T_MASK);
     int i;
     for (i=0; i<T_MASK; i++) {
-	const char *type = type_name(i, 0);
-	rb_hash_aset(result, ID2SYM(rb_intern(type)), SIZET2NUM(types[i]));
+        const char *type = type_name(i, 0);
+        rb_hash_aset(result, ID2SYM(rb_intern(type)), SIZET2NUM(types[i]));
     }
     rb_hash_aset(hash, ID2SYM(rb_intern(name)), result);
 }
@@ -6795,47 +6795,47 @@ gc_info_decode(rb_objspace_t *objspace, const VALUE hash_or_key, const int orig_
     VALUE flags = orig_flags ? orig_flags : objspace->profile.latest_gc_info;
 
     if (SYMBOL_P(hash_or_key)) {
-	key = hash_or_key;
+        key = hash_or_key;
     }
     else if (RB_TYPE_P(hash_or_key, T_HASH)) {
-	hash = hash_or_key;
+        hash = hash_or_key;
     }
     else {
-	rb_raise(rb_eTypeError, "non-hash or symbol given");
+        rb_raise(rb_eTypeError, "non-hash or symbol given");
     }
 
     if (sym_major_by == Qnil) {
 #define S(s) sym_##s = ID2SYM(rb_intern_const(#s))
-	S(major_by);
-	S(gc_by);
-	S(immediate_sweep);
-	S(have_finalizer);
-	S(state);
+        S(major_by);
+        S(gc_by);
+        S(immediate_sweep);
+        S(have_finalizer);
+        S(state);
 
-	S(stress);
-	S(nofree);
-	S(oldgen);
-	S(shady);
-	S(force);
+        S(stress);
+        S(nofree);
+        S(oldgen);
+        S(shady);
+        S(force);
 #if RGENGC_ESTIMATE_OLDMALLOC
-	S(oldmalloc);
+        S(oldmalloc);
 #endif
-	S(newobj);
-	S(malloc);
-	S(method);
-	S(capi);
+        S(newobj);
+        S(malloc);
+        S(method);
+        S(capi);
 
-	S(none);
-	S(marking);
-	S(sweeping);
+        S(none);
+        S(marking);
+        S(sweeping);
 #undef S
     }
 
 #define SET(name, attr) \
     if (key == sym_##name) \
-	return (attr); \
+        return (attr); \
     else if (hash != Qnil) \
-	rb_hash_aset(hash, sym_##name, (attr));
+        rb_hash_aset(hash, sym_##name, (attr));
 
     major_by =
       (flags & GPR_FLAG_MAJOR_BY_NOFREE) ? sym_nofree :
@@ -6849,25 +6849,25 @@ gc_info_decode(rb_objspace_t *objspace, const VALUE hash_or_key, const int orig_
     SET(major_by, major_by);
 
     SET(gc_by,
-	(flags & GPR_FLAG_NEWOBJ) ? sym_newobj :
-	(flags & GPR_FLAG_MALLOC) ? sym_malloc :
-	(flags & GPR_FLAG_METHOD) ? sym_method :
-	(flags & GPR_FLAG_CAPI)   ? sym_capi :
-	(flags & GPR_FLAG_STRESS) ? sym_stress :
-	Qnil
+        (flags & GPR_FLAG_NEWOBJ) ? sym_newobj :
+        (flags & GPR_FLAG_MALLOC) ? sym_malloc :
+        (flags & GPR_FLAG_METHOD) ? sym_method :
+        (flags & GPR_FLAG_CAPI)   ? sym_capi :
+        (flags & GPR_FLAG_STRESS) ? sym_stress :
+        Qnil
     );
 
     SET(have_finalizer, (flags & GPR_FLAG_HAVE_FINALIZE) ? Qtrue : Qfalse);
     SET(immediate_sweep, (flags & GPR_FLAG_IMMEDIATE_SWEEP) ? Qtrue : Qfalse);
 
     if (orig_flags == 0) {
-	SET(state, gc_mode(objspace) == gc_mode_none ? sym_none :
-	           gc_mode(objspace) == gc_mode_marking ? sym_marking : sym_sweeping);
+        SET(state, gc_mode(objspace) == gc_mode_none ? sym_none :
+                   gc_mode(objspace) == gc_mode_marking ? sym_marking : sym_sweeping);
     }
 #undef SET
 
     if (!NIL_P(key)) {/* matched key should return above */
-	rb_raise(rb_eArgError, "unknown key: %"PRIsVALUE, rb_sym2str(key));
+        rb_raise(rb_eArgError, "unknown key: %"PRIsVALUE, rb_sym2str(key));
     }
 
     return hash;
@@ -6896,13 +6896,13 @@ gc_latest_gc_info(int argc, VALUE *argv, VALUE self)
     VALUE arg = Qnil;
 
     if (rb_scan_args(argc, argv, "01", &arg) == 1) {
-	if (!SYMBOL_P(arg) && !RB_TYPE_P(arg, T_HASH)) {
-	    rb_raise(rb_eTypeError, "non-hash or symbol given");
-	}
+        if (!SYMBOL_P(arg) && !RB_TYPE_P(arg, T_HASH)) {
+            rb_raise(rb_eTypeError, "non-hash or symbol given");
+        }
     }
 
     if (arg == Qnil) {
-	arg = rb_hash_new();
+        arg = rb_hash_new();
     }
 
     return gc_info_decode(objspace, arg, 0);
@@ -6985,104 +6985,104 @@ setup_gc_stat_symbols(void)
 {
     if (gc_stat_symbols[0] == 0) {
 #define S(s) gc_stat_symbols[gc_stat_sym_##s] = ID2SYM(rb_intern_const(#s))
-	S(count);
-	S(heap_allocated_pages);
-	S(heap_sorted_length);
-	S(heap_allocatable_pages);
-	S(heap_available_slots);
-	S(heap_live_slots);
-	S(heap_free_slots);
-	S(heap_final_slots);
-	S(heap_marked_slots);
-	S(heap_eden_pages);
-	S(heap_tomb_pages);
-	S(total_allocated_pages);
-	S(total_freed_pages);
-	S(total_allocated_objects);
-	S(total_freed_objects);
-	S(malloc_increase_bytes);
-	S(malloc_increase_bytes_limit);
+        S(count);
+        S(heap_allocated_pages);
+        S(heap_sorted_length);
+        S(heap_allocatable_pages);
+        S(heap_available_slots);
+        S(heap_live_slots);
+        S(heap_free_slots);
+        S(heap_final_slots);
+        S(heap_marked_slots);
+        S(heap_eden_pages);
+        S(heap_tomb_pages);
+        S(total_allocated_pages);
+        S(total_freed_pages);
+        S(total_allocated_objects);
+        S(total_freed_objects);
+        S(malloc_increase_bytes);
+        S(malloc_increase_bytes_limit);
 #if USE_RGENGC
-	S(minor_gc_count);
-	S(major_gc_count);
-	S(remembered_wb_unprotected_objects);
-	S(remembered_wb_unprotected_objects_limit);
-	S(old_objects);
-	S(old_objects_limit);
+        S(minor_gc_count);
+        S(major_gc_count);
+        S(remembered_wb_unprotected_objects);
+        S(remembered_wb_unprotected_objects_limit);
+        S(old_objects);
+        S(old_objects_limit);
 #if RGENGC_ESTIMATE_OLDMALLOC
-	S(oldmalloc_increase_bytes);
-	S(oldmalloc_increase_bytes_limit);
+        S(oldmalloc_increase_bytes);
+        S(oldmalloc_increase_bytes_limit);
 #endif
 #if RGENGC_PROFILE
-	S(total_generated_normal_object_count);
-	S(total_generated_shady_object_count);
-	S(total_shade_operation_count);
-	S(total_promoted_count);
-	S(total_remembered_normal_object_count);
-	S(total_remembered_shady_object_count);
+        S(total_generated_normal_object_count);
+        S(total_generated_shady_object_count);
+        S(total_shade_operation_count);
+        S(total_promoted_count);
+        S(total_remembered_normal_object_count);
+        S(total_remembered_shady_object_count);
 #endif /* RGENGC_PROFILE */
 #endif /* USE_RGENGC */
 #undef S
 #define S(s) gc_stat_compat_symbols[gc_stat_compat_sym_##s] = ID2SYM(rb_intern_const(#s))
-	S(gc_stat_heap_used);
-	S(heap_eden_page_length);
-	S(heap_tomb_page_length);
-	S(heap_increment);
-	S(heap_length);
-	S(heap_live_slot);
-	S(heap_free_slot);
-	S(heap_final_slot);
-	S(heap_swept_slot);
+        S(gc_stat_heap_used);
+        S(heap_eden_page_length);
+        S(heap_tomb_page_length);
+        S(heap_increment);
+        S(heap_length);
+        S(heap_live_slot);
+        S(heap_free_slot);
+        S(heap_final_slot);
+        S(heap_swept_slot);
 #if USE_RGEGC
-	S(remembered_shady_object);
-	S(remembered_shady_object_limit);
-	S(old_object);
-	S(old_object_limit);
+        S(remembered_shady_object);
+        S(remembered_shady_object_limit);
+        S(old_object);
+        S(old_object_limit);
 #endif
-	S(total_allocated_object);
-	S(total_freed_object);
-	S(malloc_increase);
-	S(malloc_limit);
+        S(total_allocated_object);
+        S(total_freed_object);
+        S(malloc_increase);
+        S(malloc_limit);
 #if RGENGC_ESTIMATE_OLDMALLOC
-	S(oldmalloc_increase);
-	S(oldmalloc_limit);
+        S(oldmalloc_increase);
+        S(oldmalloc_limit);
 #endif
 #undef S
 
-	{
-	    VALUE table = gc_stat_compat_table = rb_hash_new();
-	    rb_obj_hide(table);
-	    rb_gc_register_mark_object(table);
+        {
+            VALUE table = gc_stat_compat_table = rb_hash_new();
+            rb_obj_hide(table);
+            rb_gc_register_mark_object(table);
 
-	    /* compatibility layer for Ruby 2.1 */
+            /* compatibility layer for Ruby 2.1 */
 #define OLD_SYM(s) gc_stat_compat_symbols[gc_stat_compat_sym_##s]
 #define NEW_SYM(s) gc_stat_symbols[gc_stat_sym_##s]
-	    rb_hash_aset(table, OLD_SYM(gc_stat_heap_used), NEW_SYM(heap_allocated_pages));
-	    rb_hash_aset(table, OLD_SYM(heap_eden_page_length), NEW_SYM(heap_eden_pages));
-	    rb_hash_aset(table, OLD_SYM(heap_tomb_page_length), NEW_SYM(heap_tomb_pages));
-	    rb_hash_aset(table, OLD_SYM(heap_increment), NEW_SYM(heap_allocatable_pages));
-	    rb_hash_aset(table, OLD_SYM(heap_length), NEW_SYM(heap_sorted_length));
-	    rb_hash_aset(table, OLD_SYM(heap_live_slot), NEW_SYM(heap_live_slots));
-	    rb_hash_aset(table, OLD_SYM(heap_free_slot), NEW_SYM(heap_free_slots));
-	    rb_hash_aset(table, OLD_SYM(heap_final_slot), NEW_SYM(heap_final_slots));
+            rb_hash_aset(table, OLD_SYM(gc_stat_heap_used), NEW_SYM(heap_allocated_pages));
+            rb_hash_aset(table, OLD_SYM(heap_eden_page_length), NEW_SYM(heap_eden_pages));
+            rb_hash_aset(table, OLD_SYM(heap_tomb_page_length), NEW_SYM(heap_tomb_pages));
+            rb_hash_aset(table, OLD_SYM(heap_increment), NEW_SYM(heap_allocatable_pages));
+            rb_hash_aset(table, OLD_SYM(heap_length), NEW_SYM(heap_sorted_length));
+            rb_hash_aset(table, OLD_SYM(heap_live_slot), NEW_SYM(heap_live_slots));
+            rb_hash_aset(table, OLD_SYM(heap_free_slot), NEW_SYM(heap_free_slots));
+            rb_hash_aset(table, OLD_SYM(heap_final_slot), NEW_SYM(heap_final_slots));
 #if USE_RGEGC
-	    rb_hash_aset(table, OLD_SYM(remembered_shady_object), NEW_SYM(remembered_wb_unprotected_objects));
-	    rb_hash_aset(table, OLD_SYM(remembered_shady_object_limit), NEW_SYM(remembered_wb_unprotected_objects_limit));
-	    rb_hash_aset(table, OLD_SYM(old_object), NEW_SYM(old_objects));
-	    rb_hash_aset(table, OLD_SYM(old_object_limit), NEW_SYM(old_objects_limit));
+            rb_hash_aset(table, OLD_SYM(remembered_shady_object), NEW_SYM(remembered_wb_unprotected_objects));
+            rb_hash_aset(table, OLD_SYM(remembered_shady_object_limit), NEW_SYM(remembered_wb_unprotected_objects_limit));
+            rb_hash_aset(table, OLD_SYM(old_object), NEW_SYM(old_objects));
+            rb_hash_aset(table, OLD_SYM(old_object_limit), NEW_SYM(old_objects_limit));
 #endif
-	    rb_hash_aset(table, OLD_SYM(total_allocated_object), NEW_SYM(total_allocated_objects));
-	    rb_hash_aset(table, OLD_SYM(total_freed_object), NEW_SYM(total_freed_objects));
-	    rb_hash_aset(table, OLD_SYM(malloc_increase), NEW_SYM(malloc_increase_bytes));
-	    rb_hash_aset(table, OLD_SYM(malloc_limit), NEW_SYM(malloc_increase_bytes_limit));
+            rb_hash_aset(table, OLD_SYM(total_allocated_object), NEW_SYM(total_allocated_objects));
+            rb_hash_aset(table, OLD_SYM(total_freed_object), NEW_SYM(total_freed_objects));
+            rb_hash_aset(table, OLD_SYM(malloc_increase), NEW_SYM(malloc_increase_bytes));
+            rb_hash_aset(table, OLD_SYM(malloc_limit), NEW_SYM(malloc_increase_bytes_limit));
 #if RGENGC_ESTIMATE_OLDMALLOC
-	    rb_hash_aset(table, OLD_SYM(oldmalloc_increase), NEW_SYM(oldmalloc_increase_bytes));
-	    rb_hash_aset(table, OLD_SYM(oldmalloc_limit), NEW_SYM(oldmalloc_increase_bytes_limit));
+            rb_hash_aset(table, OLD_SYM(oldmalloc_increase), NEW_SYM(oldmalloc_increase_bytes));
+            rb_hash_aset(table, OLD_SYM(oldmalloc_limit), NEW_SYM(oldmalloc_increase_bytes_limit));
 #endif
 #undef OLD_SYM
 #undef NEW_SYM
-	    rb_obj_freeze(table);
-	}
+            rb_obj_freeze(table);
+        }
     }
 }
 
@@ -7092,14 +7092,14 @@ compat_key(VALUE key)
     VALUE new_key = rb_hash_lookup(gc_stat_compat_table, key);
 
     if (!NIL_P(new_key)) {
-	static int warned = 0;
-	if (warned == 0) {
-	    rb_warn("GC.stat keys were changed from Ruby 2.1. "
-		    "In this case, you refer to obsolete `%"PRIsVALUE"' (new key is `%"PRIsVALUE"'). "
-		    "Please check <https://bugs.ruby-lang.org/issues/9924> for more information.",
-		    key, new_key);
-	    warned = 1;
-	}
+        static int warned = 0;
+        if (warned == 0) {
+            rb_warn("GC.stat keys were changed from Ruby 2.1. "
+                    "In this case, you refer to obsolete `%"PRIsVALUE"' (new key is `%"PRIsVALUE"'). "
+                    "Please check <https://bugs.ruby-lang.org/issues/9924> for more information.",
+                    key, new_key);
+            warned = 1;
+        }
     }
 
     return new_key;
@@ -7115,7 +7115,7 @@ default_proc_for_compat_func(VALUE hash, VALUE dmy, int argc, VALUE *argv)
     key = argv[1];
 
     if ((new_key = compat_key(key)) != Qnil) {
-	return rb_hash_lookup(hash, new_key);
+        return rb_hash_lookup(hash, new_key);
     }
 
     return Qnil;
@@ -7130,29 +7130,29 @@ gc_stat_internal(VALUE hash_or_sym)
     setup_gc_stat_symbols();
 
     if (RB_TYPE_P(hash_or_sym, T_HASH)) {
-	hash = hash_or_sym;
+        hash = hash_or_sym;
 
-	if (NIL_P(RHASH_IFNONE(hash))) {
-	    static VALUE default_proc_for_compat = 0;
-	    if (default_proc_for_compat == 0) { /* TODO: it should be */
-		default_proc_for_compat = rb_proc_new(default_proc_for_compat_func, Qnil);
-		rb_gc_register_mark_object(default_proc_for_compat);
-	    }
-	    rb_hash_set_default_proc(hash, default_proc_for_compat);
-	}
+        if (NIL_P(RHASH_IFNONE(hash))) {
+            static VALUE default_proc_for_compat = 0;
+            if (default_proc_for_compat == 0) { /* TODO: it should be */
+                default_proc_for_compat = rb_proc_new(default_proc_for_compat_func, Qnil);
+                rb_gc_register_mark_object(default_proc_for_compat);
+            }
+            rb_hash_set_default_proc(hash, default_proc_for_compat);
+        }
     }
     else if (SYMBOL_P(hash_or_sym)) {
-	key = hash_or_sym;
+        key = hash_or_sym;
     }
     else {
-	rb_raise(rb_eTypeError, "non-hash or symbol argument");
+        rb_raise(rb_eTypeError, "non-hash or symbol argument");
     }
 
 #define SET(name, attr) \
     if (key == gc_stat_symbols[gc_stat_sym_##name]) \
-	return attr; \
+        return attr; \
     else if (hash != Qnil) \
-	rb_hash_aset(hash, gc_stat_symbols[gc_stat_sym_##name], SIZET2NUM(attr));
+        rb_hash_aset(hash, gc_stat_symbols[gc_stat_sym_##name], SIZET2NUM(attr));
 
   again:
     SET(count, objspace->profile.count);
@@ -7198,22 +7198,22 @@ gc_stat_internal(VALUE hash_or_sym)
 #undef SET
 
     if (!NIL_P(key)) { /* matched key should return above */
-	VALUE new_key;
-	if ((new_key = compat_key(key)) != Qnil) {
-	    key = new_key;
-	    goto again;
-	}
-	rb_raise(rb_eArgError, "unknown key: %"PRIsVALUE, rb_sym2str(key));
+        VALUE new_key;
+        if ((new_key = compat_key(key)) != Qnil) {
+            key = new_key;
+            goto again;
+        }
+        rb_raise(rb_eArgError, "unknown key: %"PRIsVALUE, rb_sym2str(key));
     }
 
 #if defined(RGENGC_PROFILE) && RGENGC_PROFILE >= 2
     if (hash != Qnil) {
-	gc_count_add_each_types(hash, "generated_normal_object_count_types", objspace->profile.generated_normal_object_count_types);
-	gc_count_add_each_types(hash, "generated_shady_object_count_types", objspace->profile.generated_shady_object_count_types);
-	gc_count_add_each_types(hash, "shade_operation_count_types", objspace->profile.shade_operation_count_types);
-	gc_count_add_each_types(hash, "promoted_types", objspace->profile.promoted_types);
-	gc_count_add_each_types(hash, "remembered_normal_object_count_types", objspace->profile.remembered_normal_object_count_types);
-	gc_count_add_each_types(hash, "remembered_shady_object_count_types", objspace->profile.remembered_shady_object_count_types);
+        gc_count_add_each_types(hash, "generated_normal_object_count_types", objspace->profile.generated_normal_object_count_types);
+        gc_count_add_each_types(hash, "generated_shady_object_count_types", objspace->profile.generated_shady_object_count_types);
+        gc_count_add_each_types(hash, "shade_operation_count_types", objspace->profile.shade_operation_count_types);
+        gc_count_add_each_types(hash, "promoted_types", objspace->profile.promoted_types);
+        gc_count_add_each_types(hash, "remembered_normal_object_count_types", objspace->profile.remembered_normal_object_count_types);
+        gc_count_add_each_types(hash, "remembered_shady_object_count_types", objspace->profile.remembered_shady_object_count_types);
     }
 #endif
 
@@ -7271,13 +7271,13 @@ gc_stat(int argc, VALUE *argv, VALUE self)
     VALUE arg = Qnil;
 
     if (rb_scan_args(argc, argv, "01", &arg) == 1) {
-	if (SYMBOL_P(arg)) {
-	    size_t value = gc_stat_internal(arg);
-	    return SIZET2NUM(value);
-	}
-	else if (!RB_TYPE_P(arg, T_HASH)) {
-	    rb_raise(rb_eTypeError, "non-hash or symbol given");
-	}
+        if (SYMBOL_P(arg)) {
+            size_t value = gc_stat_internal(arg);
+            return SIZET2NUM(value);
+        }
+        else if (!RB_TYPE_P(arg, T_HASH)) {
+            rb_raise(rb_eTypeError, "non-hash or symbol given");
+        }
     }
 
     if (arg == Qnil) {
@@ -7291,18 +7291,18 @@ size_t
 rb_gc_stat(VALUE key)
 {
     if (SYMBOL_P(key)) {
-	size_t value = gc_stat_internal(key);
-	return value;
+        size_t value = gc_stat_internal(key);
+        return value;
     }
     else {
-	gc_stat_internal(key);
-	return 0;
+        gc_stat_internal(key);
+        return 0;
     }
 }
 
 /*
  *  call-seq:
- *    GC.stress	    -> integer, true or false
+ *    GC.stress            -> integer, true or false
  *
  *  Returns current status of GC stress mode.
  */
@@ -7400,53 +7400,53 @@ get_envparam_size(const char *name, size_t *default_value, size_t lower_bound)
     ssize_t val;
 
     if (ptr != NULL && *ptr) {
-	size_t unit = 0;
-	char *end;
+        size_t unit = 0;
+        char *end;
 #if SIZEOF_SIZE_T == SIZEOF_LONG_LONG
-	val = strtoll(ptr, &end, 0);
+        val = strtoll(ptr, &end, 0);
 #else
-	val = strtol(ptr, &end, 0);
+        val = strtol(ptr, &end, 0);
 #endif
-	switch (*end) {
-	  case 'k': case 'K':
-	    unit = 1024;
-	    ++end;
-	    break;
-	  case 'm': case 'M':
-	    unit = 1024*1024;
-	    ++end;
-	    break;
-	  case 'g': case 'G':
-	    unit = 1024*1024*1024;
-	    ++end;
-	    break;
-	}
-	while (*end && isspace((unsigned char)*end)) end++;
-	if (*end) {
-	    if (RTEST(ruby_verbose)) fprintf(stderr, "invalid string for %s: %s\n", name, ptr);
-	    return 0;
-	}
-	if (unit > 0) {
-	    if (val < -(ssize_t)(SIZE_MAX / 2 / unit) || (ssize_t)(SIZE_MAX / 2 / unit) < val) {
-		if (RTEST(ruby_verbose)) fprintf(stderr, "%s=%s is ignored because it overflows\n", name, ptr);
-		return 0;
-	    }
-	    val *= unit;
-	}
-	if (val > 0 && (size_t)val > lower_bound) {
-	    if (RTEST(ruby_verbose)) {
-		fprintf(stderr, "%s=%"PRIdSIZE" (default value: %"PRIuSIZE")\n", name, val, *default_value);
-	    }
-	    *default_value = (size_t)val;
-	    return 1;
-	}
-	else {
-	    if (RTEST(ruby_verbose)) {
-		fprintf(stderr, "%s=%"PRIdSIZE" (default value: %"PRIuSIZE") is ignored because it must be greater than %"PRIuSIZE".\n",
-			name, val, *default_value, lower_bound);
-	    }
-	    return 0;
-	}
+        switch (*end) {
+          case 'k': case 'K':
+            unit = 1024;
+            ++end;
+            break;
+          case 'm': case 'M':
+            unit = 1024*1024;
+            ++end;
+            break;
+          case 'g': case 'G':
+            unit = 1024*1024*1024;
+            ++end;
+            break;
+        }
+        while (*end && isspace((unsigned char)*end)) end++;
+        if (*end) {
+            if (RTEST(ruby_verbose)) fprintf(stderr, "invalid string for %s: %s\n", name, ptr);
+            return 0;
+        }
+        if (unit > 0) {
+            if (val < -(ssize_t)(SIZE_MAX / 2 / unit) || (ssize_t)(SIZE_MAX / 2 / unit) < val) {
+                if (RTEST(ruby_verbose)) fprintf(stderr, "%s=%s is ignored because it overflows\n", name, ptr);
+                return 0;
+            }
+            val *= unit;
+        }
+        if (val > 0 && (size_t)val > lower_bound) {
+            if (RTEST(ruby_verbose)) {
+                fprintf(stderr, "%s=%"PRIdSIZE" (default value: %"PRIuSIZE")\n", name, val, *default_value);
+            }
+            *default_value = (size_t)val;
+            return 1;
+        }
+        else {
+            if (RTEST(ruby_verbose)) {
+                fprintf(stderr, "%s=%"PRIdSIZE" (default value: %"PRIuSIZE") is ignored because it must be greater than %"PRIuSIZE".\n",
+                        name, val, *default_value, lower_bound);
+            }
+            return 0;
+        }
     }
     return 0;
 }
@@ -7458,35 +7458,35 @@ get_envparam_double(const char *name, double *default_value, double lower_bound,
     double val;
 
     if (ptr != NULL && *ptr) {
-	char *end;
-	val = strtod(ptr, &end);
-	if (!*ptr || *end) {
-	    if (RTEST(ruby_verbose)) fprintf(stderr, "invalid string for %s: %s\n", name, ptr);
-	    return 0;
-	}
+        char *end;
+        val = strtod(ptr, &end);
+        if (!*ptr || *end) {
+            if (RTEST(ruby_verbose)) fprintf(stderr, "invalid string for %s: %s\n", name, ptr);
+            return 0;
+        }
 
-	if (accept_zero && val == 0.0) {
-	    goto accept;
-	}
-	else if (val <= lower_bound) {
-	    if (RTEST(ruby_verbose)) {
-		fprintf(stderr, "%s=%f (default value: %f) is ignored because it must be greater than %f.\n",
-			name, val, *default_value, lower_bound);
-	    }
-	}
-	else if (upper_bound != 0.0 && /* ignore upper_bound if it is 0.0 */
-		 val > upper_bound) {
-	    if (RTEST(ruby_verbose)) {
-		fprintf(stderr, "%s=%f (default value: %f) is ignored because it must be lower than %f.\n",
-			name, val, *default_value, upper_bound);
-	    }
-	}
-	else {
-	  accept:
-	    if (RTEST(ruby_verbose)) fprintf(stderr, "%s=%f (default value: %f)\n", name, val, *default_value);
-	    *default_value = val;
-	    return 1;
-	}
+        if (accept_zero && val == 0.0) {
+            goto accept;
+        }
+        else if (val <= lower_bound) {
+            if (RTEST(ruby_verbose)) {
+                fprintf(stderr, "%s=%f (default value: %f) is ignored because it must be greater than %f.\n",
+                        name, val, *default_value, lower_bound);
+            }
+        }
+        else if (upper_bound != 0.0 && /* ignore upper_bound if it is 0.0 */
+                 val > upper_bound) {
+            if (RTEST(ruby_verbose)) {
+                fprintf(stderr, "%s=%f (default value: %f) is ignored because it must be lower than %f.\n",
+                        name, val, *default_value, upper_bound);
+            }
+        }
+        else {
+          accept:
+            if (RTEST(ruby_verbose)) fprintf(stderr, "%s=%f (default value: %f)\n", name, val, *default_value);
+            *default_value = val;
+            return 1;
+        }
     }
     return 0;
 }
@@ -7499,7 +7499,7 @@ gc_set_initial_pages(void)
 
     min_pages = gc_params.heap_init_slots / HEAP_PAGE_OBJ_LIMIT;
     if (min_pages > heap_eden->total_pages) {
-	heap_add_pages(objspace, heap_eden, min_pages - heap_eden->total_pages);
+        heap_add_pages(objspace, heap_eden, min_pages - heap_eden->total_pages);
     }
 }
 
@@ -7552,29 +7552,29 @@ ruby_gc_set_params(int safe_level)
 
     /* RUBY_GC_HEAP_FREE_SLOTS */
     if (get_envparam_size("RUBY_GC_HEAP_FREE_SLOTS", &gc_params.heap_free_slots, 0)) {
-	/* ok */
+        /* ok */
     }
     else if (get_envparam_size("RUBY_FREE_MIN", &gc_params.heap_free_slots, 0)) {
-	rb_warn("RUBY_FREE_MIN is obsolete. Use RUBY_GC_HEAP_FREE_SLOTS instead.");
+        rb_warn("RUBY_FREE_MIN is obsolete. Use RUBY_GC_HEAP_FREE_SLOTS instead.");
     }
 
     /* RUBY_GC_HEAP_INIT_SLOTS */
     if (get_envparam_size("RUBY_GC_HEAP_INIT_SLOTS", &gc_params.heap_init_slots, 0)) {
-	gc_set_initial_pages();
+        gc_set_initial_pages();
     }
     else if (get_envparam_size("RUBY_HEAP_MIN_SLOTS", &gc_params.heap_init_slots, 0)) {
-	rb_warn("RUBY_HEAP_MIN_SLOTS is obsolete. Use RUBY_GC_HEAP_INIT_SLOTS instead.");
-	gc_set_initial_pages();
+        rb_warn("RUBY_HEAP_MIN_SLOTS is obsolete. Use RUBY_GC_HEAP_INIT_SLOTS instead.");
+        gc_set_initial_pages();
     }
 
     get_envparam_double("RUBY_GC_HEAP_GROWTH_FACTOR", &gc_params.growth_factor, 1.0, 0.0, FALSE);
     get_envparam_size  ("RUBY_GC_HEAP_GROWTH_MAX_SLOTS", &gc_params.growth_max_slots, 0);
     get_envparam_double("RUBY_GC_HEAP_FREE_SLOTS_MIN_RATIO", &gc_params.heap_free_slots_min_ratio,
-			0.0, 1.0, FALSE);
+                        0.0, 1.0, FALSE);
     get_envparam_double("RUBY_GC_HEAP_FREE_SLOTS_MAX_RATIO", &gc_params.heap_free_slots_max_ratio,
-			gc_params.heap_free_slots_min_ratio, 1.0, FALSE);
+                        gc_params.heap_free_slots_min_ratio, 1.0, FALSE);
     get_envparam_double("RUBY_GC_HEAP_FREE_SLOTS_GOAL_RATIO", &gc_params.heap_free_slots_goal_ratio,
-			gc_params.heap_free_slots_min_ratio, gc_params.heap_free_slots_max_ratio, TRUE);
+                        gc_params.heap_free_slots_min_ratio, gc_params.heap_free_slots_max_ratio, TRUE);
     get_envparam_double("RUBY_GC_HEAP_OLDOBJECT_LIMIT_FACTOR", &gc_params.oldobject_limit_factor, 0.0, 0.0, TRUE);
 
     get_envparam_size  ("RUBY_GC_MALLOC_LIMIT", &gc_params.malloc_limit_min, 0);
@@ -7586,8 +7586,8 @@ ruby_gc_set_params(int safe_level)
 
 #if RGENGC_ESTIMATE_OLDMALLOC
     if (get_envparam_size("RUBY_GC_OLDMALLOC_LIMIT", &gc_params.oldmalloc_limit_min, 0)) {
-	rb_objspace_t *objspace = &rb_objspace;
-	objspace->rgengc.oldmalloc_increase_limit = gc_params.oldmalloc_limit_min;
+        rb_objspace_t *objspace = &rb_objspace;
+        objspace->rgengc.oldmalloc_increase_limit = gc_params.oldmalloc_limit_min;
     }
     get_envparam_size  ("RUBY_GC_OLDMALLOC_LIMIT_MAX", &gc_params.oldmalloc_limit_max, 0);
     get_envparam_double("RUBY_GC_OLDMALLOC_LIMIT_GROWTH_FACTOR", &gc_params.oldmalloc_limit_growth_factor, 1.0, 0.0, FALSE);
@@ -7600,12 +7600,12 @@ rb_objspace_reachable_objects_from(VALUE obj, void (func)(VALUE, void *), void *
     rb_objspace_t *objspace = &rb_objspace;
 
     if (is_markable_object(objspace, obj)) {
-	struct mark_func_data_struct mfd;
-	mfd.mark_func = func;
-	mfd.data = data;
-	PUSH_MARK_FUNC_DATA(&mfd);
-	gc_mark_children(objspace, obj);
-	POP_MARK_FUNC_DATA();
+        struct mark_func_data_struct mfd;
+        mfd.mark_func = func;
+        mfd.data = data;
+        PUSH_MARK_FUNC_DATA(&mfd);
+        gc_mark_children(objspace, obj);
+        POP_MARK_FUNC_DATA();
     }
 }
 
@@ -7657,16 +7657,16 @@ static void
 negative_size_allocation_error(const char *msg)
 {
     if (ruby_thread_has_gvl_p()) {
-	rb_raise(rb_eNoMemError, "%s", msg);
+        rb_raise(rb_eNoMemError, "%s", msg);
     }
     else {
-	if (ruby_native_thread_p()) {
-	    rb_thread_call_with_gvl(negative_size_allocation_error_with_gvl, (void *)msg);
-	}
-	else {
-	    fprintf(stderr, "[FATAL] %s\n", msg);
-	    exit(EXIT_FAILURE);
-	}
+        if (ruby_native_thread_p()) {
+            rb_thread_call_with_gvl(negative_size_allocation_error_with_gvl, (void *)msg);
+        }
+        else {
+            fprintf(stderr, "[FATAL] %s\n", msg);
+            exit(EXIT_FAILURE);
+        }
     }
 }
 
@@ -7681,17 +7681,17 @@ static void
 ruby_memerror(void)
 {
     if (ruby_thread_has_gvl_p()) {
-	rb_memerror();
+        rb_memerror();
     }
     else {
-	if (ruby_native_thread_p()) {
-	    rb_thread_call_with_gvl(ruby_memerror_body, 0);
-	}
-	else {
-	    /* no ruby thread */
-	    fprintf(stderr, "[FATAL] failed to allocate memory\n");
-	    exit(EXIT_FAILURE);
-	}
+        if (ruby_native_thread_p()) {
+            rb_thread_call_with_gvl(ruby_memerror_body, 0);
+        }
+        else {
+            /* no ruby thread */
+            fprintf(stderr, "[FATAL] failed to allocate memory\n");
+            exit(EXIT_FAILURE);
+        }
     }
 }
 
@@ -7706,16 +7706,16 @@ rb_memerror(void)
 
     exc = nomem_error;
     if (!exc ||
-	rb_ec_raised_p(ec, RAISED_NOMEMORY)) {
-	fprintf(stderr, "[FATAL] failed to allocate memory\n");
-	exit(EXIT_FAILURE);
+        rb_ec_raised_p(ec, RAISED_NOMEMORY)) {
+        fprintf(stderr, "[FATAL] failed to allocate memory\n");
+        exit(EXIT_FAILURE);
     }
     if (rb_ec_raised_p(ec, RAISED_NOMEMORY)) {
-	rb_ec_raised_clear(ec);
+        rb_ec_raised_clear(ec);
     }
     else {
-	rb_ec_raised_set(ec, RAISED_NOMEMORY);
-	exc = ruby_vm_special_exception_copy(exc);
+        rb_ec_raised_set(ec, RAISED_NOMEMORY);
+        exc = ruby_vm_special_exception_copy(exc);
     }
     ec->errinfo = exc;
     EC_JUMP_TAG(ec, TAG_RAISE);
@@ -7791,9 +7791,9 @@ atomic_sub_nounderflow(size_t *var, size_t sub)
     if (sub == 0) return;
 
     while (1) {
-	size_t val = *var;
-	if (val < sub) sub = val;
-	if (ATOMIC_SIZE_CAS(*var, val, val-sub) == val) break;
+        size_t val = *var;
+        if (val < sub) sub = val;
+        if (ATOMIC_SIZE_CAS(*var, val, val-sub) == val) break;
     }
 }
 
@@ -7815,69 +7815,69 @@ static void
 objspace_malloc_increase(rb_objspace_t *objspace, void *mem, size_t new_size, size_t old_size, enum memop_type type)
 {
     if (new_size > old_size) {
-	ATOMIC_SIZE_ADD(malloc_increase, new_size - old_size);
+        ATOMIC_SIZE_ADD(malloc_increase, new_size - old_size);
 #if RGENGC_ESTIMATE_OLDMALLOC
-	ATOMIC_SIZE_ADD(objspace->rgengc.oldmalloc_increase, new_size - old_size);
+        ATOMIC_SIZE_ADD(objspace->rgengc.oldmalloc_increase, new_size - old_size);
 #endif
     }
     else {
-	atomic_sub_nounderflow(&malloc_increase, old_size - new_size);
+        atomic_sub_nounderflow(&malloc_increase, old_size - new_size);
 #if RGENGC_ESTIMATE_OLDMALLOC
-	atomic_sub_nounderflow(&objspace->rgengc.oldmalloc_increase, old_size - new_size);
+        atomic_sub_nounderflow(&objspace->rgengc.oldmalloc_increase, old_size - new_size);
 #endif
     }
 
     if (type == MEMOP_TYPE_MALLOC) {
       retry:
-	if (malloc_increase > malloc_limit && ruby_native_thread_p() && !dont_gc) {
-	    if (ruby_thread_has_gvl_p() && is_lazy_sweeping(heap_eden)) {
-		gc_rest(objspace); /* gc_rest can reduce malloc_increase */
-		goto retry;
-	    }
-	    garbage_collect_with_gvl(objspace, GPR_FLAG_MALLOC);
-	}
+        if (malloc_increase > malloc_limit && ruby_native_thread_p() && !dont_gc) {
+            if (ruby_thread_has_gvl_p() && is_lazy_sweeping(heap_eden)) {
+                gc_rest(objspace); /* gc_rest can reduce malloc_increase */
+                goto retry;
+            }
+            garbage_collect_with_gvl(objspace, GPR_FLAG_MALLOC);
+        }
     }
 
 #if MALLOC_ALLOCATED_SIZE
     if (new_size >= old_size) {
-	ATOMIC_SIZE_ADD(objspace->malloc_params.allocated_size, new_size - old_size);
+        ATOMIC_SIZE_ADD(objspace->malloc_params.allocated_size, new_size - old_size);
     }
     else {
-	size_t dec_size = old_size - new_size;
-	size_t allocated_size = objspace->malloc_params.allocated_size;
+        size_t dec_size = old_size - new_size;
+        size_t allocated_size = objspace->malloc_params.allocated_size;
 
 #if MALLOC_ALLOCATED_SIZE_CHECK
-	if (allocated_size < dec_size) {
-	    rb_bug("objspace_malloc_increase: underflow malloc_params.allocated_size.");
-	}
+        if (allocated_size < dec_size) {
+            rb_bug("objspace_malloc_increase: underflow malloc_params.allocated_size.");
+        }
 #endif
-	atomic_sub_nounderflow(&objspace->malloc_params.allocated_size, dec_size);
+        atomic_sub_nounderflow(&objspace->malloc_params.allocated_size, dec_size);
     }
 
     if (0) fprintf(stderr, "increase - ptr: %p, type: %s, new_size: %d, old_size: %d\n",
-		   mem,
-		   type == MEMOP_TYPE_MALLOC  ? "malloc" :
-		   type == MEMOP_TYPE_FREE    ? "free  " :
-		   type == MEMOP_TYPE_REALLOC ? "realloc": "error",
-		   (int)new_size, (int)old_size);
+                   mem,
+                   type == MEMOP_TYPE_MALLOC  ? "malloc" :
+                   type == MEMOP_TYPE_FREE    ? "free  " :
+                   type == MEMOP_TYPE_REALLOC ? "realloc": "error",
+                   (int)new_size, (int)old_size);
 
     switch (type) {
       case MEMOP_TYPE_MALLOC:
-	ATOMIC_SIZE_INC(objspace->malloc_params.allocations);
-	break;
+        ATOMIC_SIZE_INC(objspace->malloc_params.allocations);
+        break;
       case MEMOP_TYPE_FREE:
-	{
-	    size_t allocations = objspace->malloc_params.allocations;
-	    if (allocations > 0) {
-		atomic_sub_nounderflow(&objspace->malloc_params.allocations, 1);
-	    }
+        {
+            size_t allocations = objspace->malloc_params.allocations;
+            if (allocations > 0) {
+                atomic_sub_nounderflow(&objspace->malloc_params.allocations, 1);
+            }
 #if MALLOC_ALLOCATED_SIZE_CHECK
-	    else {
-		GC_ASSERT(objspace->malloc_params.allocations > 0);
-	    }
+            else {
+                GC_ASSERT(objspace->malloc_params.allocations > 0);
+            }
 #endif
-	}
-	break;
+        }
+        break;
       case MEMOP_TYPE_REALLOC: /* ignore */ break;
     }
 #endif
@@ -7935,13 +7935,13 @@ objspace_malloc_fixup(rb_objspace_t *objspace, void *mem, size_t size)
 
 #define TRY_WITH_GC(alloc) do { \
         objspace_malloc_gc_stress(objspace); \
-	if (!(alloc) && \
+        if (!(alloc) && \
             (!garbage_collect_with_gvl(objspace, GPR_FLAG_FULL_MARK | \
                 GPR_FLAG_IMMEDIATE_MARK | GPR_FLAG_IMMEDIATE_SWEEP | \
                 GPR_FLAG_MALLOC) || \
-	     !(alloc))) { \
-	    ruby_memerror(); \
-	} \
+             !(alloc))) { \
+            ruby_memerror(); \
+        } \
     } while (0)
 
 /* these shouldn't be called directly.
@@ -7962,7 +7962,7 @@ xmalloc2_size(const size_t count, const size_t elsize)
 {
     size_t ret;
     if (rb_mul_size_overflow(count, elsize, SSIZE_MAX, &ret)) {
-	ruby_malloc_size_overflow(count, elsize);
+        ruby_malloc_size_overflow(count, elsize);
     }
     return ret;
 }
@@ -7980,8 +7980,8 @@ objspace_xrealloc(rb_objspace_t *objspace, void *ptr, size_t new_size, size_t ol
      * see http://www.open-std.org/jtc1/sc22/wg14/www/docs/dr_400.htm
      */
     if (new_size == 0) {
-	objspace_xfree(objspace, ptr, old_size);
-	return 0;
+        objspace_xfree(objspace, ptr, old_size);
+        return 0;
     }
 
 #if CALC_EXACT_MALLOC_SIZE
@@ -8138,7 +8138,7 @@ void *
 ruby_xmalloc_body(size_t size)
 {
     if ((ssize_t)size < 0) {
-	negative_size_allocation_error("too large allocation size");
+        negative_size_allocation_error("too large allocation size");
     }
     return ruby_xmalloc0(size);
 }
@@ -8147,8 +8147,8 @@ void
 ruby_malloc_size_overflow(size_t count, size_t elsize)
 {
     rb_raise(rb_eArgError,
-	     "malloc: possible integer overflow (%"PRIuSIZE"*%"PRIuSIZE")",
-	     count, elsize);
+             "malloc: possible integer overflow (%"PRIuSIZE"*%"PRIuSIZE")",
+             count, elsize);
 }
 
 void *
@@ -8180,7 +8180,7 @@ void *
 ruby_sized_xrealloc(void *ptr, size_t new_size, size_t old_size)
 {
     if ((ssize_t)new_size < 0) {
-	negative_size_allocation_error("too large allocation size");
+        negative_size_allocation_error("too large allocation size");
     }
 
     return objspace_xrealloc(&rb_objspace, ptr, new_size, old_size);
@@ -8200,7 +8200,7 @@ ruby_sized_xrealloc2(void *ptr, size_t n, size_t size, size_t old_n)
 {
     size_t len = size * n;
     if (n != 0 && size != len / n) {
-	rb_raise(rb_eArgError, "realloc: possible integer overflow");
+        rb_raise(rb_eArgError, "realloc: possible integer overflow");
     }
     return objspace_xrealloc(&rb_objspace, ptr, len, old_n * size);
 }
@@ -8218,7 +8218,7 @@ void
 ruby_sized_xfree(void *x, size_t size)
 {
     if (x) {
-	objspace_xfree(&rb_objspace, x, size);
+        objspace_xfree(&rb_objspace, x, size);
     }
 }
 
@@ -8291,7 +8291,7 @@ rb_alloc_tmp_buffer(volatile VALUE *store, long len)
     long cnt;
 
     if (len < 0 || (cnt = (long)roomof(len, sizeof(VALUE))) < 0) {
-	rb_raise(rb_eArgError, "negative buffer size (or size too big)");
+        rb_raise(rb_eArgError, "negative buffer size (or size too big)");
     }
 
     return rb_alloc_tmp_buffer_with_count(store, len, cnt);
@@ -8302,9 +8302,9 @@ rb_free_tmp_buffer(volatile VALUE *store)
 {
     rb_imemo_tmpbuf_t *s = (rb_imemo_tmpbuf_t*)ATOMIC_VALUE_EXCHANGE(*store, 0);
     if (s) {
-	void *ptr = ATOMIC_PTR_EXCHANGE(s->ptr, 0);
-	s->cnt = 0;
-	ruby_xfree(ptr);
+        void *ptr = ATOMIC_PTR_EXCHANGE(s->ptr, 0);
+        s->cnt = 0;
+        ruby_xfree(ptr);
     }
 }
 
@@ -8345,10 +8345,10 @@ rb_gc_adjust_memory_usage(ssize_t diff)
 {
     rb_objspace_t *objspace = &rb_objspace;
     if (diff > 0) {
-	objspace_malloc_increase(objspace, 0, diff, 0, MEMOP_TYPE_REALLOC);
+        objspace_malloc_increase(objspace, 0, diff, 0, MEMOP_TYPE_REALLOC);
     }
     else if (diff < 0) {
-	objspace_malloc_increase(objspace, 0, 0, -diff, MEMOP_TYPE_REALLOC);
+        objspace_malloc_increase(objspace, 0, 0, -diff, MEMOP_TYPE_REALLOC);
     }
 }
 
@@ -8357,8 +8357,8 @@ rb_gc_adjust_memory_usage(ssize_t diff)
 */
 
 struct weakmap {
-    st_table *obj2wmap;		/* obj -> [ref,...] */
-    st_table *wmap2obj;		/* ref -> obj */
+    st_table *obj2wmap;                /* obj -> [ref,...] */
+    st_table *wmap2obj;                /* ref -> obj */
     VALUE final;
 };
 
@@ -8425,9 +8425,9 @@ wmap_memsize(const void *ptr)
 static const rb_data_type_t weakmap_type = {
     "weakmap",
     {
-	wmap_mark,
-	wmap_free,
-	wmap_memsize,
+        wmap_mark,
+        wmap_free,
+        wmap_memsize,
     },
     0, 0, RUBY_TYPED_FREE_IMMEDIATELY
 };
@@ -8450,18 +8450,18 @@ wmap_final_func(st_data_t *key, st_data_t *value, st_data_t arg, int existing)
     if (!existing) return ST_STOP;
     wmap = (VALUE)arg, ptr = (VALUE *)*value;
     for (i = j = 1, size = ptr[0]; i <= size; ++i) {
-	if (ptr[i] != wmap) {
-	    ptr[j++] = ptr[i];
-	}
+        if (ptr[i] != wmap) {
+            ptr[j++] = ptr[i];
+        }
     }
     if (j == 1) {
-	ruby_sized_xfree(ptr, i * sizeof(VALUE));
-	return ST_DELETE;
+        ruby_sized_xfree(ptr, i * sizeof(VALUE));
+        return ST_DELETE;
     }
     if (j < i) {
-	ptr = ruby_sized_xrealloc2(ptr, j + 1, sizeof(VALUE), i);
-	ptr[0] = j;
-	*value = (st_data_t)ptr;
+        ptr = ruby_sized_xrealloc2(ptr, j + 1, sizeof(VALUE), i);
+        ptr[0] = j;
+        *value = (st_data_t)ptr;
     }
     return ST_CONTINUE;
 }
@@ -8481,19 +8481,19 @@ wmap_finalize(VALUE self, VALUE objid)
     /* obj is original referenced object and/or weak reference. */
     orig = (st_data_t)obj;
     if (st_delete(w->obj2wmap, &orig, &data)) {
-	rids = (VALUE *)data;
-	size = *rids++;
-	for (i = 0; i < size; ++i) {
-	    wmap = (st_data_t)rids[i];
-	    st_delete(w->wmap2obj, &wmap, NULL);
-	}
-	ruby_sized_xfree((VALUE *)data, (size + 1) * sizeof(VALUE));
+        rids = (VALUE *)data;
+        size = *rids++;
+        for (i = 0; i < size; ++i) {
+            wmap = (st_data_t)rids[i];
+            st_delete(w->wmap2obj, &wmap, NULL);
+        }
+        ruby_sized_xfree((VALUE *)data, (size + 1) * sizeof(VALUE));
     }
 
     wmap = (st_data_t)obj;
     if (st_delete(w->wmap2obj, &wmap, &orig)) {
-	wmap = (st_data_t)obj;
-	st_update(w->obj2wmap, orig, wmap_final_func, wmap);
+        wmap = (st_data_t)obj;
+        st_update(w->obj2wmap, orig, wmap_final_func, wmap);
     }
     return self;
 }
@@ -8510,11 +8510,11 @@ wmap_inspect_i(st_data_t key, st_data_t val, st_data_t arg)
     VALUE k = (VALUE)key, v = (VALUE)val;
 
     if (RSTRING_PTR(str)[0] == '#') {
-	rb_str_cat2(str, ", ");
+        rb_str_cat2(str, ", ");
     }
     else {
-	rb_str_cat2(str, ": ");
-	RSTRING_PTR(str)[0] = '#';
+        rb_str_cat2(str, ": ");
+        RSTRING_PTR(str)[0] = '#';
     }
     k = SPECIAL_CONST_P(k) ? rb_inspect(k) : rb_any_to_s(k);
     rb_str_append(str, k);
@@ -8537,7 +8537,7 @@ wmap_inspect(VALUE self)
     TypedData_Get_Struct(self, struct weakmap, &weakmap_type, w);
     str = rb_sprintf("-<%"PRIsVALUE":%p", c, (void *)self);
     if (w->wmap2obj) {
-	st_foreach(w->wmap2obj, wmap_inspect_i, str);
+        st_foreach(w->wmap2obj, wmap_inspect_i, str);
     }
     RSTRING_PTR(str)[0] = '#';
     rb_str_cat2(str, ">");
@@ -8550,7 +8550,7 @@ wmap_each_i(st_data_t key, st_data_t val, st_data_t arg)
     rb_objspace_t *objspace = (rb_objspace_t *)arg;
     VALUE obj = (VALUE)val;
     if (is_id_value(objspace, obj) && is_live_object(objspace, obj)) {
-	rb_yield_values(2, (VALUE)key, obj);
+        rb_yield_values(2, (VALUE)key, obj);
     }
     return ST_CONTINUE;
 }
@@ -8573,7 +8573,7 @@ wmap_each_key_i(st_data_t key, st_data_t val, st_data_t arg)
     rb_objspace_t *objspace = (rb_objspace_t *)arg;
     VALUE obj = (VALUE)val;
     if (is_id_value(objspace, obj) && is_live_object(objspace, obj)) {
-	rb_yield((VALUE)key);
+        rb_yield((VALUE)key);
     }
     return ST_CONTINUE;
 }
@@ -8596,7 +8596,7 @@ wmap_each_value_i(st_data_t key, st_data_t val, st_data_t arg)
     rb_objspace_t *objspace = (rb_objspace_t *)arg;
     VALUE obj = (VALUE)val;
     if (is_id_value(objspace, obj) && is_live_object(objspace, obj)) {
-	rb_yield(obj);
+        rb_yield(obj);
     }
     return ST_CONTINUE;
 }
@@ -8621,7 +8621,7 @@ wmap_keys_i(st_data_t key, st_data_t val, st_data_t arg)
     VALUE ary = argp->value;
     VALUE obj = (VALUE)val;
     if (is_id_value(objspace, obj) && is_live_object(objspace, obj)) {
-	rb_ary_push(ary, (VALUE)key);
+        rb_ary_push(ary, (VALUE)key);
     }
     return ST_CONTINUE;
 }
@@ -8648,7 +8648,7 @@ wmap_values_i(st_data_t key, st_data_t val, st_data_t arg)
     VALUE ary = argp->value;
     VALUE obj = (VALUE)val;
     if (is_id_value(objspace, obj) && is_live_object(objspace, obj)) {
-	rb_ary_push(ary, obj);
+        rb_ary_push(ary, obj);
     }
     return ST_CONTINUE;
 }
@@ -8672,14 +8672,14 @@ wmap_aset_update(st_data_t *key, st_data_t *val, st_data_t arg, int existing)
 {
     VALUE size, *ptr, *optr;
     if (existing) {
-	size = (ptr = optr = (VALUE *)*val)[0];
-	++size;
-	ptr = ruby_sized_xrealloc2(ptr, size + 1, sizeof(VALUE), size);
+        size = (ptr = optr = (VALUE *)*val)[0];
+        ++size;
+        ptr = ruby_sized_xrealloc2(ptr, size + 1, sizeof(VALUE), size);
     }
     else {
-	optr = 0;
-	size = 1;
-	ptr = ruby_xmalloc0(2 * sizeof(VALUE));
+        optr = 0;
+        size = 1;
+        ptr = ruby_xmalloc0(2 * sizeof(VALUE));
     }
     ptr[0] = size;
     ptr[size] = (VALUE)arg;
@@ -8780,25 +8780,25 @@ getrusage_time(void)
 
 #ifdef _WIN32
     {
-	FILETIME creation_time, exit_time, kernel_time, user_time;
-	ULARGE_INTEGER ui;
-	LONG_LONG q;
-	double t;
+        FILETIME creation_time, exit_time, kernel_time, user_time;
+        ULARGE_INTEGER ui;
+        LONG_LONG q;
+        double t;
 
-	if (GetProcessTimes(GetCurrentProcess(),
-			    &creation_time, &exit_time, &kernel_time, &user_time) != 0) {
-	    memcpy(&ui, &user_time, sizeof(FILETIME));
-	    q = ui.QuadPart / 10L;
-	    t = (DWORD)(q % 1000000L) * 1e-6;
-	    q /= 1000000L;
+        if (GetProcessTimes(GetCurrentProcess(),
+                            &creation_time, &exit_time, &kernel_time, &user_time) != 0) {
+            memcpy(&ui, &user_time, sizeof(FILETIME));
+            q = ui.QuadPart / 10L;
+            t = (DWORD)(q % 1000000L) * 1e-6;
+            q /= 1000000L;
 #ifdef __GNUC__
-	    t += q;
+            t += q;
 #else
-	    t += (double)(DWORD)(q >> 16) * (1 << 16);
-	    t += (DWORD)q & ~(~0 << 16);
+            t += (double)(DWORD)(q >> 16) * (1 << 16);
+            t += (DWORD)q & ~(~0 << 16);
 #endif
-	    return t;
-	}
+            return t;
+        }
     }
 #endif
 
@@ -8809,44 +8809,44 @@ static inline void
 gc_prof_setup_new_record(rb_objspace_t *objspace, int reason)
 {
     if (objspace->profile.run) {
-	size_t index = objspace->profile.next_index;
-	gc_profile_record *record;
+        size_t index = objspace->profile.next_index;
+        gc_profile_record *record;
 
-	/* create new record */
-	objspace->profile.next_index++;
+        /* create new record */
+        objspace->profile.next_index++;
 
-	if (!objspace->profile.records) {
-	    objspace->profile.size = GC_PROFILE_RECORD_DEFAULT_SIZE;
-	    objspace->profile.records = malloc(sizeof(gc_profile_record) * objspace->profile.size);
-	}
-	if (index >= objspace->profile.size) {
-	    void *ptr;
-	    objspace->profile.size += 1000;
-	    ptr = realloc(objspace->profile.records, sizeof(gc_profile_record) * objspace->profile.size);
-	    if (!ptr) rb_memerror();
-	    objspace->profile.records = ptr;
-	}
-	if (!objspace->profile.records) {
-	    rb_bug("gc_profile malloc or realloc miss");
-	}
-	record = objspace->profile.current_record = &objspace->profile.records[objspace->profile.next_index - 1];
-	MEMZERO(record, gc_profile_record, 1);
+        if (!objspace->profile.records) {
+            objspace->profile.size = GC_PROFILE_RECORD_DEFAULT_SIZE;
+            objspace->profile.records = malloc(sizeof(gc_profile_record) * objspace->profile.size);
+        }
+        if (index >= objspace->profile.size) {
+            void *ptr;
+            objspace->profile.size += 1000;
+            ptr = realloc(objspace->profile.records, sizeof(gc_profile_record) * objspace->profile.size);
+            if (!ptr) rb_memerror();
+            objspace->profile.records = ptr;
+        }
+        if (!objspace->profile.records) {
+            rb_bug("gc_profile malloc or realloc miss");
+        }
+        record = objspace->profile.current_record = &objspace->profile.records[objspace->profile.next_index - 1];
+        MEMZERO(record, gc_profile_record, 1);
 
-	/* setup before-GC parameter */
-	record->flags = reason | (ruby_gc_stressful ? GPR_FLAG_STRESS : 0);
+        /* setup before-GC parameter */
+        record->flags = reason | (ruby_gc_stressful ? GPR_FLAG_STRESS : 0);
 #if MALLOC_ALLOCATED_SIZE
-	record->allocated_size = malloc_allocated_size;
+        record->allocated_size = malloc_allocated_size;
 #endif
 #if GC_PROFILE_MORE_DETAIL && GC_PROFILE_DETAIL_MEMORY
 #ifdef RUSAGE_SELF
-	{
-	    struct rusage usage;
-	    if (getrusage(RUSAGE_SELF, &usage) == 0) {
-		record->maxrss = usage.ru_maxrss;
-		record->minflt = usage.ru_minflt;
-		record->majflt = usage.ru_majflt;
-	    }
-	}
+        {
+            struct rusage usage;
+            if (getrusage(RUSAGE_SELF, &usage) == 0) {
+                record->maxrss = usage.ru_maxrss;
+                record->minflt = usage.ru_minflt;
+                record->majflt = usage.ru_majflt;
+            }
+        }
 #endif
 #endif
     }
@@ -8856,12 +8856,12 @@ static inline void
 gc_prof_timer_start(rb_objspace_t *objspace)
 {
     if (gc_prof_enabled(objspace)) {
-	gc_profile_record *record = gc_prof_record(objspace);
+        gc_profile_record *record = gc_prof_record(objspace);
 #if GC_PROFILE_MORE_DETAIL
-	record->prepare_time = objspace->profile.prepare_time;
+        record->prepare_time = objspace->profile.prepare_time;
 #endif
-	record->gc_time = 0;
-	record->gc_invoke_time = getrusage_time();
+        record->gc_time = 0;
+        record->gc_invoke_time = getrusage_time();
     }
 }
 
@@ -8870,10 +8870,10 @@ elapsed_time_from(double time)
 {
     double now = getrusage_time();
     if (now > time) {
-	return now - time;
+        return now - time;
     }
     else {
-	return 0;
+        return 0;
     }
 }
 
@@ -8881,9 +8881,9 @@ static inline void
 gc_prof_timer_stop(rb_objspace_t *objspace)
 {
     if (gc_prof_enabled(objspace)) {
-	gc_profile_record *record = gc_prof_record(objspace);
-	record->gc_time = elapsed_time_from(record->gc_invoke_time);
-	record->gc_invoke_time -= objspace->profile.invoke_time;
+        gc_profile_record *record = gc_prof_record(objspace);
+        record->gc_time = elapsed_time_from(record->gc_invoke_time);
+        record->gc_invoke_time -= objspace->profile.invoke_time;
     }
 }
 
@@ -8895,7 +8895,7 @@ gc_prof_mark_timer_start(rb_objspace_t *objspace)
     RUBY_DTRACE_GC_HOOK(MARK_BEGIN);
 #if GC_PROFILE_MORE_DETAIL
     if (gc_prof_enabled(objspace)) {
-	gc_prof_record(objspace)->gc_mark_time = getrusage_time();
+        gc_prof_record(objspace)->gc_mark_time = getrusage_time();
     }
 #endif
 }
@@ -8907,7 +8907,7 @@ gc_prof_mark_timer_stop(rb_objspace_t *objspace)
 #if GC_PROFILE_MORE_DETAIL
     if (gc_prof_enabled(objspace)) {
         gc_profile_record *record = gc_prof_record(objspace);
-	record->gc_mark_time = elapsed_time_from(record->gc_mark_time);
+        record->gc_mark_time = elapsed_time_from(record->gc_mark_time);
     }
 #endif
 }
@@ -8917,11 +8917,11 @@ gc_prof_sweep_timer_start(rb_objspace_t *objspace)
 {
     RUBY_DTRACE_GC_HOOK(SWEEP_BEGIN);
     if (gc_prof_enabled(objspace)) {
-	gc_profile_record *record = gc_prof_record(objspace);
+        gc_profile_record *record = gc_prof_record(objspace);
 
-	if (record->gc_time > 0 || GC_PROFILE_MORE_DETAIL) {
-	    objspace->profile.gc_sweep_start_time = getrusage_time();
-	}
+        if (record->gc_time > 0 || GC_PROFILE_MORE_DETAIL) {
+            objspace->profile.gc_sweep_start_time = getrusage_time();
+        }
     }
 }
 
@@ -8931,23 +8931,23 @@ gc_prof_sweep_timer_stop(rb_objspace_t *objspace)
     RUBY_DTRACE_GC_HOOK(SWEEP_END);
 
     if (gc_prof_enabled(objspace)) {
-	double sweep_time;
-	gc_profile_record *record = gc_prof_record(objspace);
+        double sweep_time;
+        gc_profile_record *record = gc_prof_record(objspace);
 
-	if (record->gc_time > 0) {
-	    sweep_time = elapsed_time_from(objspace->profile.gc_sweep_start_time);
-	    /* need to accumulate GC time for lazy sweep after gc() */
-	    record->gc_time += sweep_time;
-	}
-	else if (GC_PROFILE_MORE_DETAIL) {
-	    sweep_time = elapsed_time_from(objspace->profile.gc_sweep_start_time);
-	}
+        if (record->gc_time > 0) {
+            sweep_time = elapsed_time_from(objspace->profile.gc_sweep_start_time);
+            /* need to accumulate GC time for lazy sweep after gc() */
+            record->gc_time += sweep_time;
+        }
+        else if (GC_PROFILE_MORE_DETAIL) {
+            sweep_time = elapsed_time_from(objspace->profile.gc_sweep_start_time);
+        }
 
 #if GC_PROFILE_MORE_DETAIL
-	record->gc_sweep_time += sweep_time;
-	if (heap_pages_deferred_final) record->flags |= GPR_FLAG_HAVE_FINALIZE;
+        record->gc_sweep_time += sweep_time;
+        if (heap_pages_deferred_final) record->flags |= GPR_FLAG_HAVE_FINALIZE;
 #endif
-	if (heap_pages_deferred_final) objspace->profile.latest_gc_info |= GPR_FLAG_HAVE_FINALIZE;
+        if (heap_pages_deferred_final) objspace->profile.latest_gc_info |= GPR_FLAG_HAVE_FINALIZE;
     }
 }
 
@@ -8957,8 +8957,8 @@ gc_prof_set_malloc_info(rb_objspace_t *objspace)
 #if GC_PROFILE_MORE_DETAIL
     if (gc_prof_enabled(objspace)) {
         gc_profile_record *record = gc_prof_record(objspace);
-	record->allocate_increase = malloc_increase;
-	record->allocate_limit = malloc_limit;
+        record->allocate_increase = malloc_increase;
+        record->allocate_limit = malloc_limit;
     }
 #endif
 }
@@ -8967,19 +8967,19 @@ static inline void
 gc_prof_set_heap_info(rb_objspace_t *objspace)
 {
     if (gc_prof_enabled(objspace)) {
-	gc_profile_record *record = gc_prof_record(objspace);
-	size_t live = objspace->profile.total_allocated_objects_at_gc_start - objspace->profile.total_freed_objects;
-	size_t total = objspace->profile.heap_used_at_gc_start * HEAP_PAGE_OBJ_LIMIT;
+        gc_profile_record *record = gc_prof_record(objspace);
+        size_t live = objspace->profile.total_allocated_objects_at_gc_start - objspace->profile.total_freed_objects;
+        size_t total = objspace->profile.heap_used_at_gc_start * HEAP_PAGE_OBJ_LIMIT;
 
 #if GC_PROFILE_MORE_DETAIL
-	record->heap_use_pages = objspace->profile.heap_used_at_gc_start;
-	record->heap_live_objects = live;
-	record->heap_free_objects = total - live;
+        record->heap_use_pages = objspace->profile.heap_used_at_gc_start;
+        record->heap_live_objects = live;
+        record->heap_free_objects = total - live;
 #endif
 
-	record->heap_total_objects = total;
-	record->heap_use_size = live * sizeof(RVALUE);
-	record->heap_total_size = total * sizeof(RVALUE);
+        record->heap_total_objects = total;
+        record->heap_use_size = live * sizeof(RVALUE);
+        record->heap_total_size = total * sizeof(RVALUE);
     }
 }
 
@@ -9010,7 +9010,7 @@ gc_profile_clear(void)
 
 /*
  *  call-seq:
- *     GC::Profiler.raw_data	-> [Hash, ...]
+ *     GC::Profiler.raw_data        -> [Hash, ...]
  *
  *  Returns an Array of individual raw profile data Hashes ordered
  *  from earliest to latest by +:GC_INVOKE_TIME+.
@@ -9018,31 +9018,31 @@ gc_profile_clear(void)
  *  For example:
  *
  *    [
- *	{
- *	   :GC_TIME=>1.3000000000000858e-05,
- *	   :GC_INVOKE_TIME=>0.010634999999999999,
- *	   :HEAP_USE_SIZE=>289640,
- *	   :HEAP_TOTAL_SIZE=>588960,
- *	   :HEAP_TOTAL_OBJECTS=>14724,
- *	   :GC_IS_MARKED=>false
- *	},
+ *        {
+ *           :GC_TIME=>1.3000000000000858e-05,
+ *           :GC_INVOKE_TIME=>0.010634999999999999,
+ *           :HEAP_USE_SIZE=>289640,
+ *           :HEAP_TOTAL_SIZE=>588960,
+ *           :HEAP_TOTAL_OBJECTS=>14724,
+ *           :GC_IS_MARKED=>false
+ *        },
  *      # ...
  *    ]
  *
  *  The keys mean:
  *
  *  +:GC_TIME+::
- *	Time elapsed in seconds for this GC run
+ *        Time elapsed in seconds for this GC run
  *  +:GC_INVOKE_TIME+::
- *	Time elapsed in seconds from startup to when the GC was invoked
+ *        Time elapsed in seconds from startup to when the GC was invoked
  *  +:HEAP_USE_SIZE+::
- *	Total bytes of heap used
+ *        Total bytes of heap used
  *  +:HEAP_TOTAL_SIZE+::
- *	Total size of heap in bytes
+ *        Total size of heap in bytes
  *  +:HEAP_TOTAL_OBJECTS+::
- *	Total number of objects
+ *        Total number of objects
  *  +:GC_IS_MARKED+::
- *	Returns +true+ if the GC is in mark phase
+ *        Returns +true+ if the GC is in mark phase
  *
  *  If ruby was built with +GC_PROFILE_MORE_DETAIL+, you will also have access
  *  to the following hash keys:
@@ -9067,14 +9067,14 @@ gc_profile_record_get(void)
     rb_objspace_t *objspace = (&rb_objspace);
 
     if (!objspace->profile.run) {
-	return Qnil;
+        return Qnil;
     }
 
     for (i =0; i < objspace->profile.next_index; i++) {
-	gc_profile_record *record = &objspace->profile.records[i];
+        gc_profile_record *record = &objspace->profile.records[i];
 
-	prof = rb_hash_new();
-	rb_hash_aset(prof, ID2SYM(rb_intern("GC_FLAGS")), gc_info_decode(0, rb_hash_new(), record->flags));
+        prof = rb_hash_new();
+        rb_hash_aset(prof, ID2SYM(rb_intern("GC_FLAGS")), gc_info_decode(0, rb_hash_new(), record->flags));
         rb_hash_aset(prof, ID2SYM(rb_intern("GC_TIME")), DBL2NUM(record->gc_time));
         rb_hash_aset(prof, ID2SYM(rb_intern("GC_INVOKE_TIME")), DBL2NUM(record->gc_invoke_time));
         rb_hash_aset(prof, ID2SYM(rb_intern("HEAP_USE_SIZE")), SIZET2NUM(record->heap_use_size));
@@ -9090,18 +9090,18 @@ gc_profile_record_get(void)
         rb_hash_aset(prof, ID2SYM(rb_intern("HEAP_LIVE_OBJECTS")), SIZET2NUM(record->heap_live_objects));
         rb_hash_aset(prof, ID2SYM(rb_intern("HEAP_FREE_OBJECTS")), SIZET2NUM(record->heap_free_objects));
 
-	rb_hash_aset(prof, ID2SYM(rb_intern("REMOVING_OBJECTS")), SIZET2NUM(record->removing_objects));
-	rb_hash_aset(prof, ID2SYM(rb_intern("EMPTY_OBJECTS")), SIZET2NUM(record->empty_objects));
+        rb_hash_aset(prof, ID2SYM(rb_intern("REMOVING_OBJECTS")), SIZET2NUM(record->removing_objects));
+        rb_hash_aset(prof, ID2SYM(rb_intern("EMPTY_OBJECTS")), SIZET2NUM(record->empty_objects));
 
-	rb_hash_aset(prof, ID2SYM(rb_intern("HAVE_FINALIZE")), (record->flags & GPR_FLAG_HAVE_FINALIZE) ? Qtrue : Qfalse);
+        rb_hash_aset(prof, ID2SYM(rb_intern("HAVE_FINALIZE")), (record->flags & GPR_FLAG_HAVE_FINALIZE) ? Qtrue : Qfalse);
 #endif
 
 #if RGENGC_PROFILE > 0
-	rb_hash_aset(prof, ID2SYM(rb_intern("OLD_OBJECTS")), SIZET2NUM(record->old_objects));
-	rb_hash_aset(prof, ID2SYM(rb_intern("REMEMBERED_NORMAL_OBJECTS")), SIZET2NUM(record->remembered_normal_objects));
-	rb_hash_aset(prof, ID2SYM(rb_intern("REMEMBERED_SHADY_OBJECTS")), SIZET2NUM(record->remembered_shady_objects));
+        rb_hash_aset(prof, ID2SYM(rb_intern("OLD_OBJECTS")), SIZET2NUM(record->old_objects));
+        rb_hash_aset(prof, ID2SYM(rb_intern("REMEMBERED_NORMAL_OBJECTS")), SIZET2NUM(record->remembered_normal_objects));
+        rb_hash_aset(prof, ID2SYM(rb_intern("REMEMBERED_SHADY_OBJECTS")), SIZET2NUM(record->remembered_shady_objects));
 #endif
-	rb_ary_push(gc_profile, prof);
+        rb_ary_push(gc_profile, prof);
     }
 
     return gc_profile;
@@ -9117,8 +9117,8 @@ gc_profile_dump_major_reason(int flags, char *buff)
     int i = 0;
 
     if (reason == GPR_FLAG_NONE) {
-	buff[0] = '-';
-	buff[1] = 0;
+        buff[0] = '-';
+        buff[1] = 0;
     }
     else {
 #define C(x, s) \
@@ -9127,11 +9127,11 @@ gc_profile_dump_major_reason(int flags, char *buff)
       if (i >= MAJOR_REASON_MAX) rb_bug("gc_profile_dump_major_reason: overflow"); \
       buff[i] = 0; \
   }
-	C(NOFREE, N);
-	C(OLDGEN, O);
-	C(SHADY,  S);
+        C(NOFREE, N);
+        C(OLDGEN, O);
+        C(SHADY,  S);
 #if RGENGC_ESTIMATE_OLDMALLOC
-	C(OLDMALLOC, M);
+        C(OLDMALLOC, M);
 #endif
 #undef C
     }
@@ -9149,87 +9149,87 @@ gc_profile_dump_on(VALUE out, VALUE (*append)(VALUE, VALUE))
 #endif
 
     if (objspace->profile.run && count /* > 1 */) {
-	size_t i;
-	const gc_profile_record *record;
+        size_t i;
+        const gc_profile_record *record;
 
-	append(out, rb_sprintf("GC %"PRIuSIZE" invokes.\n", objspace->profile.count));
-	append(out, rb_str_new_cstr("Index    Invoke Time(sec)       Use Size(byte)     Total Size(byte)         Total Object                    GC Time(ms)\n"));
+        append(out, rb_sprintf("GC %"PRIuSIZE" invokes.\n", objspace->profile.count));
+        append(out, rb_str_new_cstr("Index    Invoke Time(sec)       Use Size(byte)     Total Size(byte)         Total Object                    GC Time(ms)\n"));
 
-	for (i = 0; i < count; i++) {
-	    record = &objspace->profile.records[i];
-	    append(out, rb_sprintf("%5"PRIuSIZE" %19.3f %20"PRIuSIZE" %20"PRIuSIZE" %20"PRIuSIZE" %30.20f\n",
-				   i+1, record->gc_invoke_time, record->heap_use_size,
-				   record->heap_total_size, record->heap_total_objects, record->gc_time*1000));
-	}
+        for (i = 0; i < count; i++) {
+            record = &objspace->profile.records[i];
+            append(out, rb_sprintf("%5"PRIuSIZE" %19.3f %20"PRIuSIZE" %20"PRIuSIZE" %20"PRIuSIZE" %30.20f\n",
+                                   i+1, record->gc_invoke_time, record->heap_use_size,
+                                   record->heap_total_size, record->heap_total_objects, record->gc_time*1000));
+        }
 
 #if GC_PROFILE_MORE_DETAIL
-	append(out, rb_str_new_cstr("\n\n" \
-				    "More detail.\n" \
-				    "Prepare Time = Previously GC's rest sweep time\n"
-				    "Index Flags          Allocate Inc.  Allocate Limit"
+        append(out, rb_str_new_cstr("\n\n" \
+                                    "More detail.\n" \
+                                    "Prepare Time = Previously GC's rest sweep time\n"
+                                    "Index Flags          Allocate Inc.  Allocate Limit"
 #if CALC_EXACT_MALLOC_SIZE
-				    "  Allocated Size"
+                                    "  Allocated Size"
 #endif
-				    "  Use Page     Mark Time(ms)    Sweep Time(ms)  Prepare Time(ms)  LivingObj    FreeObj RemovedObj   EmptyObj"
+                                    "  Use Page     Mark Time(ms)    Sweep Time(ms)  Prepare Time(ms)  LivingObj    FreeObj RemovedObj   EmptyObj"
 #if RGENGC_PROFILE
-				    " OldgenObj RemNormObj RemShadObj"
+                                    " OldgenObj RemNormObj RemShadObj"
 #endif
 #if GC_PROFILE_DETAIL_MEMORY
-				    " MaxRSS(KB) MinorFLT MajorFLT"
+                                    " MaxRSS(KB) MinorFLT MajorFLT"
 #endif
-				    "\n"));
+                                    "\n"));
 
-	for (i = 0; i < count; i++) {
-	    record = &objspace->profile.records[i];
-	    append(out, rb_sprintf("%5"PRIuSIZE" %4s/%c/%6s%c %13"PRIuSIZE" %15"PRIuSIZE
+        for (i = 0; i < count; i++) {
+            record = &objspace->profile.records[i];
+            append(out, rb_sprintf("%5"PRIuSIZE" %4s/%c/%6s%c %13"PRIuSIZE" %15"PRIuSIZE
 #if CALC_EXACT_MALLOC_SIZE
-				   " %15"PRIuSIZE
+                                   " %15"PRIuSIZE
 #endif
-				   " %9"PRIuSIZE" %17.12f %17.12f %17.12f %10"PRIuSIZE" %10"PRIuSIZE" %10"PRIuSIZE" %10"PRIuSIZE
+                                   " %9"PRIuSIZE" %17.12f %17.12f %17.12f %10"PRIuSIZE" %10"PRIuSIZE" %10"PRIuSIZE" %10"PRIuSIZE
 #if RGENGC_PROFILE
-				   "%10"PRIuSIZE" %10"PRIuSIZE" %10"PRIuSIZE
+                                   "%10"PRIuSIZE" %10"PRIuSIZE" %10"PRIuSIZE
 #endif
 #if GC_PROFILE_DETAIL_MEMORY
-				   "%11ld %8ld %8ld"
+                                   "%11ld %8ld %8ld"
 #endif
 
-				   "\n",
-				   i+1,
-				   gc_profile_dump_major_reason(record->flags, reason_str),
-				   (record->flags & GPR_FLAG_HAVE_FINALIZE) ? 'F' : '.',
-				   (record->flags & GPR_FLAG_NEWOBJ) ? "NEWOBJ" :
-				   (record->flags & GPR_FLAG_MALLOC) ? "MALLOC" :
-				   (record->flags & GPR_FLAG_METHOD) ? "METHOD" :
-				   (record->flags & GPR_FLAG_CAPI)   ? "CAPI__" : "??????",
-				   (record->flags & GPR_FLAG_STRESS) ? '!' : ' ',
-				   record->allocate_increase, record->allocate_limit,
+                                   "\n",
+                                   i+1,
+                                   gc_profile_dump_major_reason(record->flags, reason_str),
+                                   (record->flags & GPR_FLAG_HAVE_FINALIZE) ? 'F' : '.',
+                                   (record->flags & GPR_FLAG_NEWOBJ) ? "NEWOBJ" :
+                                   (record->flags & GPR_FLAG_MALLOC) ? "MALLOC" :
+                                   (record->flags & GPR_FLAG_METHOD) ? "METHOD" :
+                                   (record->flags & GPR_FLAG_CAPI)   ? "CAPI__" : "??????",
+                                   (record->flags & GPR_FLAG_STRESS) ? '!' : ' ',
+                                   record->allocate_increase, record->allocate_limit,
 #if CALC_EXACT_MALLOC_SIZE
-				   record->allocated_size,
+                                   record->allocated_size,
 #endif
-				   record->heap_use_pages,
-				   record->gc_mark_time*1000,
-				   record->gc_sweep_time*1000,
-				   record->prepare_time*1000,
+                                   record->heap_use_pages,
+                                   record->gc_mark_time*1000,
+                                   record->gc_sweep_time*1000,
+                                   record->prepare_time*1000,
 
-				   record->heap_live_objects,
-				   record->heap_free_objects,
-				   record->removing_objects,
-				   record->empty_objects
+                                   record->heap_live_objects,
+                                   record->heap_free_objects,
+                                   record->removing_objects,
+                                   record->empty_objects
 #if RGENGC_PROFILE
-				   ,
-				   record->old_objects,
-				   record->remembered_normal_objects,
-				   record->remembered_shady_objects
+                                   ,
+                                   record->old_objects,
+                                   record->remembered_normal_objects,
+                                   record->remembered_shady_objects
 #endif
 #if GC_PROFILE_DETAIL_MEMORY
-				   ,
-				   record->maxrss / 1024,
-				   record->minflt,
-				   record->majflt
+                                   ,
+                                   record->maxrss / 1024,
+                                   record->minflt,
+                                   record->majflt
 #endif
 
-		       ));
-	}
+                       ));
+        }
 #endif
     }
 }
@@ -9268,10 +9268,10 @@ gc_profile_report(int argc, VALUE *argv, VALUE self)
     VALUE out;
 
     if (argc == 0) {
-	out = rb_stdout;
+        out = rb_stdout;
     }
     else {
-	rb_scan_args(argc, argv, "01", &out);
+        rb_scan_args(argc, argv, "01", &out);
     }
     gc_profile_dump_on(out, rb_io_write);
 
@@ -9280,7 +9280,7 @@ gc_profile_report(int argc, VALUE *argv, VALUE self)
 
 /*
  *  call-seq:
- *     GC::Profiler.total_time	-> float
+ *     GC::Profiler.total_time        -> float
  *
  *  The total time used for garbage collection in seconds
  */
@@ -9292,19 +9292,19 @@ gc_profile_total_time(VALUE self)
     rb_objspace_t *objspace = &rb_objspace;
 
     if (objspace->profile.run && objspace->profile.next_index > 0) {
-	size_t i;
-	size_t count = objspace->profile.next_index;
+        size_t i;
+        size_t count = objspace->profile.next_index;
 
-	for (i = 0; i < count; i++) {
-	    time += objspace->profile.records[i].gc_time;
-	}
+        for (i = 0; i < count; i++) {
+            time += objspace->profile.records[i].gc_time;
+        }
     }
     return DBL2NUM(time);
 }
 
 /*
  *  call-seq:
- *    GC::Profiler.enabled?	-> true or false
+ *    GC::Profiler.enabled?        -> true or false
  *
  *  The current status of GC profile mode.
  */
@@ -9318,7 +9318,7 @@ gc_profile_enable_get(VALUE self)
 
 /*
  *  call-seq:
- *    GC::Profiler.enable	-> nil
+ *    GC::Profiler.enable        -> nil
  *
  *  Starts the GC profiler.
  *
@@ -9335,7 +9335,7 @@ gc_profile_enable(void)
 
 /*
  *  call-seq:
- *    GC::Profiler.disable	-> nil
+ *    GC::Profiler.disable        -> nil
  *
  *  Stops the GC profiler.
  *
@@ -9360,35 +9360,35 @@ type_name(int type, VALUE obj)
 {
     switch (type) {
 #define TYPE_NAME(t) case (t): return #t;
-	    TYPE_NAME(T_NONE);
-	    TYPE_NAME(T_OBJECT);
-	    TYPE_NAME(T_CLASS);
-	    TYPE_NAME(T_MODULE);
-	    TYPE_NAME(T_FLOAT);
-	    TYPE_NAME(T_STRING);
-	    TYPE_NAME(T_REGEXP);
-	    TYPE_NAME(T_ARRAY);
-	    TYPE_NAME(T_HASH);
-	    TYPE_NAME(T_STRUCT);
-	    TYPE_NAME(T_BIGNUM);
-	    TYPE_NAME(T_FILE);
-	    TYPE_NAME(T_MATCH);
-	    TYPE_NAME(T_COMPLEX);
-	    TYPE_NAME(T_RATIONAL);
-	    TYPE_NAME(T_NIL);
-	    TYPE_NAME(T_TRUE);
-	    TYPE_NAME(T_FALSE);
-	    TYPE_NAME(T_SYMBOL);
-	    TYPE_NAME(T_FIXNUM);
-	    TYPE_NAME(T_UNDEF);
-	    TYPE_NAME(T_IMEMO);
-	    TYPE_NAME(T_ICLASS);
-	    TYPE_NAME(T_ZOMBIE);
+            TYPE_NAME(T_NONE);
+            TYPE_NAME(T_OBJECT);
+            TYPE_NAME(T_CLASS);
+            TYPE_NAME(T_MODULE);
+            TYPE_NAME(T_FLOAT);
+            TYPE_NAME(T_STRING);
+            TYPE_NAME(T_REGEXP);
+            TYPE_NAME(T_ARRAY);
+            TYPE_NAME(T_HASH);
+            TYPE_NAME(T_STRUCT);
+            TYPE_NAME(T_BIGNUM);
+            TYPE_NAME(T_FILE);
+            TYPE_NAME(T_MATCH);
+            TYPE_NAME(T_COMPLEX);
+            TYPE_NAME(T_RATIONAL);
+            TYPE_NAME(T_NIL);
+            TYPE_NAME(T_TRUE);
+            TYPE_NAME(T_FALSE);
+            TYPE_NAME(T_SYMBOL);
+            TYPE_NAME(T_FIXNUM);
+            TYPE_NAME(T_UNDEF);
+            TYPE_NAME(T_IMEMO);
+            TYPE_NAME(T_ICLASS);
+            TYPE_NAME(T_ZOMBIE);
       case T_DATA:
-	if (obj && rb_objspace_data_type_name(obj)) {
-	    return rb_objspace_data_type_name(obj);
-	}
-	return "T_DATA";
+        if (obj && rb_objspace_data_type_name(obj)) {
+            return rb_objspace_data_type_name(obj);
+        }
+        return "T_DATA";
 #undef TYPE_NAME
     }
     return "unknown";
@@ -9432,12 +9432,12 @@ static void
 rb_raw_iseq_info(char *buff, const int buff_size, const rb_iseq_t *iseq)
 {
     if (iseq->body && iseq->body->location.label) {
-	VALUE path = rb_iseq_path(iseq);
-	VALUE n = iseq->body->location.first_lineno;
-	snprintf(buff, buff_size, "%s %s@%s:%d", buff,
-		 RSTRING_PTR(iseq->body->location.label),
-		 RSTRING_PTR(path),
-		 n ? FIX2INT(n) : 0 );
+        VALUE path = rb_iseq_path(iseq);
+        VALUE n = iseq->body->location.first_lineno;
+        snprintf(buff, buff_size, "%s %s@%s:%d", buff,
+                 RSTRING_PTR(iseq->body->location.label),
+                 RSTRING_PTR(path),
+                 n ? FIX2INT(n) : 0 );
     }
 }
 
@@ -9445,130 +9445,130 @@ const char *
 rb_raw_obj_info(char *buff, const int buff_size, VALUE obj)
 {
     if (SPECIAL_CONST_P(obj)) {
-	snprintf(buff, buff_size, "%s", obj_type_name(obj));
+        snprintf(buff, buff_size, "%s", obj_type_name(obj));
     }
     else {
 #define TF(c) ((c) != 0 ? "true" : "false")
 #define C(c, s) ((c) != 0 ? (s) : " ")
-	const int type = BUILTIN_TYPE(obj);
+        const int type = BUILTIN_TYPE(obj);
 #if USE_RGENGC
-	const int age = RVALUE_FLAGS_AGE(RBASIC(obj)->flags);
+        const int age = RVALUE_FLAGS_AGE(RBASIC(obj)->flags);
 
-	snprintf(buff, buff_size, "%p [%d%s%s%s%s] %s",
-		 (void *)obj, age,
-		 C(RVALUE_UNCOLLECTIBLE_BITMAP(obj),  "L"),
-		 C(RVALUE_MARK_BITMAP(obj),           "M"),
-		 C(RVALUE_MARKING_BITMAP(obj),        "R"),
-		 C(RVALUE_WB_UNPROTECTED_BITMAP(obj), "U"),
-		 obj_type_name(obj));
+        snprintf(buff, buff_size, "%p [%d%s%s%s%s] %s",
+                 (void *)obj, age,
+                 C(RVALUE_UNCOLLECTIBLE_BITMAP(obj),  "L"),
+                 C(RVALUE_MARK_BITMAP(obj),           "M"),
+                 C(RVALUE_MARKING_BITMAP(obj),        "R"),
+                 C(RVALUE_WB_UNPROTECTED_BITMAP(obj), "U"),
+                 obj_type_name(obj));
 #else
-	snprintf(buff, buff_size, "%p [%s] %s",
-		 (void *)obj,
-		 C(RVALUE_MARK_BITMAP(obj),           "M"),
-		 obj_type_name(obj));
+        snprintf(buff, buff_size, "%p [%s] %s",
+                 (void *)obj,
+                 C(RVALUE_MARK_BITMAP(obj),           "M"),
+                 obj_type_name(obj));
 #endif
 
-	if (internal_object_p(obj)) {
-	    /* ignore */
-	}
-	else if (RBASIC(obj)->klass == 0) {
-	    snprintf(buff, buff_size, "%s (temporary internal)", buff);
-	}
-	else {
-	    VALUE class_path = rb_class_path_cached(RBASIC(obj)->klass);
-	    if (!NIL_P(class_path)) {
-		snprintf(buff, buff_size, "%s (%s)", buff, RSTRING_PTR(class_path));
-	    }
-	}
+        if (internal_object_p(obj)) {
+            /* ignore */
+        }
+        else if (RBASIC(obj)->klass == 0) {
+            snprintf(buff, buff_size, "%s (temporary internal)", buff);
+        }
+        else {
+            VALUE class_path = rb_class_path_cached(RBASIC(obj)->klass);
+            if (!NIL_P(class_path)) {
+                snprintf(buff, buff_size, "%s (%s)", buff, RSTRING_PTR(class_path));
+            }
+        }
 
 #if GC_DEBUG
-	snprintf(buff, buff_size, "%s @%s:%d", buff, RANY(obj)->file, RANY(obj)->line);
+        snprintf(buff, buff_size, "%s @%s:%d", buff, RANY(obj)->file, RANY(obj)->line);
 #endif
 
-	switch (type) {
-	  case T_NODE:
-	    UNEXPECTED_NODE(rb_raw_obj_info);
-	    break;
-	  case T_ARRAY:
-	    snprintf(buff, buff_size, "%s [%s%s] len: %d", buff,
-		     C(ARY_EMBED_P(obj),  "E"),
-		     C(ARY_SHARED_P(obj), "S"),
-		     (int)RARRAY_LEN(obj));
-	    break;
-	  case T_STRING: {
-	    snprintf(buff, buff_size, "%s %s", buff, RSTRING_PTR(obj));
-	    break;
-	  }
-	  case T_CLASS: {
-	    VALUE class_path = rb_class_path_cached(obj);
-	    if (!NIL_P(class_path)) {
-		snprintf(buff, buff_size, "%s %s", buff, RSTRING_PTR(class_path));
-	    }
-	    break;
-	  }
-	  case T_DATA: {
-	    const struct rb_block *block;
-	    const rb_iseq_t *iseq;
-	    if (rb_obj_is_proc(obj) &&
-		(block = vm_proc_block(obj)) != NULL &&
-		(vm_block_type(block) == block_type_iseq) &&
-		(iseq = vm_block_iseq(block)) != NULL) {
-		rb_raw_iseq_info(buff, buff_size, iseq);
-	    }
-	    else {
-		const char * const type_name = rb_objspace_data_type_name(obj);
-		if (type_name) {
-		    snprintf(buff, buff_size, "%s %s", buff, type_name);
-		}
-	    }
-	    break;
-	  }
-	  case T_IMEMO: {
-	    const char *imemo_name = "\0";
-	    switch (imemo_type(obj)) {
+        switch (type) {
+          case T_NODE:
+            UNEXPECTED_NODE(rb_raw_obj_info);
+            break;
+          case T_ARRAY:
+            snprintf(buff, buff_size, "%s [%s%s] len: %d", buff,
+                     C(ARY_EMBED_P(obj),  "E"),
+                     C(ARY_SHARED_P(obj), "S"),
+                     (int)RARRAY_LEN(obj));
+            break;
+          case T_STRING: {
+            snprintf(buff, buff_size, "%s %s", buff, RSTRING_PTR(obj));
+            break;
+          }
+          case T_CLASS: {
+            VALUE class_path = rb_class_path_cached(obj);
+            if (!NIL_P(class_path)) {
+                snprintf(buff, buff_size, "%s %s", buff, RSTRING_PTR(class_path));
+            }
+            break;
+          }
+          case T_DATA: {
+            const struct rb_block *block;
+            const rb_iseq_t *iseq;
+            if (rb_obj_is_proc(obj) &&
+                (block = vm_proc_block(obj)) != NULL &&
+                (vm_block_type(block) == block_type_iseq) &&
+                (iseq = vm_block_iseq(block)) != NULL) {
+                rb_raw_iseq_info(buff, buff_size, iseq);
+            }
+            else {
+                const char * const type_name = rb_objspace_data_type_name(obj);
+                if (type_name) {
+                    snprintf(buff, buff_size, "%s %s", buff, type_name);
+                }
+            }
+            break;
+          }
+          case T_IMEMO: {
+            const char *imemo_name = "\0";
+            switch (imemo_type(obj)) {
 #define IMEMO_NAME(x) case imemo_##x: imemo_name = #x; break;
-		IMEMO_NAME(env);
-		IMEMO_NAME(cref);
-		IMEMO_NAME(svar);
-		IMEMO_NAME(throw_data);
-		IMEMO_NAME(ifunc);
-		IMEMO_NAME(memo);
-		IMEMO_NAME(ment);
-		IMEMO_NAME(iseq);
-		IMEMO_NAME(tmpbuf);
+                IMEMO_NAME(env);
+                IMEMO_NAME(cref);
+                IMEMO_NAME(svar);
+                IMEMO_NAME(throw_data);
+                IMEMO_NAME(ifunc);
+                IMEMO_NAME(memo);
+                IMEMO_NAME(ment);
+                IMEMO_NAME(iseq);
+                IMEMO_NAME(tmpbuf);
 #undef IMEMO_NAME
-	      default: UNREACHABLE;
-	    }
-	    snprintf(buff, buff_size, "%s %s", buff, imemo_name);
+              default: UNREACHABLE;
+            }
+            snprintf(buff, buff_size, "%s %s", buff, imemo_name);
 
-	    switch (imemo_type(obj)) {
-	      case imemo_ment: {
-		const rb_method_entry_t *me = &RANY(obj)->as.imemo.ment;
-		if (me->def) {
-		    snprintf(buff, buff_size, "%s (called_id: %s, type: %s, alias: %d, owner: %s, defined_class: %s)", buff,
-			     rb_id2name(me->called_id),
-			     method_type_name(me->def->type),
-			     me->def->alias_count,
-			     obj_info(me->owner),
-			     obj_info(me->defined_class));
-		}
-		else {
-		    snprintf(buff, buff_size, "%s", rb_id2name(me->called_id));
-		}
-		break;
-	      }
-	      case imemo_iseq: {
-		const rb_iseq_t *iseq = (const rb_iseq_t *)obj;
-		rb_raw_iseq_info(buff, buff_size, iseq);
-		break;
-	      }
-	      default:
-		break;
-	    }
-	  }
-	  default:
-	    break;
-	}
+            switch (imemo_type(obj)) {
+              case imemo_ment: {
+                const rb_method_entry_t *me = &RANY(obj)->as.imemo.ment;
+                if (me->def) {
+                    snprintf(buff, buff_size, "%s (called_id: %s, type: %s, alias: %d, owner: %s, defined_class: %s)", buff,
+                             rb_id2name(me->called_id),
+                             method_type_name(me->def->type),
+                             me->def->alias_count,
+                             obj_info(me->owner),
+                             obj_info(me->defined_class));
+                }
+                else {
+                    snprintf(buff, buff_size, "%s", rb_id2name(me->called_id));
+                }
+                break;
+              }
+              case imemo_iseq: {
+                const rb_iseq_t *iseq = (const rb_iseq_t *)obj;
+                rb_raw_iseq_info(buff, buff_size, iseq);
+                break;
+              }
+              default:
+                break;
+            }
+          }
+          default:
+            break;
+        }
 #undef TF
 #undef C
     }
@@ -9588,7 +9588,7 @@ obj_info(VALUE obj)
     char *const buff = &obj_info_buffers[index][0];
 
     if (obj_info_buffers_index >= OBJ_INFO_BUFFERS_NUM) {
-	obj_info_buffers_index = 0;
+        obj_info_buffers_index = 0;
     }
 
     return rb_raw_obj_info(buff, OBJ_INFO_BUFFERS_SIZE, obj);
@@ -9605,10 +9605,10 @@ MJIT_FUNC_EXPORTED const char *
 rb_obj_info(VALUE obj)
 {
     if (!rb_special_const_p(obj)) {
-	return obj_info(obj);
+        return obj_info(obj);
     }
     else {
-	return obj_type_name(obj);
+        return obj_type_name(obj);
     }
 }
 
@@ -9682,7 +9682,7 @@ rb_gcdebug_add_stress_to_class(int argc, VALUE *argv, VALUE self)
     rb_objspace_t *objspace = &rb_objspace;
 
     if (!stress_to_class) {
-	stress_to_class = rb_ary_tmp_new(argc);
+        stress_to_class = rb_ary_tmp_new(argc);
     }
     rb_ary_cat(stress_to_class, argv, argc);
     return self;
@@ -9703,12 +9703,12 @@ rb_gcdebug_remove_stress_to_class(int argc, VALUE *argv, VALUE self)
     int i;
 
     if (stress_to_class) {
-	for (i = 0; i < argc; ++i) {
-	    rb_ary_delete_same(stress_to_class, argv[i]);
-	}
-	if (RARRAY_LEN(stress_to_class) == 0) {
-	    stress_to_class = 0;
-	}
+        for (i = 0; i < argc; ++i) {
+            rb_ary_delete_same(stress_to_class, argv[i]);
+        }
+        if (RARRAY_LEN(stress_to_class) == 0) {
+            stress_to_class = 0;
+        }
     }
     return Qnil;
 }
@@ -9833,24 +9833,24 @@ Init_GC(void)
     rb_define_module_function(rb_mObjSpace, "count_objects", count_objects, -1);
 
     {
-	VALUE rb_cWeakMap = rb_define_class_under(rb_mObjSpace, "WeakMap", rb_cObject);
-	rb_define_alloc_func(rb_cWeakMap, wmap_allocate);
-	rb_define_method(rb_cWeakMap, "[]=", wmap_aset, 2);
-	rb_define_method(rb_cWeakMap, "[]", wmap_aref, 1);
-	rb_define_method(rb_cWeakMap, "include?", wmap_has_key, 1);
-	rb_define_method(rb_cWeakMap, "member?", wmap_has_key, 1);
-	rb_define_method(rb_cWeakMap, "key?", wmap_has_key, 1);
-	rb_define_method(rb_cWeakMap, "inspect", wmap_inspect, 0);
-	rb_define_method(rb_cWeakMap, "each", wmap_each, 0);
-	rb_define_method(rb_cWeakMap, "each_pair", wmap_each, 0);
-	rb_define_method(rb_cWeakMap, "each_key", wmap_each_key, 0);
-	rb_define_method(rb_cWeakMap, "each_value", wmap_each_value, 0);
-	rb_define_method(rb_cWeakMap, "keys", wmap_keys, 0);
-	rb_define_method(rb_cWeakMap, "values", wmap_values, 0);
-	rb_define_method(rb_cWeakMap, "size", wmap_size, 0);
-	rb_define_method(rb_cWeakMap, "length", wmap_size, 0);
-	rb_define_private_method(rb_cWeakMap, "finalize", wmap_finalize, 1);
-	rb_include_module(rb_cWeakMap, rb_mEnumerable);
+        VALUE rb_cWeakMap = rb_define_class_under(rb_mObjSpace, "WeakMap", rb_cObject);
+        rb_define_alloc_func(rb_cWeakMap, wmap_allocate);
+        rb_define_method(rb_cWeakMap, "[]=", wmap_aset, 2);
+        rb_define_method(rb_cWeakMap, "[]", wmap_aref, 1);
+        rb_define_method(rb_cWeakMap, "include?", wmap_has_key, 1);
+        rb_define_method(rb_cWeakMap, "member?", wmap_has_key, 1);
+        rb_define_method(rb_cWeakMap, "key?", wmap_has_key, 1);
+        rb_define_method(rb_cWeakMap, "inspect", wmap_inspect, 0);
+        rb_define_method(rb_cWeakMap, "each", wmap_each, 0);
+        rb_define_method(rb_cWeakMap, "each_pair", wmap_each, 0);
+        rb_define_method(rb_cWeakMap, "each_key", wmap_each_key, 0);
+        rb_define_method(rb_cWeakMap, "each_value", wmap_each_value, 0);
+        rb_define_method(rb_cWeakMap, "keys", wmap_keys, 0);
+        rb_define_method(rb_cWeakMap, "values", wmap_values, 0);
+        rb_define_method(rb_cWeakMap, "size", wmap_size, 0);
+        rb_define_method(rb_cWeakMap, "length", wmap_size, 0);
+        rb_define_private_method(rb_cWeakMap, "finalize", wmap_finalize, 1);
+        rb_include_module(rb_cWeakMap, rb_mEnumerable);
     }
 
     /* internal methods */
@@ -9866,24 +9866,24 @@ Init_GC(void)
 #endif
 
     {
-	VALUE opts;
-	/* GC build options */
-	rb_define_const(rb_mGC, "OPTS", opts = rb_ary_new());
+        VALUE opts;
+        /* GC build options */
+        rb_define_const(rb_mGC, "OPTS", opts = rb_ary_new());
 #define OPT(o) if (o) rb_ary_push(opts, rb_fstring_lit(#o))
-	OPT(GC_DEBUG);
-	OPT(USE_RGENGC);
-	OPT(RGENGC_DEBUG);
-	OPT(RGENGC_CHECK_MODE);
-	OPT(RGENGC_PROFILE);
-	OPT(RGENGC_ESTIMATE_OLDMALLOC);
-	OPT(GC_PROFILE_MORE_DETAIL);
-	OPT(GC_ENABLE_LAZY_SWEEP);
-	OPT(CALC_EXACT_MALLOC_SIZE);
-	OPT(MALLOC_ALLOCATED_SIZE);
-	OPT(MALLOC_ALLOCATED_SIZE_CHECK);
-	OPT(GC_PROFILE_DETAIL_MEMORY);
+        OPT(GC_DEBUG);
+        OPT(USE_RGENGC);
+        OPT(RGENGC_DEBUG);
+        OPT(RGENGC_CHECK_MODE);
+        OPT(RGENGC_PROFILE);
+        OPT(RGENGC_ESTIMATE_OLDMALLOC);
+        OPT(GC_PROFILE_MORE_DETAIL);
+        OPT(GC_ENABLE_LAZY_SWEEP);
+        OPT(CALC_EXACT_MALLOC_SIZE);
+        OPT(MALLOC_ALLOCATED_SIZE);
+        OPT(MALLOC_ALLOCATED_SIZE_CHECK);
+        OPT(GC_PROFILE_DETAIL_MEMORY);
 #undef OPT
-	OBJ_FREEZE(opts);
+        OBJ_FREEZE(opts);
     }
 }
 

@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1989, 1993
- *	The Regents of the University of California.  All rights reserved.
+ *        The Regents of the University of California.  All rights reserved.
  *
  * This code is derived from software contributed to Berkeley by
  * Tom Truscott.
@@ -37,7 +37,7 @@
 
 #ifdef CHAR_BITS
 #if CHAR_BITS != 8
-	#error C_block structure assumes 8 bit characters
+        #error C_block structure assumes 8 bit characters
 #endif
 #endif
 
@@ -57,7 +57,7 @@
  * This avoids use of bit fields (your compiler may be sloppy with them).
  */
 #if SIZEOF_LONG == 4
-#define	LONG_IS_32_BITS
+#define        LONG_IS_32_BITS
 #endif
 
 /*
@@ -65,9 +65,9 @@
  * XXX this feature is currently unused, see "endian" comment below.
  */
 #if SIZEOF_LONG == 8
-#define	B64	long
+#define        B64        long
 #elif SIZEOF_LONG_LONG == 8
-#define	B64	LONG_LONG
+#define        B64        LONG_LONG
 #endif
 
 /*
@@ -76,12 +76,12 @@
  * little effect on crypt().
  */
 #if defined(notdef)
-#define	LARGEDATA
+#define        LARGEDATA
 #endif
 
 /* compile with "-DSTATIC=int" when profiling */
 #ifndef STATIC
-#define	STATIC	static
+#define        STATIC        static
 #endif
 
 /* ==================================== */
@@ -154,37 +154,37 @@
  *
  * The transformations used are:
  * IE3264: MSB->LSB conversion, initial permutation, and expansion.
- *	This is done by collecting the 32 even-numbered bits and applying
- *	a 32->64 bit transformation, and then collecting the 32 odd-numbered
- *	bits and applying the same transformation.  Since there are only
- *	32 input bits, the IE3264 transformation table is half the size of
- *	the usual table.
+ *        This is done by collecting the 32 even-numbered bits and applying
+ *        a 32->64 bit transformation, and then collecting the 32 odd-numbered
+ *        bits and applying the same transformation.  Since there are only
+ *        32 input bits, the IE3264 transformation table is half the size of
+ *        the usual table.
  * CF6464: Compression, final permutation, and LSB->MSB conversion.
- *	This is done by two trivial 48->32 bit compressions to obtain
- *	a 64-bit block (the bit numbering is given in the "CIFP" table)
- *	followed by a 64->64 bit "cleanup" transformation.  (It would
- *	be possible to group the bits in the 64-bit block so that 2
- *	identical 32->32 bit transformations could be used instead,
- *	saving a factor of 4 in space and possibly 2 in time, but
- *	byte-ordering and other complications rear their ugly head.
- *	Similar opportunities/problems arise in the key schedule
- *	transforms.)
+ *        This is done by two trivial 48->32 bit compressions to obtain
+ *        a 64-bit block (the bit numbering is given in the "CIFP" table)
+ *        followed by a 64->64 bit "cleanup" transformation.  (It would
+ *        be possible to group the bits in the 64-bit block so that 2
+ *        identical 32->32 bit transformations could be used instead,
+ *        saving a factor of 4 in space and possibly 2 in time, but
+ *        byte-ordering and other complications rear their ugly head.
+ *        Similar opportunities/problems arise in the key schedule
+ *        transforms.)
  * PC1ROT: MSB->LSB, PC1 permutation, rotate, and PC2 permutation.
- *	This admittedly baroque 64->64 bit transformation is used to
- *	produce the first code (in 8*(6+2) format) of the key schedule.
+ *        This admittedly baroque 64->64 bit transformation is used to
+ *        produce the first code (in 8*(6+2) format) of the key schedule.
  * PC2ROT[0]: Inverse PC2 permutation, rotate, and PC2 permutation.
- *	It would be possible to define 15 more transformations, each
- *	with a different rotation, to generate the entire key schedule.
- *	To save space, however, we instead permute each code into the
- *	next by using a transformation that "undoes" the PC2 permutation,
- *	rotates the code, and then applies PC2.  Unfortunately, PC2
- *	transforms 56 bits into 48 bits, dropping 8 bits, so PC2 is not
- *	invertible.  We get around that problem by using a modified PC2
- *	which retains the 8 otherwise-lost bits in the unused low-order
- *	bits of each byte.  The low-order bits are cleared when the
- *	codes are stored into the key schedule.
+ *        It would be possible to define 15 more transformations, each
+ *        with a different rotation, to generate the entire key schedule.
+ *        To save space, however, we instead permute each code into the
+ *        next by using a transformation that "undoes" the PC2 permutation,
+ *        rotates the code, and then applies PC2.  Unfortunately, PC2
+ *        transforms 56 bits into 48 bits, dropping 8 bits, so PC2 is not
+ *        invertible.  We get around that problem by using a modified PC2
+ *        which retains the 8 otherwise-lost bits in the unused low-order
+ *        bits of each byte.  The low-order bits are cleared when the
+ *        codes are stored into the key schedule.
  * PC2ROT[1]: Same as PC2ROT[0], but with two rotations.
- *	This is faster than applying PC2ROT[0] twice,
+ *        This is faster than applying PC2ROT[0] twice,
  *
  * The Bell Labs "salt" (Bob Baldwin):
  *
@@ -201,40 +201,40 @@
  */
 
 typedef union {
-	unsigned char b[8];
-	struct {
+        unsigned char b[8];
+        struct {
 #if defined(LONG_IS_32_BITS)
-		/* long is often faster than a 32-bit bit field */
-		long	i0;
-		long	i1;
+                /* long is often faster than a 32-bit bit field */
+                long        i0;
+                long        i1;
 #else
-		long	i0: 32;
-		long	i1: 32;
+                long        i0: 32;
+                long        i1: 32;
 #endif
-	} b32;
+        } b32;
 #if defined(B64)
-	B64	b64;
+        B64        b64;
 #endif
 } C_block;
 
 #if defined(LARGEDATA)
-	/* Waste memory like crazy.  Also, do permutations in line */
-#define	LGCHUNKBITS	3
-#define	CHUNKBITS	(1<<LGCHUNKBITS)
+        /* Waste memory like crazy.  Also, do permutations in line */
+#define        LGCHUNKBITS        3
+#define        CHUNKBITS        (1<<LGCHUNKBITS)
 #else
-	/* "small data" */
-#define	LGCHUNKBITS	2
-#define	CHUNKBITS	(1<<LGCHUNKBITS)
+        /* "small data" */
+#define        LGCHUNKBITS        2
+#define        CHUNKBITS        (1<<LGCHUNKBITS)
 #endif
 
 struct crypt_data {
-	/* The Key Schedule, filled in by des_setkey() or setkey(). */
-#define	KS_SIZE	16
-	C_block	KS[KS_SIZE];
+        /* The Key Schedule, filled in by des_setkey() or setkey(). */
+#define        KS_SIZE        16
+        C_block        KS[KS_SIZE];
 
-	/* ==================================== */
+        /* ==================================== */
 
-	char	cryptresult[1+4+4+11+1];	/* encrypted result */
+        char        cryptresult[1+4+4+11+1];        /* encrypted result */
 };
 
 char *crypt(const char *key, const char *setting);

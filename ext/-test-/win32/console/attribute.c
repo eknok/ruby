@@ -19,13 +19,13 @@ console_info(VALUE io)
     CONSOLE_SCREEN_BUFFER_INFO csbi;
 
     if (!GetConsoleScreenBufferInfo(h, &csbi))
-	rb_syserr_fail(rb_w32_map_errno(GetLastError()), "not console");
+        rb_syserr_fail(rb_w32_map_errno(GetLastError()), "not console");
     return rb_struct_new(rb_cConsoleScreenBufferInfo,
-			 INT2FIX(csbi.dwSize.X),
-			 INT2FIX(csbi.dwSize.Y),
-			 INT2FIX(csbi.dwCursorPosition.X),
-			 INT2FIX(csbi.dwCursorPosition.Y),
-			 INT2FIX(csbi.wAttributes));
+                         INT2FIX(csbi.dwSize.X),
+                         INT2FIX(csbi.dwSize.Y),
+                         INT2FIX(csbi.dwCursorPosition.X),
+                         INT2FIX(csbi.dwCursorPosition.Y),
+                         INT2FIX(csbi.wAttributes));
 }
 
 static VALUE
@@ -44,9 +44,9 @@ void
 Init_attribute(VALUE m)
 {
     rb_cConsoleScreenBufferInfo = rb_struct_define_under(m, "ConsoleScreenBufferInfo",
-							 "size_x", "size_y",
-							 "cur_x", "cur_y",
-							 "attr", NULL);
+                                                         "size_x", "size_y",
+                                                         "cur_x", "cur_y",
+                                                         "attr", NULL);
     rb_define_method(rb_cIO, "console_info", console_info, 0);
     rb_define_method(rb_cIO, "console_attribute", console_set_attribute, 1);
 

@@ -6,7 +6,7 @@
 #include <stddef.h>
 #include <openssl/md5.h>
 
-#define MD5_BLOCK_LENGTH	MD5_CBLOCK
+#define MD5_BLOCK_LENGTH        MD5_CBLOCK
 
 static DEFINE_FINISH_FUNC_FROM_FINAL(MD5)
 #undef MD5_Finish

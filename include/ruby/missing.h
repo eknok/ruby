@@ -1,7 +1,7 @@
 /************************************************
 
   missing.h - prototype for *.c in ./missing, and
-  	      for missing timeval struct
+                for missing timeval struct
 
   $Author$
   created at: Sat May 11 23:46:03 JST 2002
@@ -51,15 +51,15 @@ extern "C" {
 
 #if !defined(HAVE_STRUCT_TIMEVAL)
 struct timeval {
-    time_t tv_sec;	/* seconds */
-    long tv_usec;	/* microseconds */
+    time_t tv_sec;        /* seconds */
+    long tv_usec;        /* microseconds */
 };
 #endif /* HAVE_STRUCT_TIMEVAL */
 
 #if !defined(HAVE_STRUCT_TIMESPEC)
 struct timespec {
-    time_t tv_sec;	/* seconds */
-    long tv_nsec;	/* nanoseconds */
+    time_t tv_sec;        /* seconds */
+    long tv_nsec;        /* nanoseconds */
 };
 #endif
 
@@ -98,7 +98,7 @@ RUBY_EXTERN int eaccess(const char*, int);
 #endif
 
 #ifndef HAVE_ROUND
-RUBY_EXTERN double round(double);	/* numeric.c */
+RUBY_EXTERN double round(double);        /* numeric.c */
 #endif
 
 #ifndef HAVE_FINITE

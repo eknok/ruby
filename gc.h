@@ -31,13 +31,13 @@ static inline void
 rb_gc_debug_body(const char *mode, const char *msg, int st, void *ptr)
 {
     if (st == 0) {
-	ruby_gc_debug_indent--;
+        ruby_gc_debug_indent--;
     }
     rb_gc_debug_indent();
     printf("%s: %s %s (%p)\n", mode, st ? "->" : "<-", msg, ptr);
 
     if (st) {
-	ruby_gc_debug_indent++;
+        ruby_gc_debug_indent++;
     }
 
     fflush(stdout);
@@ -70,10 +70,10 @@ rb_gc_debug_body(const char *mode, const char *msg, int st, void *ptr)
 #else
 RUBY_EXTERN int ruby_stack_grow_direction;
 int ruby_get_stack_grow_direction(volatile VALUE *addr);
-# define stack_growup_p(x) (			\
-	(ruby_stack_grow_direction ?		\
-	 ruby_stack_grow_direction :		\
-	 ruby_get_stack_grow_direction(x)) > 0)
+# define stack_growup_p(x) (                        \
+        (ruby_stack_grow_direction ?                \
+         ruby_stack_grow_direction :                \
+         ruby_get_stack_grow_direction(x)) > 0)
 # define STACK_UPPER(x, a, b) (stack_growup_p(x) ? (a) : (b))
 #endif
 

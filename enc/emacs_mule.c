@@ -269,8 +269,8 @@ code_to_mbc(OnigCodePoint code, UChar *buf, OnigEncoding enc)
 
 static int
 mbc_case_fold(OnigCaseFoldType flag,
-	      const UChar** pp, const UChar* end, UChar* lower,
-	      OnigEncoding enc)
+              const UChar** pp, const UChar* end, UChar* lower,
+              OnigEncoding enc)
 {
   int len;
   const UChar* p = *pp;

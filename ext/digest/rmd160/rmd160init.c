@@ -62,5 +62,5 @@ Init_rmd160(void)
 #undef RUBY_UNTYPED_DATA_WARNING
 #define RUBY_UNTYPED_DATA_WARNING 0
     rb_iv_set(cDigest_RMD160, "metadata",
-	      Data_Wrap_Struct(0, 0, 0, (void *)&rmd160));
+              Data_Wrap_Struct(0, 0, 0, (void *)&rmd160));
 }

@@ -1,7 +1,7 @@
-/*	$NetBSD: sha1.c,v 1.2 2001/03/22 09:51:48 agc Exp $	*/
-/*	$OpenBSD: sha1.c,v 1.9 1997/07/23 21:12:32 kstailey Exp $	*/
-/*	$RoughId: sha1.c,v 1.2 2001/07/13 19:49:10 knu Exp $	*/
-/*	$Id$	*/
+/*        $NetBSD: sha1.c,v 1.2 2001/03/22 09:51:48 agc Exp $        */
+/*        $OpenBSD: sha1.c,v 1.9 1997/07/23 21:12:32 kstailey Exp $        */
+/*        $RoughId: sha1.c,v 1.2 2001/07/13 19:49:10 knu Exp $        */
+/*        $Id$        */
 
 /*
  * SHA-1 in C
@@ -19,12 +19,12 @@
 
 #include "sha1.h"
 
-#define SHA1HANDSOFF		/* Copies data before messing with it. */
+#define SHA1HANDSOFF                /* Copies data before messing with it. */
 
 #if defined(_KERNEL) || defined(_STANDALONE)
 #include <sys/param.h>
 #include <sys/systm.h>
-#define _DIAGASSERT(x)	(void)0
+#define _DIAGASSERT(x)        (void)0
 #else
 /* #include "namespace.h" */
 #include <assert.h>
@@ -32,7 +32,7 @@
 #endif
 
 #ifndef _DIAGASSERT
-#define _DIAGASSERT(cond)	assert(cond)
+#define _DIAGASSERT(cond)        assert(cond)
 #endif
 
 /*
@@ -40,7 +40,7 @@
  * XXX in the kernel.
  */
 #if defined(_KERNEL) || defined(_STANDALONE)
-#define	memcpy(s, d, l)		bcopy((d), (s), (l))
+#define        memcpy(s, d, l)                bcopy((d), (s), (l))
 #endif
 
 #define rol(value, bits) (((value) << (bits)) | ((value) >> (32 - (bits))))
@@ -227,16 +227,16 @@ void SHA1_Update(SHA1_CTX *context, const uint8_t *data, size_t len)
 
     j = context->count[0];
     if ((context->count[0] += len << 3) < j)
-	context->count[1] += (len>>29)+1;
+        context->count[1] += (len>>29)+1;
     j = (j >> 3) & 63;
     if ((j + len) > 63) {
-	(void)memcpy(&context->buffer[j], data, (i = 64-j));
-	SHA1_Transform(context->state, context->buffer);
-	for ( ; i + 63 < len; i += 64)
-	    SHA1_Transform(context->state, &data[i]);
-	j = 0;
+        (void)memcpy(&context->buffer[j], data, (i = 64-j));
+        SHA1_Transform(context->state, context->buffer);
+        for ( ; i + 63 < len; i += 64)
+            SHA1_Transform(context->state, &data[i]);
+        j = 0;
     } else {
-	i = 0;
+        i = 0;
     }
     (void)memcpy(&context->buffer[j], &data[i], len - i);
 }
@@ -254,18 +254,18 @@ int SHA1_Finish(SHA1_CTX* context, uint8_t digest[20])
     _DIAGASSERT(context != 0);
 
     for (i = 0; i < 8; i++) {
-	finalcount[i] = (uint8_t)((context->count[(i >= 4 ? 0 : 1)]
-	 >> ((3-(i & 3)) * 8) ) & 255);	 /* Endian independent */
+        finalcount[i] = (uint8_t)((context->count[(i >= 4 ? 0 : 1)]
+         >> ((3-(i & 3)) * 8) ) & 255);         /* Endian independent */
     }
     SHA1_Update(context, (const uint8_t *)"\200", 1);
     while ((context->count[0] & 504) != 448)
-	SHA1_Update(context, (const uint8_t *)"\0", 1);
+        SHA1_Update(context, (const uint8_t *)"\0", 1);
     SHA1_Update(context, finalcount, 8);  /* Should cause a SHA1_Transform() */
 
     if (digest) {
-	for (i = 0; i < 20; i++)
-	    digest[i] = (uint8_t)
-		((context->state[i>>2] >> ((3-(i & 3)) * 8) ) & 255);
+        for (i = 0; i < 20; i++)
+            digest[i] = (uint8_t)
+                ((context->state[i>>2] >> ((3-(i & 3)) * 8) ) & 255);
     }
     return 1;
 }

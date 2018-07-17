@@ -69,14 +69,14 @@
 # endif
 
 # if SIZEOF_INT == 2
-#  define ffi_type_uint	ffi_type_uint16
-#  define ffi_type_sint	ffi_type_sint16
+#  define ffi_type_uint        ffi_type_uint16
+#  define ffi_type_sint        ffi_type_sint16
 # elif SIZEOF_INT == 4
-#  define ffi_type_uint	ffi_type_uint32
-#  define ffi_type_sint	ffi_type_sint32
+#  define ffi_type_uint        ffi_type_uint32
+#  define ffi_type_sint        ffi_type_sint32
 # elif SIZEOF_INT == 8
-#  define ffi_type_uint	ffi_type_uint64
-#  define ffi_type_sint	ffi_type_sint64
+#  define ffi_type_uint        ffi_type_uint64
+#  define ffi_type_sint        ffi_type_sint64
 # else
 #  error "int size not supported"
 # endif

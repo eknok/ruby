@@ -171,28 +171,28 @@ typedef unsigned long rb_num_t;
 typedef   signed long rb_snum_t;
 
 enum ruby_tag_type {
-    RUBY_TAG_NONE	= 0x0,
-    RUBY_TAG_RETURN	= 0x1,
-    RUBY_TAG_BREAK	= 0x2,
-    RUBY_TAG_NEXT	= 0x3,
-    RUBY_TAG_RETRY	= 0x4,
-    RUBY_TAG_REDO	= 0x5,
-    RUBY_TAG_RAISE	= 0x6,
-    RUBY_TAG_THROW	= 0x7,
-    RUBY_TAG_FATAL	= 0x8,
-    RUBY_TAG_MASK	= 0xf
+    RUBY_TAG_NONE        = 0x0,
+    RUBY_TAG_RETURN        = 0x1,
+    RUBY_TAG_BREAK        = 0x2,
+    RUBY_TAG_NEXT        = 0x3,
+    RUBY_TAG_RETRY        = 0x4,
+    RUBY_TAG_REDO        = 0x5,
+    RUBY_TAG_RAISE        = 0x6,
+    RUBY_TAG_THROW        = 0x7,
+    RUBY_TAG_FATAL        = 0x8,
+    RUBY_TAG_MASK        = 0xf
 };
 
-#define TAG_NONE	RUBY_TAG_NONE
-#define TAG_RETURN	RUBY_TAG_RETURN
-#define TAG_BREAK	RUBY_TAG_BREAK
-#define TAG_NEXT	RUBY_TAG_NEXT
-#define TAG_RETRY	RUBY_TAG_RETRY
-#define TAG_REDO	RUBY_TAG_REDO
-#define TAG_RAISE	RUBY_TAG_RAISE
-#define TAG_THROW	RUBY_TAG_THROW
-#define TAG_FATAL	RUBY_TAG_FATAL
-#define TAG_MASK	RUBY_TAG_MASK
+#define TAG_NONE        RUBY_TAG_NONE
+#define TAG_RETURN        RUBY_TAG_RETURN
+#define TAG_BREAK        RUBY_TAG_BREAK
+#define TAG_NEXT        RUBY_TAG_NEXT
+#define TAG_RETRY        RUBY_TAG_RETRY
+#define TAG_REDO        RUBY_TAG_REDO
+#define TAG_RAISE        RUBY_TAG_RAISE
+#define TAG_THROW        RUBY_TAG_THROW
+#define TAG_FATAL        RUBY_TAG_FATAL
+#define TAG_MASK        RUBY_TAG_MASK
 
 enum ruby_vm_throw_flags {
     VM_THROW_NO_ESCAPE_FLAG = 0x8000,
@@ -211,15 +211,15 @@ struct iseq_inline_cache_entry {
     rb_serial_t ic_serial;
     const rb_cref_t *ic_cref;
     union {
-	size_t index;
-	VALUE value;
+        size_t index;
+        VALUE value;
     } ic_value;
 };
 
 union iseq_inline_storage_entry {
     struct {
-	struct rb_thread_struct *running_thread;
-	VALUE value;
+        struct rb_thread_struct *running_thread;
+        VALUE value;
     } once;
     struct iseq_inline_cache_entry cache;
 };
@@ -273,9 +273,9 @@ struct rb_call_cache {
     vm_call_handler call;
 
     union {
-	unsigned int index; /* used by ivar */
-	enum method_missing_reason method_missing_reason; /* used by method_missing */
-	int inc_sp; /* used by cfunc */
+        unsigned int index; /* used by ivar */
+        enum method_missing_reason method_missing_reason; /* used by method_missing */
+        int inc_sp; /* used by cfunc */
     } aux;
 };
 
@@ -301,11 +301,11 @@ static inline VALUE
 pathobj_path(VALUE pathobj)
 {
     if (RB_TYPE_P(pathobj, T_STRING)) {
-	return pathobj;
+        return pathobj;
     }
     else {
-	VM_ASSERT(RB_TYPE_P(pathobj, T_ARRAY));
-	return RARRAY_AREF(pathobj, PATHOBJ_PATH);
+        VM_ASSERT(RB_TYPE_P(pathobj, T_ARRAY));
+        return RARRAY_AREF(pathobj, PATHOBJ_PATH);
     }
 }
 
@@ -313,11 +313,11 @@ static inline VALUE
 pathobj_realpath(VALUE pathobj)
 {
     if (RB_TYPE_P(pathobj, T_STRING)) {
-	return pathobj;
+        return pathobj;
     }
     else {
-	VM_ASSERT(RB_TYPE_P(pathobj, T_ARRAY));
-	return RARRAY_AREF(pathobj, PATHOBJ_REALPATH);
+        VM_ASSERT(RB_TYPE_P(pathobj, T_ARRAY));
+        return RARRAY_AREF(pathobj, PATHOBJ_REALPATH);
     }
 }
 
@@ -326,15 +326,15 @@ struct rb_mjit_unit;
 
 struct rb_iseq_constant_body {
     enum iseq_type {
-	ISEQ_TYPE_TOP,
-	ISEQ_TYPE_METHOD,
-	ISEQ_TYPE_BLOCK,
-	ISEQ_TYPE_CLASS,
-	ISEQ_TYPE_RESCUE,
-	ISEQ_TYPE_ENSURE,
-	ISEQ_TYPE_EVAL,
-	ISEQ_TYPE_MAIN,
-	ISEQ_TYPE_PLAIN
+        ISEQ_TYPE_TOP,
+        ISEQ_TYPE_METHOD,
+        ISEQ_TYPE_BLOCK,
+        ISEQ_TYPE_CLASS,
+        ISEQ_TYPE_RESCUE,
+        ISEQ_TYPE_ENSURE,
+        ISEQ_TYPE_EVAL,
+        ISEQ_TYPE_MAIN,
+        ISEQ_TYPE_PLAIN
     } type;              /* instruction sequence type */
 
     unsigned int iseq_size;
@@ -364,65 +364,65 @@ struct rb_iseq_constant_body {
      */
 
     struct {
-	struct {
-	    unsigned int has_lead   : 1;
-	    unsigned int has_opt    : 1;
-	    unsigned int has_rest   : 1;
-	    unsigned int has_post   : 1;
-	    unsigned int has_kw     : 1;
-	    unsigned int has_kwrest : 1;
-	    unsigned int has_block  : 1;
+        struct {
+            unsigned int has_lead   : 1;
+            unsigned int has_opt    : 1;
+            unsigned int has_rest   : 1;
+            unsigned int has_post   : 1;
+            unsigned int has_kw     : 1;
+            unsigned int has_kwrest : 1;
+            unsigned int has_block  : 1;
 
-	    unsigned int ambiguous_param0 : 1; /* {|a|} */
-	} flags;
+            unsigned int ambiguous_param0 : 1; /* {|a|} */
+        } flags;
 
-	unsigned int size;
+        unsigned int size;
 
-	int lead_num;
-	int opt_num;
-	int rest_start;
-	int post_start;
-	int post_num;
-	int block_start;
+        int lead_num;
+        int opt_num;
+        int rest_start;
+        int post_start;
+        int post_num;
+        int block_start;
 
-	const VALUE *opt_table; /* (opt_num + 1) entries. */
-	/* opt_num and opt_table:
-	 *
-	 * def foo o1=e1, o2=e2, ..., oN=eN
-	 * #=>
-	 *   # prologue code
-	 *   A1: e1
-	 *   A2: e2
-	 *   ...
-	 *   AN: eN
-	 *   AL: body
-	 * opt_num = N
-	 * opt_table = [A1, A2, ..., AN, AL]
-	 */
+        const VALUE *opt_table; /* (opt_num + 1) entries. */
+        /* opt_num and opt_table:
+         *
+         * def foo o1=e1, o2=e2, ..., oN=eN
+         * #=>
+         *   # prologue code
+         *   A1: e1
+         *   A2: e2
+         *   ...
+         *   AN: eN
+         *   AL: body
+         * opt_num = N
+         * opt_table = [A1, A2, ..., AN, AL]
+         */
 
-	const struct rb_iseq_param_keyword {
-	    int num;
-	    int required_num;
-	    int bits_start;
-	    int rest_start;
-	    const ID *table;
-	    const VALUE *default_values;
-	} *keyword;
+        const struct rb_iseq_param_keyword {
+            int num;
+            int required_num;
+            int bits_start;
+            int rest_start;
+            const ID *table;
+            const VALUE *default_values;
+        } *keyword;
     } param;
 
     rb_iseq_location_t location;
 
     /* insn info, must be freed */
     struct iseq_insn_info {
-	const struct iseq_insn_info_entry *body;
-	unsigned int *positions;
-	unsigned int size;
+        const struct iseq_insn_info_entry *body;
+        unsigned int *positions;
+        unsigned int size;
 #if VM_INSN_INFO_TABLE_IMPL == 2
-	struct succ_index_table *succ_index_table;
+        struct succ_index_table *succ_index_table;
 #endif
     } insns_info;
 
-    const ID *local_table;		/* must free */
+    const ID *local_table;                /* must free */
 
     /* catch table */
     const struct iseq_catch_table *catch_table;
@@ -433,16 +433,16 @@ struct rb_iseq_constant_body {
 
     union iseq_inline_storage_entry *is_entries;
     struct rb_call_info *ci_entries; /* struct rb_call_info ci_entries[ci_size];
-				      * struct rb_call_info_with_kwarg cikw_entries[ci_kw_size];
-				      * So that:
-				      * struct rb_call_info_with_kwarg *cikw_entries = &body->ci_entries[ci_size];
-				      */
+                                      * struct rb_call_info_with_kwarg cikw_entries[ci_kw_size];
+                                      * So that:
+                                      * struct rb_call_info_with_kwarg *cikw_entries = &body->ci_entries[ci_size];
+                                      */
     struct rb_call_cache *cc_entries; /* size is ci_size = ci_kw_size */
 
     struct {
-	rb_snum_t flip_count;
-	VALUE coverage;
-	VALUE *original_iseq;
+        rb_snum_t flip_count;
+        VALUE coverage;
+        VALUE *original_iseq;
     } variable;
 
     unsigned int local_table_size;
@@ -467,14 +467,14 @@ struct rb_iseq_struct {
     struct rb_iseq_constant_body *body;
 
     union { /* 4, 5 words */
-	struct iseq_compile_data *compile_data; /* used at compile time */
+        struct iseq_compile_data *compile_data; /* used at compile time */
 
-	struct {
-	    VALUE obj;
-	    int index;
-	} loader;
+        struct {
+            VALUE obj;
+            int index;
+        } loader;
 
-	rb_event_flag_t trace_events;
+        rb_event_flag_t trace_events;
     } aux;
 };
 
@@ -491,7 +491,7 @@ rb_iseq_check(const rb_iseq_t *iseq)
 {
 #if USE_LAZY_LOAD
     if (iseq->body == NULL) {
-	rb_iseq_complete((rb_iseq_t *)iseq);
+        rb_iseq_complete((rb_iseq_t *)iseq);
     }
 #endif
     return iseq;
@@ -605,8 +605,8 @@ typedef struct rb_vm_struct {
 
     /* signal */
     struct {
-	VALUE cmd[RUBY_NSIG];
-	unsigned char safe[RUBY_NSIG];
+        VALUE cmd[RUBY_NSIG];
+        unsigned char safe[RUBY_NSIG];
     } trap_list;
 
     /* hook */
@@ -635,10 +635,10 @@ typedef struct rb_vm_struct {
 
     /* params */
     struct { /* size in byte */
-	size_t thread_vm_stack_size;
-	size_t thread_machine_stack_size;
-	size_t fiber_vm_stack_size;
-	size_t fiber_machine_stack_size;
+        size_t thread_vm_stack_size;
+        size_t thread_machine_stack_size;
+        size_t fiber_vm_stack_size;
+        size_t fiber_machine_stack_size;
     } default_params;
 
     short redefined_flag[BOP_LAST_];
@@ -691,9 +691,9 @@ struct rb_captured_block {
     VALUE self;
     const VALUE *ep;
     union {
-	const rb_iseq_t *iseq;
-	const struct vm_ifunc *ifunc;
-	VALUE val;
+        const rb_iseq_t *iseq;
+        const struct vm_ifunc *ifunc;
+        VALUE val;
     } code;
 };
 
@@ -713,24 +713,24 @@ enum rb_block_type {
 
 struct rb_block {
     union {
-	struct rb_captured_block captured;
-	VALUE symbol;
-	VALUE proc;
+        struct rb_captured_block captured;
+        VALUE symbol;
+        VALUE proc;
     } as;
     enum rb_block_type type;
 };
 
 typedef struct rb_control_frame_struct {
-    const VALUE *pc;		/* cfp[0] */
-    VALUE *sp;			/* cfp[1] */
-    const rb_iseq_t *iseq;	/* cfp[2] */
-    VALUE self;			/* cfp[3] / block[0] */
-    const VALUE *ep;		/* cfp[4] / block[1] */
+    const VALUE *pc;                /* cfp[0] */
+    VALUE *sp;                        /* cfp[1] */
+    const rb_iseq_t *iseq;        /* cfp[2] */
+    VALUE self;                        /* cfp[3] / block[0] */
+    const VALUE *ep;                /* cfp[4] / block[1] */
     const void *block_code;     /* cfp[5] / block[2] */ /* iseq or ifunc */
-    const VALUE *bp;		/* cfp[6] */
+    const VALUE *bp;                /* cfp[6] */
 
 #if VM_DEBUG_BP_CHECK
-    VALUE *bp_check;		/* cfp[7] */
+    VALUE *bp_check;                /* cfp[7] */
 #endif
 } rb_control_frame_t;
 
@@ -765,8 +765,8 @@ struct rb_vm_tag {
 
 STATIC_ASSERT(rb_vm_tag_buf_offset, offsetof(struct rb_vm_tag, buf) > 0);
 STATIC_ASSERT(rb_vm_tag_buf_end,
-	      offsetof(struct rb_vm_tag, buf) + sizeof(rb_jmpbuf_t) <
-	      sizeof(struct rb_vm_tag));
+              offsetof(struct rb_vm_tag, buf) + sizeof(rb_jmpbuf_t) <
+              sizeof(struct rb_vm_tag));
 
 struct rb_vm_protect_tag {
     struct rb_vm_protect_tag *prev;
@@ -801,7 +801,7 @@ typedef struct rb_fiber_struct rb_fiber_t;
 
 typedef struct rb_execution_context_struct {
     /* execution information */
-    VALUE *vm_stack;		/* must free, must mark */
+    VALUE *vm_stack;                /* must free, must mark */
     size_t vm_stack_size;       /* size in word (byte size / sizeof(VALUE)) */
     rb_control_frame_t *cfp;
 
@@ -840,15 +840,15 @@ typedef struct rb_execution_context_struct {
 
     /* for GC */
     struct {
-	VALUE *stack_start;
-	VALUE *stack_end;
-	size_t stack_maxsize;
+        VALUE *stack_start;
+        VALUE *stack_end;
+        size_t stack_maxsize;
 #ifdef __ia64
-	VALUE *register_stack_start;
-	VALUE *register_stack_end;
-	size_t register_stack_maxsize;
+        VALUE *register_stack_start;
+        VALUE *register_stack_end;
+        size_t register_stack_maxsize;
 #endif
-	RUBY_ALIGNAS(SIZEOF_VALUE) jmp_buf regs;
+        RUBY_ALIGNAS(SIZEOF_VALUE) jmp_buf regs;
     } machine;
 } rb_execution_context_t;
 
@@ -944,9 +944,9 @@ rb_iseq_t *rb_iseq_new         (const rb_ast_body_t *ast, VALUE name, VALUE path
 rb_iseq_t *rb_iseq_new_top     (const rb_ast_body_t *ast, VALUE name, VALUE path, VALUE realpath, const rb_iseq_t *parent);
 rb_iseq_t *rb_iseq_new_main    (const rb_ast_body_t *ast,             VALUE path, VALUE realpath, const rb_iseq_t *parent);
 rb_iseq_t *rb_iseq_new_with_opt(const rb_ast_body_t *ast, VALUE name, VALUE path, VALUE realpath, VALUE first_lineno,
-				const rb_iseq_t *parent, enum iseq_type, const rb_compile_option_t*);
+                                const rb_iseq_t *parent, enum iseq_type, const rb_compile_option_t*);
 rb_iseq_t *rb_iseq_new_ifunc(const struct vm_ifunc *ifunc, VALUE name, VALUE path, VALUE realpath, VALUE first_lineno,
-			     const rb_iseq_t *parent, enum iseq_type, const rb_compile_option_t*);
+                             const rb_iseq_t *parent, enum iseq_type, const rb_compile_option_t*);
 
 /* src -> iseq */
 rb_iseq_t *rb_iseq_compile(VALUE src, VALUE file, VALUE line);
@@ -969,8 +969,8 @@ RUBY_SYMBOL_EXPORT_END
 
 typedef struct {
     const struct rb_block block;
-    unsigned int is_from_method: 1;	/* bool */
-    unsigned int is_lambda: 1;		/* bool */
+    unsigned int is_from_method: 1;        /* bool */
+    unsigned int is_lambda: 1;                /* bool */
 } rb_proc_t;
 
 typedef struct {
@@ -1308,13 +1308,13 @@ VM_BH_ISEQ_BLOCK_P(VALUE block_handler)
 {
     if ((block_handler & 0x03) == 0x01) {
 #if VM_CHECK_MODE > 0
-	struct rb_captured_block *captured = VM_TAGGED_PTR_REF(block_handler, 0x03);
-	VM_ASSERT(imemo_type_p(captured->code.val, imemo_iseq));
+        struct rb_captured_block *captured = VM_TAGGED_PTR_REF(block_handler, 0x03);
+        VM_ASSERT(imemo_type_p(captured->code.val, imemo_iseq));
 #endif
-	return 1;
+        return 1;
     }
     else {
-	return 0;
+        return 0;
     }
 }
 
@@ -1339,13 +1339,13 @@ VM_BH_IFUNC_P(VALUE block_handler)
 {
     if ((block_handler & 0x03) == 0x03) {
 #if VM_CHECK_MODE > 0
-	struct rb_captured_block *captured = (void *)(block_handler & ~0x03);
-	VM_ASSERT(imemo_type_p(captured->code.val, imemo_ifunc));
+        struct rb_captured_block *captured = (void *)(block_handler & ~0x03);
+        VM_ASSERT(imemo_type_p(captured->code.val, imemo_ifunc));
 #endif
-	return 1;
+        return 1;
     }
     else {
-	return 0;
+        return 0;
     }
 }
 
@@ -1377,17 +1377,17 @@ static inline enum rb_block_handler_type
 vm_block_handler_type(VALUE block_handler)
 {
     if (VM_BH_ISEQ_BLOCK_P(block_handler)) {
-	return block_handler_type_iseq;
+        return block_handler_type_iseq;
     }
     else if (VM_BH_IFUNC_P(block_handler)) {
-	return block_handler_type_ifunc;
+        return block_handler_type_ifunc;
     }
     else if (SYMBOL_P(block_handler)) {
-	return block_handler_type_symbol;
+        return block_handler_type_symbol;
     }
     else {
-	VM_ASSERT(rb_obj_is_proc(block_handler));
-	return block_handler_type_proc;
+        VM_ASSERT(rb_obj_is_proc(block_handler));
+        return block_handler_type_proc;
     }
 }
 
@@ -1395,7 +1395,7 @@ static inline void
 vm_block_handler_verify(MAYBE_UNUSED(VALUE block_handler))
 {
     VM_ASSERT(block_handler == VM_BLOCK_HANDLER_NONE ||
-	      (vm_block_handler_type(block_handler), 1));
+              (vm_block_handler_type(block_handler), 1));
 }
 
 static inline enum rb_block_type
@@ -1404,17 +1404,17 @@ vm_block_type(const struct rb_block *block)
 #if VM_CHECK_MODE > 0
     switch (block->type) {
       case block_type_iseq:
-	VM_ASSERT(imemo_type_p(block->as.captured.code.val, imemo_iseq));
-	break;
+        VM_ASSERT(imemo_type_p(block->as.captured.code.val, imemo_iseq));
+        break;
       case block_type_ifunc:
-	VM_ASSERT(imemo_type_p(block->as.captured.code.val, imemo_ifunc));
-	break;
+        VM_ASSERT(imemo_type_p(block->as.captured.code.val, imemo_ifunc));
+        break;
       case block_type_symbol:
-	VM_ASSERT(SYMBOL_P(block->as.symbol));
-	break;
+        VM_ASSERT(SYMBOL_P(block->as.symbol));
+        break;
       case block_type_proc:
-	VM_ASSERT(rb_obj_is_proc(block->as.proc));
-	break;
+        VM_ASSERT(rb_obj_is_proc(block->as.proc));
+        break;
     }
 #endif
     return block->type;
@@ -1481,11 +1481,11 @@ vm_block_self(const struct rb_block *block)
     switch (vm_block_type(block)) {
       case block_type_iseq:
       case block_type_ifunc:
-	return block->as.captured.self;
+        return block->as.captured.self;
       case block_type_proc:
-	return vm_block_self(vm_proc_block(block->as.proc));
+        return vm_block_self(vm_proc_block(block->as.proc));
       case block_type_symbol:
-	return Qundef;
+        return Qundef;
     }
     VM_UNREACHABLE(vm_block_self);
     return Qundef;
@@ -1571,7 +1571,7 @@ const VALUE *rb_binding_add_dynavars(VALUE bindval, rb_binding_t *bind, int dync
 void rb_vm_inc_const_missing_count(void);
 void rb_vm_gvl_destroy(rb_vm_t *vm);
 VALUE rb_vm_call(rb_execution_context_t *ec, VALUE recv, VALUE id, int argc,
-		 const VALUE *argv, const rb_callable_method_entry_t *me);
+                 const VALUE *argv, const rb_callable_method_entry_t *me);
 void rb_vm_pop_frame(rb_execution_context_t *ec);
 
 void rb_thread_start_timer_thread(void);
@@ -1668,10 +1668,10 @@ rb_ec_vm_ptr(const rb_execution_context_t *ec)
 {
     const rb_thread_t *th = rb_ec_thread_ptr(ec);
     if (th) {
-	return th->vm;
+        return th->vm;
     }
     else {
-	return NULL;
+        return NULL;
     }
 }
 
@@ -1692,16 +1692,16 @@ static inline rb_vm_t *
 rb_current_vm(void)
 {
     VM_ASSERT(ruby_current_vm_ptr == NULL ||
-	      ruby_current_execution_context_ptr == NULL ||
-	      rb_ec_thread_ptr(GET_EC()) == NULL ||
-	      rb_ec_vm_ptr(GET_EC()) == ruby_current_vm_ptr);
+              ruby_current_execution_context_ptr == NULL ||
+              rb_ec_thread_ptr(GET_EC()) == NULL ||
+              rb_ec_vm_ptr(GET_EC()) == ruby_current_vm_ptr);
     return ruby_current_vm_ptr;
 }
 
 #define rb_thread_set_current_raw(th) (void)(ruby_current_execution_context_ptr = (th)->ec)
 #define rb_thread_set_current(th) do { \
     if ((th)->vm->running_thread != (th)) { \
-	(th)->running_time_us = 0; \
+        (th)->running_time_us = 0; \
     } \
     rb_thread_set_current_raw(th); \
     (th)->vm->running_thread = (th); \
@@ -1715,16 +1715,16 @@ enum {
     TIMER_INTERRUPT_MASK         = 0x01,
     PENDING_INTERRUPT_MASK       = 0x02,
     POSTPONED_JOB_INTERRUPT_MASK = 0x04,
-    TRAP_INTERRUPT_MASK	         = 0x08
+    TRAP_INTERRUPT_MASK                 = 0x08
 };
 
-#define RUBY_VM_SET_TIMER_INTERRUPT(ec)		ATOMIC_OR((ec)->interrupt_flag, TIMER_INTERRUPT_MASK)
-#define RUBY_VM_SET_INTERRUPT(ec)		ATOMIC_OR((ec)->interrupt_flag, PENDING_INTERRUPT_MASK)
-#define RUBY_VM_SET_POSTPONED_JOB_INTERRUPT(ec)	ATOMIC_OR((ec)->interrupt_flag, POSTPONED_JOB_INTERRUPT_MASK)
-#define RUBY_VM_SET_TRAP_INTERRUPT(ec)		ATOMIC_OR((ec)->interrupt_flag, TRAP_INTERRUPT_MASK)
-#define RUBY_VM_INTERRUPTED(ec)			((ec)->interrupt_flag & ~(ec)->interrupt_mask & \
-						 (PENDING_INTERRUPT_MASK|TRAP_INTERRUPT_MASK))
-#define RUBY_VM_INTERRUPTED_ANY(ec)		((ec)->interrupt_flag & ~(ec)->interrupt_mask)
+#define RUBY_VM_SET_TIMER_INTERRUPT(ec)                ATOMIC_OR((ec)->interrupt_flag, TIMER_INTERRUPT_MASK)
+#define RUBY_VM_SET_INTERRUPT(ec)                ATOMIC_OR((ec)->interrupt_flag, PENDING_INTERRUPT_MASK)
+#define RUBY_VM_SET_POSTPONED_JOB_INTERRUPT(ec)        ATOMIC_OR((ec)->interrupt_flag, POSTPONED_JOB_INTERRUPT_MASK)
+#define RUBY_VM_SET_TRAP_INTERRUPT(ec)                ATOMIC_OR((ec)->interrupt_flag, TRAP_INTERRUPT_MASK)
+#define RUBY_VM_INTERRUPTED(ec)                        ((ec)->interrupt_flag & ~(ec)->interrupt_mask & \
+                                                 (PENDING_INTERRUPT_MASK|TRAP_INTERRUPT_MASK))
+#define RUBY_VM_INTERRUPTED_ANY(ec)                ((ec)->interrupt_flag & ~(ec)->interrupt_mask)
 
 VALUE rb_exc_set_backtrace(VALUE exc, VALUE bt);
 int rb_signal_buff_size(void);
@@ -1748,7 +1748,7 @@ rb_vm_check_ints(rb_execution_context_t *ec)
 {
     VM_ASSERT(ec == GET_EC());
     if (UNLIKELY(RUBY_VM_INTERRUPTED_ANY(ec))) {
-	rb_threadptr_execute_interrupts(rb_ec_thread_ptr(ec), 0);
+        rb_threadptr_execute_interrupts(rb_ec_thread_ptr(ec), 0);
     }
 }
 
@@ -1775,14 +1775,14 @@ void rb_exec_event_hooks(struct rb_trace_arg_struct *trace_arg, int pop_p);
 #define EXEC_EVENT_HOOK_ORIG(ec_, flag_, vm_flags_, self_, id_, called_id_, klass_, data_, pop_p_) do { \
     const rb_event_flag_t flag_arg_ = (flag_); \
     if (UNLIKELY(vm_flags_ & (flag_arg_))) { \
-	/* defer evaluating the other arguments */ \
-	rb_exec_event_hook_orig(ec_, flag_arg_, self_, id_, called_id_, klass_, data_, pop_p_); \
+        /* defer evaluating the other arguments */ \
+        rb_exec_event_hook_orig(ec_, flag_arg_, self_, id_, called_id_, klass_, data_, pop_p_); \
     } \
 } while (0)
 
 static inline void
 rb_exec_event_hook_orig(rb_execution_context_t *ec, const rb_event_flag_t flag,
-			VALUE self, ID id, ID called_id, VALUE klass, VALUE data, int pop_p)
+                        VALUE self, ID id, ID called_id, VALUE klass, VALUE data, int pop_p)
 {
     struct rb_trace_arg_struct trace_arg;
 

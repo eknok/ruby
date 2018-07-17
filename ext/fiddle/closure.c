@@ -17,7 +17,7 @@ typedef struct {
 #elif defined(__OpenBSD__) || defined(__APPLE__) || defined(__linux__)
 # define USE_FFI_CLOSURE_ALLOC 0
 #elif defined(RUBY_LIBFFI_MODVERSION) && RUBY_LIBFFI_MODVERSION < 3000005 && \
-	(defined(__i386__) || defined(__x86_64__) || defined(_M_IX86) || defined(_M_AMD64))
+        (defined(__i386__) || defined(__x86_64__) || defined(_M_IX86) || defined(_M_AMD64))
 # define USE_FFI_CLOSURE_ALLOC 0
 #else
 # define USE_FFI_CLOSURE_ALLOC 1
@@ -83,54 +83,54 @@ with_gvl_callback(void *ptr)
     for (i = 0; i < argc; i++) {
         type = NUM2INT(RARRAY_AREF(rbargs, i));
         switch (type) {
-	  case TYPE_VOID:
-	    argc = 0;
-	    break;
-	  case TYPE_INT:
-	    rb_ary_push(params, INT2NUM(*(int *)x->args[i]));
-	    break;
-	  case -TYPE_INT:
-	    rb_ary_push(params, UINT2NUM(*(unsigned int *)x->args[i]));
-	    break;
-	  case TYPE_VOIDP:
-	    rb_ary_push(params,
-			rb_funcall(cPointer, rb_intern("[]"), 1,
-				   PTR2NUM(*(void **)x->args[i])));
-	    break;
-	  case TYPE_LONG:
-	    rb_ary_push(params, LONG2NUM(*(long *)x->args[i]));
-	    break;
-	  case -TYPE_LONG:
-	    rb_ary_push(params, ULONG2NUM(*(unsigned long *)x->args[i]));
-	    break;
-	  case TYPE_CHAR:
-	    rb_ary_push(params, INT2NUM(*(signed char *)x->args[i]));
-	    break;
-	  case -TYPE_CHAR:
-	    rb_ary_push(params, UINT2NUM(*(unsigned char *)x->args[i]));
-	    break;
-	  case TYPE_SHORT:
-	    rb_ary_push(params, INT2NUM(*(signed short *)x->args[i]));
-	    break;
-	  case -TYPE_SHORT:
-	    rb_ary_push(params, UINT2NUM(*(unsigned short *)x->args[i]));
-	    break;
-	  case TYPE_DOUBLE:
-	    rb_ary_push(params, rb_float_new(*(double *)x->args[i]));
-	    break;
-	  case TYPE_FLOAT:
-	    rb_ary_push(params, rb_float_new(*(float *)x->args[i]));
-	    break;
+          case TYPE_VOID:
+            argc = 0;
+            break;
+          case TYPE_INT:
+            rb_ary_push(params, INT2NUM(*(int *)x->args[i]));
+            break;
+          case -TYPE_INT:
+            rb_ary_push(params, UINT2NUM(*(unsigned int *)x->args[i]));
+            break;
+          case TYPE_VOIDP:
+            rb_ary_push(params,
+                        rb_funcall(cPointer, rb_intern("[]"), 1,
+                                   PTR2NUM(*(void **)x->args[i])));
+            break;
+          case TYPE_LONG:
+            rb_ary_push(params, LONG2NUM(*(long *)x->args[i]));
+            break;
+          case -TYPE_LONG:
+            rb_ary_push(params, ULONG2NUM(*(unsigned long *)x->args[i]));
+            break;
+          case TYPE_CHAR:
+            rb_ary_push(params, INT2NUM(*(signed char *)x->args[i]));
+            break;
+          case -TYPE_CHAR:
+            rb_ary_push(params, UINT2NUM(*(unsigned char *)x->args[i]));
+            break;
+          case TYPE_SHORT:
+            rb_ary_push(params, INT2NUM(*(signed short *)x->args[i]));
+            break;
+          case -TYPE_SHORT:
+            rb_ary_push(params, UINT2NUM(*(unsigned short *)x->args[i]));
+            break;
+          case TYPE_DOUBLE:
+            rb_ary_push(params, rb_float_new(*(double *)x->args[i]));
+            break;
+          case TYPE_FLOAT:
+            rb_ary_push(params, rb_float_new(*(float *)x->args[i]));
+            break;
 #if HAVE_LONG_LONG
-	  case TYPE_LONG_LONG:
-	    rb_ary_push(params, LL2NUM(*(LONG_LONG *)x->args[i]));
-	    break;
-	  case -TYPE_LONG_LONG:
-	    rb_ary_push(params, ULL2NUM(*(unsigned LONG_LONG *)x->args[i]));
-	    break;
+          case TYPE_LONG_LONG:
+            rb_ary_push(params, LL2NUM(*(LONG_LONG *)x->args[i]));
+            break;
+          case -TYPE_LONG_LONG:
+            rb_ary_push(params, ULL2NUM(*(unsigned LONG_LONG *)x->args[i]));
+            break;
 #endif
-	  default:
-	    rb_raise(rb_eRuntimeError, "closure args: %d", type);
+          default:
+            rb_raise(rb_eRuntimeError, "closure args: %d", type);
         }
     }
 
@@ -140,42 +140,42 @@ with_gvl_callback(void *ptr)
     type = NUM2INT(ctype);
     switch (type) {
       case TYPE_VOID:
-	break;
+        break;
       case TYPE_LONG:
-	*(long *)x->resp = NUM2LONG(ret);
-	break;
+        *(long *)x->resp = NUM2LONG(ret);
+        break;
       case -TYPE_LONG:
-	*(unsigned long *)x->resp = NUM2ULONG(ret);
-	break;
+        *(unsigned long *)x->resp = NUM2ULONG(ret);
+        break;
       case TYPE_CHAR:
       case TYPE_SHORT:
       case TYPE_INT:
-	*(ffi_sarg *)x->resp = NUM2INT(ret);
-	break;
+        *(ffi_sarg *)x->resp = NUM2INT(ret);
+        break;
       case -TYPE_CHAR:
       case -TYPE_SHORT:
       case -TYPE_INT:
-	*(ffi_arg *)x->resp = NUM2UINT(ret);
-	break;
+        *(ffi_arg *)x->resp = NUM2UINT(ret);
+        break;
       case TYPE_VOIDP:
-	*(void **)x->resp = NUM2PTR(ret);
-	break;
+        *(void **)x->resp = NUM2PTR(ret);
+        break;
       case TYPE_DOUBLE:
-	*(double *)x->resp = NUM2DBL(ret);
-	break;
+        *(double *)x->resp = NUM2DBL(ret);
+        break;
       case TYPE_FLOAT:
-	*(float *)x->resp = (float)NUM2DBL(ret);
-	break;
+        *(float *)x->resp = (float)NUM2DBL(ret);
+        break;
 #if HAVE_LONG_LONG
       case TYPE_LONG_LONG:
-	*(LONG_LONG *)x->resp = NUM2LL(ret);
-	break;
+        *(LONG_LONG *)x->resp = NUM2LL(ret);
+        break;
       case -TYPE_LONG_LONG:
-	*(unsigned LONG_LONG *)x->resp = NUM2ULL(ret);
-	break;
+        *(unsigned LONG_LONG *)x->resp = NUM2ULL(ret);
+        break;
 #endif
       default:
-	rb_raise(rb_eRuntimeError, "closure retval: %d", type);
+        rb_raise(rb_eRuntimeError, "closure retval: %d", type);
     }
     return 0;
 }
@@ -191,9 +191,9 @@ callback(ffi_cif *cif, void *resp, void **args, void *ctx)
     x.ctx = ctx;
 
     if (ruby_thread_has_gvl_p()) {
-	(void)with_gvl_callback(&x);
+        (void)with_gvl_callback(&x);
     } else {
-	(void)rb_thread_call_with_gvl(with_gvl_callback, &x);
+        (void)rb_thread_call_with_gvl(with_gvl_callback, &x);
     }
 }
 
@@ -203,7 +203,7 @@ allocate(VALUE klass)
     fiddle_closure * closure;
 
     VALUE i = TypedData_Make_Struct(klass, fiddle_closure,
-	    &closure_data_type, closure);
+            &closure_data_type, closure);
 
 #if USE_FFI_CLOSURE_ALLOC
     closure->pcl = ffi_closure_alloc(sizeof(ffi_closure), &closure->code);
@@ -228,7 +228,7 @@ initialize(int rbargc, VALUE argv[], VALUE self)
     int i, argc;
 
     if (2 == rb_scan_args(rbargc, argv, "21", &ret, &args, &abi))
-	abi = INT2NUM(FFI_DEFAULT_ABI);
+        abi = INT2NUM(FFI_DEFAULT_ABI);
 
     Check_Type(args, T_ARRAY);
 
@@ -252,25 +252,25 @@ initialize(int rbargc, VALUE argv[], VALUE self)
 
     result = ffi_prep_cif(cif, NUM2INT(abi), argc,
                 INT2FFI_TYPE(NUM2INT(ret)),
-		cl->argv);
+                cl->argv);
 
     if (FFI_OK != result)
-	rb_raise(rb_eRuntimeError, "error prepping CIF %d", result);
+        rb_raise(rb_eRuntimeError, "error prepping CIF %d", result);
 
 #if USE_FFI_CLOSURE_ALLOC
     result = ffi_prep_closure_loc(pcl, cif, callback,
-		(void *)self, cl->code);
+                (void *)self, cl->code);
 #else
     result = ffi_prep_closure(pcl, cif, callback, (void *)self);
     cl->code = (void *)pcl;
     i = mprotect(pcl, sizeof(*pcl), PROT_READ | PROT_EXEC);
     if (i) {
-	rb_sys_fail("mprotect");
+        rb_sys_fail("mprotect");
     }
 #endif
 
     if (FFI_OK != result)
-	rb_raise(rb_eRuntimeError, "error prepping closure %d", result);
+        rb_raise(rb_eRuntimeError, "error prepping closure %d", result);
 
     return self;
 }
@@ -309,11 +309,11 @@ Init_fiddle_closure(void)
      *       10
      *     end
      *   }.new(Fiddle::TYPE_INT, [])
-     *	    #=> #<#<Class:0x0000000150d308>:0x0000000150d240>
+     *            #=> #<#<Class:0x0000000150d308>:0x0000000150d240>
      *   func = Fiddle::Function.new(closure, [], Fiddle::TYPE_INT)
-     *	    #=> #<Fiddle::Function:0x00000001516e58>
+     *            #=> #<Fiddle::Function:0x00000001516e58>
      *   func.call
-     *	    #=> 10
+     *            #=> 10
      */
     cFiddleClosure = rb_define_class_under(mFiddle, "Closure", rb_cObject);
 

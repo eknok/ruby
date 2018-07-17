@@ -248,13 +248,13 @@ strscan_init_copy(VALUE vself, VALUE vorig)
     self = check_strscan(vself);
     orig = check_strscan(vorig);
     if (self != orig) {
-	self->flags = orig->flags;
-	self->str = orig->str;
-	self->prev = orig->prev;
-	self->curr = orig->curr;
-	if (rb_reg_region_copy(&self->regs, &orig->regs))
-	    rb_memerror();
-	RB_GC_GUARD(vorig);
+        self->flags = orig->flags;
+        self->str = orig->str;
+        self->prev = orig->prev;
+        self->curr = orig->curr;
+        if (rb_reg_region_copy(&self->regs, &orig->regs))
+            rb_memerror();
+        RB_GC_GUARD(vorig);
     }
 
     return vself;
@@ -981,13 +981,13 @@ name_to_backref_number(struct re_registers *regs, VALUE regexp, const char* name
     int num;
 
     num = onig_name_to_backref_number(RREGEXP_PTR(regexp),
-	(const unsigned char* )name, (const unsigned char* )name_end, regs);
+        (const unsigned char* )name, (const unsigned char* )name_end, regs);
     if (num >= 1) {
-	return num;
+        return num;
     }
     else {
-	rb_enc_raise(enc, rb_eIndexError, "undefined group name reference: %.*s",
-					  rb_long2int(name_end - name), name);
+        rb_enc_raise(enc, rb_eIndexError, "undefined group name reference: %.*s",
+                                          rb_long2int(name_end - name), name);
     }
 
     UNREACHABLE;
@@ -1241,27 +1241,27 @@ strscan_inspect(VALUE self)
 
     p = check_strscan(self);
     if (NIL_P(p->str)) {
-	a = rb_sprintf("#<%"PRIsVALUE" (uninitialized)>", rb_obj_class(self));
-	return infect(a, p);
+        a = rb_sprintf("#<%"PRIsVALUE" (uninitialized)>", rb_obj_class(self));
+        return infect(a, p);
     }
     if (EOS_P(p)) {
-	a = rb_sprintf("#<%"PRIsVALUE" fin>", rb_obj_class(self));
-	return infect(a, p);
+        a = rb_sprintf("#<%"PRIsVALUE" fin>", rb_obj_class(self));
+        return infect(a, p);
     }
     if (p->curr == 0) {
-	b = inspect2(p);
-	a = rb_sprintf("#<%"PRIsVALUE" %ld/%ld @ %"PRIsVALUE">",
-		       rb_obj_class(self),
-		       p->curr, S_LEN(p),
-		       b);
-	return infect(a, p);
+        b = inspect2(p);
+        a = rb_sprintf("#<%"PRIsVALUE" %ld/%ld @ %"PRIsVALUE">",
+                       rb_obj_class(self),
+                       p->curr, S_LEN(p),
+                       b);
+        return infect(a, p);
     }
     a = inspect1(p);
     b = inspect2(p);
     a = rb_sprintf("#<%"PRIsVALUE" %ld/%ld %"PRIsVALUE" @ %"PRIsVALUE">",
-		   rb_obj_class(self),
-		   p->curr, S_LEN(p),
-		   a, b);
+                   rb_obj_class(self),
+                   p->curr, S_LEN(p),
+                   a, b);
     return infect(a, p);
 }
 
@@ -1273,12 +1273,12 @@ inspect1(struct strscanner *p)
 
     if (p->curr == 0) return rb_str_new2("");
     if (p->curr > INSPECT_LENGTH) {
-	str = rb_str_new_cstr("...");
-	len = INSPECT_LENGTH;
+        str = rb_str_new_cstr("...");
+        len = INSPECT_LENGTH;
     }
     else {
-	str = rb_str_new(0, 0);
-	len = p->curr;
+        str = rb_str_new(0, 0);
+        len = p->curr;
     }
     rb_str_cat(str, CURPTR(p) - len, len);
     return rb_str_dump(str);
@@ -1293,11 +1293,11 @@ inspect2(struct strscanner *p)
     if (EOS_P(p)) return rb_str_new2("");
     len = S_RESTLEN(p);
     if (len > INSPECT_LENGTH) {
-	str = rb_str_new(CURPTR(p), INSPECT_LENGTH);
-	rb_str_cat2(str, "...");
+        str = rb_str_new(CURPTR(p), INSPECT_LENGTH);
+        rb_str_cat2(str, "...");
     }
     else {
-	str = rb_str_new(CURPTR(p), len);
+        str = rb_str_new(CURPTR(p), len);
     }
     return rb_str_dump(str);
 }
@@ -1421,7 +1421,7 @@ Init_strscan(void)
     StringScanner = rb_define_class("StringScanner", rb_cObject);
     ScanError = rb_define_class_under(StringScanner, "Error", rb_eStandardError);
     if (!rb_const_defined(rb_cObject, id_scanerr)) {
-	rb_const_set(rb_cObject, id_scanerr, ScanError);
+        rb_const_set(rb_cObject, id_scanerr, ScanError);
     }
     tmp = rb_str_new2(STRSCAN_VERSION);
     rb_obj_freeze(tmp);

@@ -119,7 +119,7 @@ free_dbm(void *ptr)
 {
     struct dbmdata *dbmp = ptr;
     if (dbmp->di_dbm)
-	gdbm_close(dbmp->di_dbm);
+        gdbm_close(dbmp->di_dbm);
     xfree(dbmp);
 }
 
@@ -129,7 +129,7 @@ memsize_dbm(const void *ptr)
     const struct dbmdata *dbmp = ptr;
     size_t size = sizeof(*dbmp);
     if (dbmp->di_dbm)
-	size += DBM_SIZEOF_DBM;
+        size += DBM_SIZEOF_DBM;
     return size;
 }
 
@@ -270,7 +270,7 @@ fgdbm_initialize(int argc, VALUE *argv, VALUE obj)
     }
 
     if (dbmp->di_dbm)
-	gdbm_close(dbmp->di_dbm);
+        gdbm_close(dbmp->di_dbm);
     dbmp->di_dbm = dbm;
     dbmp->di_size = -1;
 
@@ -625,7 +625,7 @@ fgdbm_delete_if(VALUE obj)
     for (keystr = rb_gdbm_firstkey(dbm); RTEST(keystr);
          keystr = rb_gdbm_nextkey(dbm, keystr)) {
 
-	OBJ_FREEZE(keystr);
+        OBJ_FREEZE(keystr);
         valstr = rb_gdbm_fetch2(dbm, keystr);
         ret = rb_protect(rb_yield, rb_assoc_new(rb_str_dup(keystr), valstr), &status);
         if (status != 0) break;

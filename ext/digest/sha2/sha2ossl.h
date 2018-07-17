@@ -4,9 +4,9 @@
 #include <stddef.h>
 #include <openssl/sha.h>
 
-#define SHA256_BLOCK_LENGTH	SHA256_CBLOCK
-#define SHA384_BLOCK_LENGTH	SHA512_CBLOCK
-#define SHA512_BLOCK_LENGTH	SHA512_CBLOCK
+#define SHA256_BLOCK_LENGTH        SHA256_CBLOCK
+#define SHA384_BLOCK_LENGTH        SHA512_CBLOCK
+#define SHA512_BLOCK_LENGTH        SHA512_CBLOCK
 
 #ifndef __DragonFly__
 #define SHA384_Final SHA512_Final

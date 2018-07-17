@@ -11,8 +11,8 @@ memcmp(const void *s1, const void *s2, size_t len)
     register int tmp;
 
     for (; len; --len) {
-	if (tmp = *a++ - *b++)
-	    return tmp;
+        if (tmp = *a++ - *b++)
+            return tmp;
     }
     return 0;
 }

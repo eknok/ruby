@@ -64,12 +64,12 @@ PACKED_STRUCT_UNALIGNED(struct rb_io_buffer_t {
 typedef struct rb_io_buffer_t rb_io_buffer_t;
 
 typedef struct rb_io_t {
-    FILE *stdio_file;		/* stdio ptr for read/write if available */
+    FILE *stdio_file;                /* stdio ptr for read/write if available */
     int fd;                     /* file descriptor */
-    int mode;			/* mode flags: FMODE_XXXs */
-    rb_pid_t pid;		/* child's pid (for pipes) */
-    int lineno;			/* number of lines read */
-    VALUE pathv;		/* pathname for file */
+    int mode;                        /* mode flags: FMODE_XXXs */
+    rb_pid_t pid;                /* child's pid (for pipes) */
+    int lineno;                        /* number of lines read */
+    VALUE pathv;                /* pathname for file */
     void (*finalize)(struct rb_io_t*,int); /* finalize proc */
 
     rb_io_buffer_t wbuf, rbuf;

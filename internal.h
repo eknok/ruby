@@ -93,10 +93,10 @@ extern "C" {
 #define SIGNED_INTEGER_MIN(sint_type) (-SIGNED_INTEGER_MAX(sint_type)-1)
 #define UNSIGNED_INTEGER_MAX(uint_type) (~(uint_type)0)
 
-#if SIGNEDNESS_OF_TIME_T < 0	/* signed */
+#if SIGNEDNESS_OF_TIME_T < 0        /* signed */
 # define TIMET_MAX SIGNED_INTEGER_MAX(time_t)
 # define TIMET_MIN SIGNED_INTEGER_MIN(time_t)
-#elif SIGNEDNESS_OF_TIME_T > 0	/* unsigned */
+#elif SIGNEDNESS_OF_TIME_T > 0        /* unsigned */
 # define TIMET_MAX UNSIGNED_INTEGER_MAX(time_t)
 # define TIMET_MIN ((time_t)0)
 #endif
@@ -415,10 +415,10 @@ rb_fix_plus_fix(VALUE x, VALUE y)
      *         * negative: 0b10xxx...
      */
     if (__builtin_add_overflow((long)x, (long)y-1, &lz)) {
-	return rb_int2big(rb_overflowed_fix_to_int(lz));
+        return rb_int2big(rb_overflowed_fix_to_int(lz));
     }
     else {
-	return (VALUE)lz;
+        return (VALUE)lz;
     }
 #else
     long lz = FIX2LONG(x) + FIX2LONG(y);
@@ -432,10 +432,10 @@ rb_fix_minus_fix(VALUE x, VALUE y)
 #ifdef HAVE_BUILTIN___BUILTIN_SUB_OVERFLOW
     long lz;
     if (__builtin_sub_overflow((long)x, (long)y-1, &lz)) {
-	return rb_int2big(rb_overflowed_fix_to_int(lz));
+        return rb_int2big(rb_overflowed_fix_to_int(lz));
     }
     else {
-	return (VALUE)lz;
+        return (VALUE)lz;
     }
 #else
     long lz = FIX2LONG(x) - FIX2LONG(y);
@@ -453,10 +453,10 @@ rb_fix_mul_fix(VALUE x, VALUE y)
     return DL2NUM((DLONG)lx * (DLONG)ly);
 #else
     if (MUL_OVERFLOW_FIXNUM_P(lx, ly)) {
-	return rb_big_mul(rb_int2big(lx), rb_int2big(ly));
+        return rb_big_mul(rb_int2big(lx), rb_int2big(ly));
     }
     else {
-	return LONG2FIX(lx * ly);
+        return LONG2FIX(lx * ly);
     }
 #endif
 }
@@ -476,15 +476,15 @@ rb_fix_divmod_fix(VALUE a, VALUE b, VALUE *divp, VALUE *modp)
     long y = FIX2LONG(b);
     long div, mod;
     if (x == FIXNUM_MIN && y == -1) {
-	if (divp) *divp = LONG2NUM(-FIXNUM_MIN);
-	if (modp) *modp = LONG2FIX(0);
-	return;
+        if (divp) *divp = LONG2NUM(-FIXNUM_MIN);
+        if (modp) *modp = LONG2FIX(0);
+        return;
     }
     div = x / y;
     mod = x % y;
     if (y > 0 ? mod < 0 : mod > 0) {
-	mod += y;
-	div -= 1;
+        mod += y;
+        div -= 1;
     }
     if (divp) *divp = LONG2FIX(div);
     if (modp) *modp = LONG2FIX(mod);
@@ -627,7 +627,7 @@ struct RBignum {
 #define BIGNUM_LEN(b) \
     ((RBASIC(b)->flags & BIGNUM_EMBED_FLAG) ? \
      (size_t)((RBASIC(b)->flags >> BIGNUM_EMBED_LEN_SHIFT) & \
-	      (BIGNUM_EMBED_LEN_MASK >> BIGNUM_EMBED_LEN_SHIFT)) : \
+              (BIGNUM_EMBED_LEN_MASK >> BIGNUM_EMBED_LEN_SHIFT)) : \
      RBIGNUM(b)->as.heap.len)
 /* LSB:BIGNUM_DIGITS(b)[0], MSB:BIGNUM_DIGITS(b)[BIGNUM_LEN(b)-1] */
 #define BIGNUM_DIGITS(b) \
@@ -707,11 +707,11 @@ enum {
 struct RStruct {
     struct RBasic basic;
     union {
-	struct {
-	    long len;
-	    const VALUE *ptr;
-	} heap;
-	const VALUE ary[RSTRUCT_EMBED_LEN_MAX];
+        struct {
+            long len;
+            const VALUE *ptr;
+        } heap;
+        const VALUE ary[RSTRUCT_EMBED_LEN_MAX];
     } as;
 };
 
@@ -721,7 +721,7 @@ struct RStruct {
 #undef RSTRUCT_GET
 #define RSTRUCT_EMBED_LEN(st)                               \
     (long)((RBASIC(st)->flags >> RSTRUCT_EMBED_LEN_SHIFT) & \
-	   (RSTRUCT_EMBED_LEN_MASK >> RSTRUCT_EMBED_LEN_SHIFT))
+           (RSTRUCT_EMBED_LEN_MASK >> RSTRUCT_EMBED_LEN_SHIFT))
 #define RSTRUCT_LEN(st) rb_struct_len(st)
 #define RSTRUCT_LENINT(st) rb_long2int(RSTRUCT_LEN(st))
 #define RSTRUCT_CONST_PTR(st) rb_struct_const_ptr(st)
@@ -734,14 +734,14 @@ static inline long
 rb_struct_len(VALUE st)
 {
     return (RBASIC(st)->flags & RSTRUCT_EMBED_LEN_MASK) ?
-	RSTRUCT_EMBED_LEN(st) : RSTRUCT(st)->as.heap.len;
+        RSTRUCT_EMBED_LEN(st) : RSTRUCT(st)->as.heap.len;
 }
 
 static inline const VALUE *
 rb_struct_const_ptr(VALUE st)
 {
     return FIX_CONST_VALUE_PTR((RBASIC(st)->flags & RSTRUCT_EMBED_LEN_MASK) ?
-	RSTRUCT(st)->as.ary : RSTRUCT(st)->as.heap.ptr);
+        RSTRUCT(st)->as.ary : RSTRUCT(st)->as.heap.ptr);
 }
 
 /* class.c */
@@ -835,8 +835,8 @@ static inline VALUE
 RCLASS_SET_SUPER(VALUE klass, VALUE super)
 {
     if (super) {
-	rb_class_remove_from_super_subclasses(klass);
-	rb_class_subclass_add(super, klass);
+        rb_class_remove_from_super_subclasses(klass);
+        rb_class_subclass_add(super, klass);
     }
     RB_OBJ_WRITE(klass, &RCLASS(klass)->super, super);
     return super;
@@ -880,14 +880,14 @@ static inline int
 imemo_type_p(VALUE imemo, enum imemo_type imemo_type)
 {
     if (LIKELY(!RB_SPECIAL_CONST_P(imemo))) {
-	/* fixed at compile time if imemo_type is given. */
-	const VALUE mask = (IMEMO_MASK << FL_USHIFT) | RUBY_T_MASK;
-	const VALUE expected_type = (imemo_type << FL_USHIFT) | T_IMEMO;
-	/* fixed at runtime. */
-	return expected_type == (RBASIC(imemo)->flags & mask);
+        /* fixed at compile time if imemo_type is given. */
+        const VALUE mask = (IMEMO_MASK << FL_USHIFT) | RUBY_T_MASK;
+        const VALUE expected_type = (imemo_type << FL_USHIFT) | T_IMEMO;
+        /* fixed at runtime. */
+        return expected_type == (RBASIC(imemo)->flags & mask);
     }
     else {
-	return 0;
+        return 0;
     }
 }
 
@@ -994,10 +994,10 @@ struct MEMO {
     const VALUE v1;
     const VALUE v2;
     union {
-	long cnt;
-	long state;
-	const VALUE value;
-	VALUE (*func)(ANYARGS);
+        long cnt;
+        long state;
+        const VALUE value;
+        VALUE (*func)(ANYARGS);
     } u3;
 };
 
@@ -1087,11 +1087,11 @@ VALUE rb_ary_tmp_new_from_values(VALUE, long, const VALUE *);
 #if defined(__GNUC__) && defined(HAVE_VA_ARGS_MACRO)
 #define rb_ary_new_from_args(n, ...) \
     __extension__ ({ \
-	const VALUE args_to_new_ary[] = {__VA_ARGS__}; \
-	if (__builtin_constant_p(n)) { \
-	    STATIC_ASSERT(rb_ary_new_from_args, numberof(args_to_new_ary) == (n)); \
-	} \
-	rb_ary_new_from_values(numberof(args_to_new_ary), args_to_new_ary); \
+        const VALUE args_to_new_ary[] = {__VA_ARGS__}; \
+        if (__builtin_constant_p(n)) { \
+            STATIC_ASSERT(rb_ary_new_from_args, numberof(args_to_new_ary) == (n)); \
+        } \
+        rb_ary_new_from_values(numberof(args_to_new_ary), args_to_new_ary); \
     })
 #endif
 
@@ -1330,8 +1330,8 @@ RUBY_SYMBOL_EXPORT_END
 #undef RB_NEWOBJ_OF
 #define RB_NEWOBJ_OF(obj,type,klass,flags) \
   type *(obj) = (type*)(((flags) & FL_WB_PROTECTED) ? \
-			rb_wb_protected_newobj_of(klass, (flags) & ~FL_WB_PROTECTED) : \
-			rb_wb_unprotected_newobj_of(klass, flags))
+                        rb_wb_protected_newobj_of(klass, (flags) & ~FL_WB_PROTECTED) : \
+                        rb_wb_unprotected_newobj_of(klass, flags))
 #define NEWOBJ_OF(obj,type,klass,flags) RB_NEWOBJ_OF(obj,type,klass,flags)
 
 /* hash.c */
@@ -1425,7 +1425,7 @@ enum ruby_num_rounding_mode {
     ROUND_TO(mode, name##_half_even, name##_half_up, name##_half_down)
 #define ROUND_CALL(mode, name, args) \
     ROUND_TO(mode, name##_half_even args, \
-	     name##_half_up args, name##_half_down args)
+             name##_half_up args, name##_half_down args)
 
 int rb_num_to_uint(VALUE val, unsigned int *ret);
 VALUE ruby_num_interval_step_size(VALUE from, VALUE to, VALUE step, int excl);
@@ -1470,7 +1470,7 @@ rb_num_compare_with_zero(VALUE num, ID mid)
     VALUE zero = INT2FIX(0);
     VALUE r = rb_check_funcall(num, mid, 1, &zero);
     if (r == Qundef) {
-	rb_cmperr(num, zero);
+        rb_cmperr(num, zero);
     }
     return r;
 }
@@ -1481,12 +1481,12 @@ rb_num_positive_int_p(VALUE num)
     const ID mid = '>';
 
     if (FIXNUM_P(num)) {
-	if (rb_method_basic_definition_p(rb_cInteger, mid))
-	    return FIXNUM_POSITIVE_P(num);
+        if (rb_method_basic_definition_p(rb_cInteger, mid))
+            return FIXNUM_POSITIVE_P(num);
     }
     else if (RB_TYPE_P(num, T_BIGNUM)) {
-	if (rb_method_basic_definition_p(rb_cInteger, mid))
-	    return BIGNUM_POSITIVE_P(num);
+        if (rb_method_basic_definition_p(rb_cInteger, mid))
+            return BIGNUM_POSITIVE_P(num);
     }
     return RTEST(rb_num_compare_with_zero(num, mid));
 }
@@ -1498,12 +1498,12 @@ rb_num_negative_int_p(VALUE num)
     const ID mid = '<';
 
     if (FIXNUM_P(num)) {
-	if (rb_method_basic_definition_p(rb_cInteger, mid))
-	    return FIXNUM_NEGATIVE_P(num);
+        if (rb_method_basic_definition_p(rb_cInteger, mid))
+            return FIXNUM_NEGATIVE_P(num);
     }
     else if (RB_TYPE_P(num, T_BIGNUM)) {
-	if (rb_method_basic_definition_p(rb_cInteger, mid))
-	    return BIGNUM_NEGATIVE_P(num);
+        if (rb_method_basic_definition_p(rb_cInteger, mid))
+            return BIGNUM_NEGATIVE_P(num);
     }
     return RTEST(rb_num_compare_with_zero(num, mid));
 }
@@ -1523,17 +1523,17 @@ rb_float_flonum_value(VALUE v)
 {
 #if USE_FLONUM
     if (v != (VALUE)0x8000000000000002) { /* LIKELY */
-	union {
-	    double d;
-	    VALUE v;
-	} t;
+        union {
+            double d;
+            VALUE v;
+        } t;
 
-	VALUE b63 = (v >> 63);
-	/* e: xx1... -> 011... */
-	/*    xx0... -> 100... */
-	/*      ^b63           */
-	t.v = RUBY_BIT_ROTR((2 - b63) | (v & ~(VALUE)0x03), 3);
-	return t.d;
+        VALUE b63 = (v >> 63);
+        /* e: xx1... -> 011... */
+        /*    xx0... -> 100... */
+        /*      ^b63           */
+        t.v = RUBY_BIT_ROTR((2 - b63) | (v & ~(VALUE)0x03), 3);
+        return t.d;
     }
 #endif
     return 0.0;
@@ -1549,7 +1549,7 @@ static inline double
 rb_float_value_inline(VALUE v)
 {
     if (FLONUM_P(v)) {
-	return rb_float_flonum_value(v);
+        return rb_float_flonum_value(v);
     }
     return rb_float_noflonum_value(v);
 }
@@ -1559,8 +1559,8 @@ rb_float_new_inline(double d)
 {
 #if USE_FLONUM
     union {
-	double d;
-	VALUE v;
+        double d;
+        VALUE v;
     } t;
     int bits;
 
@@ -1572,12 +1572,12 @@ rb_float_new_inline(double d)
     /*   b100 -> b001 */
 
     if (t.v != 0x3000000000000000 /* 1.72723e-77 */ &&
-	!((bits-3) & ~0x01)) {
-	return (RUBY_BIT_ROTL(t.v, 3) & ~(VALUE)0x01) | 0x02;
+        !((bits-3) & ~0x01)) {
+        return (RUBY_BIT_ROTL(t.v, 3) & ~(VALUE)0x01) | 0x02;
     }
     else if (t.v == (VALUE)0) {
-	/* +0.0 */
-	return 0x8000000000000002;
+        /* +0.0 */
+        return 0x8000000000000002;
     }
     /* out of range */
 #endif
@@ -1746,9 +1746,9 @@ int rb_get_next_signal(void);
 /* strftime.c */
 #ifdef RUBY_ENCODING_H
 VALUE rb_strftime_timespec(const char *format, size_t format_len, rb_encoding *enc,
-			   const struct vtm *vtm, struct timespec *ts, int gmt);
+                           const struct vtm *vtm, struct timespec *ts, int gmt);
 VALUE rb_strftime(const char *format, size_t format_len, rb_encoding *enc,
-		  const struct vtm *vtm, VALUE timev, int gmt);
+                  const struct vtm *vtm, VALUE timev, int gmt);
 #endif
 
 /* string.c */
@@ -1758,10 +1758,10 @@ VALUE rb_fstring_new(const char *ptr, long len);
 #define rb_fstring_literal(str) rb_fstring_lit(str)
 VALUE rb_fstring_cstr(const char *str);
 #ifdef HAVE_BUILTIN___BUILTIN_CONSTANT_P
-# define rb_fstring_cstr(str) RB_GNUC_EXTENSION_BLOCK(	\
-    (__builtin_constant_p(str)) ?		\
-	rb_fstring_new((str), (long)strlen(str)) : \
-	rb_fstring_cstr(str) \
+# define rb_fstring_cstr(str) RB_GNUC_EXTENSION_BLOCK(        \
+    (__builtin_constant_p(str)) ?                \
+        rb_fstring_new((str), (long)strlen(str)) : \
+        rb_fstring_cstr(str) \
 )
 #endif
 #ifdef RUBY_ENCODING_H
@@ -1771,9 +1771,9 @@ VALUE rb_fstring_enc_new(const char *ptr, long len, rb_encoding *enc);
 VALUE rb_fstring_enc_cstr(const char *ptr, rb_encoding *enc);
 # ifdef HAVE_BUILTIN___BUILTIN_CONSTANT_P
 #  define rb_fstring_enc_cstr(str, enc) RB_GNUC_EXTENSION_BLOCK( \
-    (__builtin_constant_p(str)) ?		\
-	rb_fstring_enc_new((str), (long)strlen(str), (enc)) : \
-	rb_fstring_enc_cstr(str, enc) \
+    (__builtin_constant_p(str)) ?                \
+        rb_fstring_enc_new((str), (long)strlen(str), (enc)) : \
+        rb_fstring_enc_cstr(str, enc) \
 )
 # endif
 #endif
@@ -1792,7 +1792,7 @@ VALUE rb_str_chomp_string(VALUE str, VALUE chomp);
 #ifdef RUBY_ENCODING_H
 VALUE rb_external_str_with_enc(VALUE str, rb_encoding *eenc);
 VALUE rb_str_cat_conv_enc_opts(VALUE newstr, long ofs, const char *ptr, long len,
-			       rb_encoding *from, int ecflags, VALUE ecopts);
+                               rb_encoding *from, int ecflags, VALUE ecopts);
 VALUE rb_enc_str_scrub(rb_encoding *enc, VALUE str, VALUE repl);
 VALUE rb_str_initialize(VALUE str, const char *ptr, long len, rb_encoding *enc);
 #endif
@@ -1815,10 +1815,10 @@ VALUE rb_sym_intern(const char *ptr, long len, rb_encoding *enc);
 VALUE rb_sym_intern_cstr(const char *ptr, rb_encoding *enc);
 #ifdef __GNUC__
 #define rb_sym_intern_cstr(ptr, enc) __extension__ ( \
-{						\
-    (__builtin_constant_p(ptr)) ?		\
-	rb_sym_intern((ptr), (long)strlen(ptr), (enc)) : \
-	rb_sym_intern_cstr((ptr), (enc)); \
+{                                                \
+    (__builtin_constant_p(ptr)) ?                \
+        rb_sym_intern((ptr), (long)strlen(ptr), (enc)) : \
+        rb_sym_intern_cstr((ptr), (enc)); \
 })
 #endif
 #endif
@@ -1826,10 +1826,10 @@ VALUE rb_sym_intern_ascii(const char *ptr, long len);
 VALUE rb_sym_intern_ascii_cstr(const char *ptr);
 #ifdef __GNUC__
 #define rb_sym_intern_ascii_cstr(ptr) __extension__ ( \
-{						\
-    (__builtin_constant_p(ptr)) ?		\
-	rb_sym_intern_ascii((ptr), (long)strlen(ptr)) : \
-	rb_sym_intern_ascii_cstr(ptr); \
+{                                                \
+    (__builtin_constant_p(ptr)) ?                \
+        rb_sym_intern_ascii((ptr), (long)strlen(ptr)) : \
+        rb_sym_intern_ascii_cstr(ptr); \
 })
 #endif
 VALUE rb_to_symbol_type(VALUE obj);
@@ -1929,14 +1929,14 @@ VALUE rb_current_realfilepath(void);
 VALUE rb_check_block_call(VALUE, ID, int, const VALUE *, rb_block_call_func_t, VALUE);
 typedef void rb_check_funcall_hook(int, VALUE, ID, int, const VALUE *, VALUE);
 VALUE rb_check_funcall_with_hook(VALUE recv, ID mid, int argc, const VALUE *argv,
-				 rb_check_funcall_hook *hook, VALUE arg);
+                                 rb_check_funcall_hook *hook, VALUE arg);
 const char *rb_type_str(enum ruby_value_type type);
 VALUE rb_check_funcall_default(VALUE, ID, int, const VALUE *, VALUE);
 VALUE rb_yield_1(VALUE val);
 VALUE rb_yield_force_blockarg(VALUE values);
 VALUE rb_lambda_call(VALUE obj, ID mid, int argc, const VALUE *argv,
-		     rb_block_call_func_t bl_proc, int min_argc, int max_argc,
-		     VALUE data2);
+                     rb_block_call_func_t bl_proc, int min_argc, int max_argc,
+                     VALUE data2);
 
 /* vm_insnhelper.c */
 VALUE rb_equal_opt(VALUE obj1, VALUE obj2);
@@ -2096,10 +2096,10 @@ RUBY_SYMBOL_EXPORT_END
 #define RUBY_DTRACE_HOOK(name, arg) \
 do { \
     if (UNLIKELY(RUBY_DTRACE_##name##_ENABLED())) { \
-	int dtrace_line; \
-	const char *dtrace_file = rb_source_location_cstr(&dtrace_line); \
-	if (!dtrace_file) dtrace_file = ""; \
-	RUBY_DTRACE_##name(arg, dtrace_file, dtrace_line); \
+        int dtrace_line; \
+        const char *dtrace_file = rb_source_location_cstr(&dtrace_line); \
+        if (!dtrace_file) dtrace_file = ""; \
+        RUBY_DTRACE_##name(arg, dtrace_file, dtrace_line); \
     } \
 } while (0)
 
@@ -2110,14 +2110,14 @@ do { \
 __extension__({ \
     VALUE arg_obj = (obj); \
     RB_SPECIAL_CONST_P(arg_obj) ? -1 : \
-	RB_BUILTIN_TYPE(arg_obj); \
+        RB_BUILTIN_TYPE(arg_obj); \
     })
 #else
 static inline int
 rb_obj_builtin_type(VALUE obj)
 {
     return RB_SPECIAL_CONST_P(obj) ? -1 :
-	RB_BUILTIN_TYPE(obj);
+        RB_BUILTIN_TYPE(obj);
 }
 #endif
 

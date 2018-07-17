@@ -105,8 +105,8 @@ static const unsigned short EncKOI8_U_CtypeTable[256] = {
 
 static int
 koi8_u_mbc_case_fold(OnigCaseFoldType flag ARG_UNUSED,
-		     const UChar** pp, const UChar* end ARG_UNUSED,
-		     UChar* lower, OnigEncoding enc ARG_UNUSED)
+                     const UChar** pp, const UChar* end ARG_UNUSED,
+                     UChar* lower, OnigEncoding enc ARG_UNUSED)
 {
   const UChar* p = *pp;
 
@@ -118,7 +118,7 @@ koi8_u_mbc_case_fold(OnigCaseFoldType flag ARG_UNUSED,
 #if 0
 static int
 koi8_u_is_mbc_ambiguous(OnigCaseFoldType flag, const UChar** pp,
-			const UChar* end, OnigEncoding enc ARG_UNUSED)
+                        const UChar* end, OnigEncoding enc ARG_UNUSED)
 {
   int v;
   const UChar* p = *pp;
@@ -131,7 +131,7 @@ koi8_u_is_mbc_ambiguous(OnigCaseFoldType flag, const UChar** pp,
 
 static int
 koi8_u_is_code_ctype(OnigCodePoint code, unsigned int ctype,
-		     OnigEncoding enc ARG_UNUSED)
+                     OnigEncoding enc ARG_UNUSED)
 {
   if (code < 256)
     return ENC_IS_KOI8_U_CTYPE(code, ctype);
@@ -183,8 +183,8 @@ static const OnigPairCaseFoldCodes CaseFoldMap[] = {
 
 static int
 koi8_u_apply_all_case_fold(OnigCaseFoldType flag,
-			   OnigApplyAllCaseFoldFunc f,
-			   void* arg, OnigEncoding enc ARG_UNUSED)
+                           OnigApplyAllCaseFoldFunc f,
+                           void* arg, OnigEncoding enc ARG_UNUSED)
 {
   return onigenc_apply_all_case_fold_with_map(
              numberof(CaseFoldMap), CaseFoldMap, 0,
@@ -193,12 +193,12 @@ koi8_u_apply_all_case_fold(OnigCaseFoldType flag,
 
 static int
 koi8_u_get_case_fold_codes_by_str(OnigCaseFoldType flag,
-		  const OnigUChar* p, const OnigUChar* end,
-		  OnigCaseFoldCodeItem items[], OnigEncoding enc ARG_UNUSED)
+                  const OnigUChar* p, const OnigUChar* end,
+                  OnigCaseFoldCodeItem items[], OnigEncoding enc ARG_UNUSED)
 {
   return onigenc_get_case_fold_codes_by_str_with_map(
-	     numberof(CaseFoldMap), CaseFoldMap, 0,
-	     flag, p, end, items);
+             numberof(CaseFoldMap), CaseFoldMap, 0,
+             flag, p, end, items);
 }
 
 OnigEncodingDefine(koi8_u, KOI8_U) = {

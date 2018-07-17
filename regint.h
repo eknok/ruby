@@ -213,7 +213,7 @@
 # define xalloca     alloca
 # define xvsnprintf  vsnprintf
 # define xsnprintf   snprintf
-# define xstrcat(dest,src,size)	  strcat(dest,src)
+# define xstrcat(dest,src,size)          strcat(dest,src)
 #endif
 
 #if defined(ONIG_DEBUG_MEMLEAK) && defined(_MSC_VER)
@@ -246,7 +246,7 @@
 #include <stddef.h>
 
 #ifdef _WIN32
-# include <malloc.h>	/* for alloca() */
+# include <malloc.h>        /* for alloca() */
 #endif
 
 #ifdef ONIG_DEBUG
@@ -268,13 +268,13 @@ typedef unsigned int uintptr_t;
 
 #ifndef PRIdPTR
 # ifdef _WIN64
-#  define PRIdPTR	"I64d"
-#  define PRIuPTR	"I64u"
-#  define PRIxPTR	"I64x"
+#  define PRIdPTR        "I64d"
+#  define PRIuPTR        "I64u"
+#  define PRIxPTR        "I64x"
 # else
-#  define PRIdPTR	"ld"
-#  define PRIuPTR	"lu"
-#  define PRIxPTR	"lx"
+#  define PRIdPTR        "ld"
+#  define PRIuPTR        "lu"
+#  define PRIxPTR        "lx"
 # endif
 #endif
 
@@ -426,7 +426,7 @@ typedef Bits*          BitSetRef;
 
 #define BITSET_CLEAR(bs) do {\
   int i;\
-  for (i = 0; i < BITSET_SIZE; i++) { (bs)[i] = 0; }	\
+  for (i = 0; i < BITSET_SIZE; i++) { (bs)[i] = 0; }        \
 } while (0)
 
 #define BS_ROOM(bs,pos)            (bs)[(int )(pos) / BITS_IN_ROOM]

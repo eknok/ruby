@@ -123,8 +123,8 @@ init_funcname_len(const char **file)
 
     /* Load the file as an object one */
     for (base = p; *p; p++) { /* Find position of last '/' */
-	if (*p == '.' && !dot) dot = p;
-	if (isdirsep(*p)) base = p+1, dot = NULL;
+        if (*p == '.' && !dot) dot = p;
+        if (isdirsep(*p)) base = p+1, dot = NULL;
     }
     *file = base;
     /* Delete suffix if it exists */
@@ -139,7 +139,7 @@ static const char funcname_prefix[sizeof(FUNCNAME_PREFIX) - 1] = FUNCNAME_PREFIX
     const size_t plen = sizeof(funcname_prefix);\
     char *const tmp = ALLOCA_N(char, plen+flen+1);\
     if (!tmp) {\
-	dln_memerror();\
+        dln_memerror();\
     }\
     memcpy(tmp, funcname_prefix, plen);\
     memcpy(tmp+plen, base, flen);\
@@ -161,13 +161,13 @@ static const char funcname_prefix[sizeof(FUNCNAME_PREFIX) - 1] = FUNCNAME_PREFIX
 
 static int dln_errno;
 
-#define DLN_ENOEXEC	ENOEXEC	/* Exec format error */
-#define DLN_ECONFL	1201	/* Symbol name conflict */
-#define DLN_ENOINIT	1202	/* No initializer given */
-#define DLN_EUNDEF	1203	/* Undefine symbol remains */
-#define DLN_ENOTLIB	1204	/* Not a library file */
-#define DLN_EBADLIB	1205	/* Malformed library file */
-#define DLN_EINIT	1206	/* Not initialized */
+#define DLN_ENOEXEC        ENOEXEC        /* Exec format error */
+#define DLN_ECONFL        1201        /* Symbol name conflict */
+#define DLN_ENOINIT        1202        /* No initializer given */
+#define DLN_EUNDEF        1203        /* Undefine symbol remains */
+#define DLN_ENOTLIB        1204        /* Not a library file */
+#define DLN_EBADLIB        1205        /* Malformed library file */
+#define DLN_EINIT        1206        /* Not initialized */
 
 static int dln_init_p = 0;
 
@@ -198,40 +198,40 @@ load_header(int fd, struct exec *hdrp, long disp)
     lseek(fd, disp, 0);
     size = read(fd, hdrp, sizeof(struct exec));
     if (size == -1) {
-	dln_errno = errno;
-	return -1;
+        dln_errno = errno;
+        return -1;
     }
     if (size != sizeof(struct exec) || N_BADMAG(*hdrp)) {
-	dln_errno = DLN_ENOEXEC;
-	return -1;
+        dln_errno = DLN_ENOEXEC;
+        return -1;
     }
     return 0;
 }
 
 #if defined(sequent)
-#define RELOC_SYMBOL(r)			((r)->r_symbolnum)
-#define RELOC_MEMORY_SUB_P(r)		((r)->r_bsr)
-#define RELOC_PCREL_P(r)		((r)->r_pcrel || (r)->r_bsr)
-#define RELOC_TARGET_SIZE(r)		((r)->r_length)
+#define RELOC_SYMBOL(r)                        ((r)->r_symbolnum)
+#define RELOC_MEMORY_SUB_P(r)                ((r)->r_bsr)
+#define RELOC_PCREL_P(r)                ((r)->r_pcrel || (r)->r_bsr)
+#define RELOC_TARGET_SIZE(r)                ((r)->r_length)
 #endif
 
 /* Default macros */
 #ifndef RELOC_ADDRESS
-#define RELOC_ADDRESS(r)		((r)->r_address)
-#define RELOC_EXTERN_P(r)		((r)->r_extern)
-#define RELOC_SYMBOL(r)			((r)->r_symbolnum)
-#define RELOC_MEMORY_SUB_P(r)		0
-#define RELOC_PCREL_P(r)		((r)->r_pcrel)
-#define RELOC_TARGET_SIZE(r)		((r)->r_length)
+#define RELOC_ADDRESS(r)                ((r)->r_address)
+#define RELOC_EXTERN_P(r)                ((r)->r_extern)
+#define RELOC_SYMBOL(r)                        ((r)->r_symbolnum)
+#define RELOC_MEMORY_SUB_P(r)                0
+#define RELOC_PCREL_P(r)                ((r)->r_pcrel)
+#define RELOC_TARGET_SIZE(r)                ((r)->r_length)
 #endif
 
 #if defined(__sun) && defined(__sparc)
 /* Sparc (Sun 4) macros */
 #  undef relocation_info
 #  define relocation_info reloc_info_sparc
-#  define R_RIGHTSHIFT(r)	(reloc_r_rightshift[(r)->r_type])
-#  define R_BITSIZE(r) 		(reloc_r_bitsize[(r)->r_type])
-#  define R_LENGTH(r)		(reloc_r_length[(r)->r_type])
+#  define R_RIGHTSHIFT(r)        (reloc_r_rightshift[(r)->r_type])
+#  define R_BITSIZE(r)                 (reloc_r_bitsize[(r)->r_type])
+#  define R_LENGTH(r)                (reloc_r_length[(r)->r_type])
 static const int reloc_r_rightshift[] = {
   0, 0, 0, 0, 0, 0, 2, 2, 10, 0, 0, 0, 0, 0, 0,
 };
@@ -247,17 +247,17 @@ static const int reloc_r_length[] = {
 #endif
 
 #if defined(sequent)
-#define R_SYMBOL(r)		((r)->r_symbolnum)
-#define R_MEMORY_SUB(r)		((r)->r_bsr)
-#define R_PCREL(r)		((r)->r_pcrel || (r)->r_bsr)
-#define R_LENGTH(r)		((r)->r_length)
+#define R_SYMBOL(r)                ((r)->r_symbolnum)
+#define R_MEMORY_SUB(r)                ((r)->r_bsr)
+#define R_PCREL(r)                ((r)->r_pcrel || (r)->r_bsr)
+#define R_LENGTH(r)                ((r)->r_length)
 #endif
 
 #ifndef R_SYMBOL
-#  define R_SYMBOL(r) 		((r)->r_symbolnum)
-#  define R_MEMORY_SUB(r)	0
-#  define R_PCREL(r)  		((r)->r_pcrel)
-#  define R_LENGTH(r) 		((r)->r_length)
+#  define R_SYMBOL(r)                 ((r)->r_symbolnum)
+#  define R_MEMORY_SUB(r)        0
+#  define R_PCREL(r)                  ((r)->r_pcrel)
+#  define R_LENGTH(r)                 ((r)->r_length)
 #endif
 
 static struct relocation_info *
@@ -270,14 +270,14 @@ load_reloc(int fd, struct exec *hdrp, long disp)
     size = hdrp->a_trsize + hdrp->a_drsize;
     reloc = (struct relocation_info*)xmalloc(size);
     if (reloc == NULL) {
-	dln_errno = errno;
-	return NULL;
+        dln_errno = errno;
+        return NULL;
     }
 
     if (read(fd, reloc, size) !=  size) {
-	dln_errno = errno;
-	free(reloc);
-	return NULL;
+        dln_errno = errno;
+        free(reloc);
+        return NULL;
     }
 
     return reloc;
@@ -294,19 +294,19 @@ load_sym(int fd, struct exec *hdrp, long disp)
 
     lseek(fd, N_SYMOFF(*hdrp) + hdrp->a_syms + disp, 0);
     if (read(fd, &size, sizeof(int)) != sizeof(int)) {
-	goto err_noexec;
+        goto err_noexec;
     }
 
     buffer = (struct nlist*)xmalloc(hdrp->a_syms + size);
     if (buffer == NULL) {
-	dln_errno = errno;
-	return NULL;
+        dln_errno = errno;
+        return NULL;
     }
 
     lseek(fd, disp + N_SYMOFF(*hdrp), 0);
     if (read(fd, buffer, hdrp->a_syms + size) != hdrp->a_syms + size) {
-	free(buffer);
-	goto err_noexec;
+        free(buffer);
+        goto err_noexec;
     }
 
     sym = buffer;
@@ -314,8 +314,8 @@ load_sym(int fd, struct exec *hdrp, long disp)
     displ = (long)buffer + (long)(hdrp->a_syms);
 
     while (sym < end) {
-	sym->n_un.n_name = (char*)sym->n_un.n_strx + displ;
-	sym++;
+        sym->n_un.n_name = (char*)sym->n_un.n_strx + displ;
+        sym++;
     }
     return buffer;
 
@@ -333,13 +333,13 @@ sym_hash(struct exec *hdrp, struct nlist *syms)
 
     tbl = st_init_strtable();
     if (tbl == NULL) {
-	dln_errno = errno;
-	return NULL;
+        dln_errno = errno;
+        return NULL;
     }
 
     while (sym < end) {
-	st_insert(tbl, sym->n_un.n_name, sym);
-	sym++;
+        st_insert(tbl, sym->n_un.n_name, sym);
+        sym++;
     }
     return tbl;
 }
@@ -356,56 +356,56 @@ dln_init(const char *prog)
 
     file = dln_find_exe_r(prog, NULL, fbuf, sizeof(fbuf));
     if (file == NULL || (fd = open(file, O_RDONLY)) < 0) {
-	dln_errno = errno;
-	return -1;
+        dln_errno = errno;
+        return -1;
     }
 
     if (load_header(fd, &hdr, 0) == -1) return -1;
     syms = load_sym(fd, &hdr, 0);
     if (syms == NULL) {
-	close(fd);
-	return -1;
+        close(fd);
+        return -1;
     }
     sym_tbl = sym_hash(&hdr, syms);
-    if (sym_tbl == NULL) {	/* file may be start with #! */
-	char c = '\0';
-	char buf[MAXPATHLEN];
-	char *p;
+    if (sym_tbl == NULL) {        /* file may be start with #! */
+        char c = '\0';
+        char buf[MAXPATHLEN];
+        char *p;
 
-	free(syms);
-	lseek(fd, 0L, 0);
-	if (read(fd, &c, 1) == -1) {
-	    dln_errno = errno;
-	    return -1;
-	}
-	if (c != '#') goto err_noexec;
-	if (read(fd, &c, 1) == -1) {
-	    dln_errno = errno;
-	    return -1;
-	}
-	if (c != '!') goto err_noexec;
+        free(syms);
+        lseek(fd, 0L, 0);
+        if (read(fd, &c, 1) == -1) {
+            dln_errno = errno;
+            return -1;
+        }
+        if (c != '#') goto err_noexec;
+        if (read(fd, &c, 1) == -1) {
+            dln_errno = errno;
+            return -1;
+        }
+        if (c != '!') goto err_noexec;
 
-	p = buf;
-	/* skip forwarding spaces */
-	while (read(fd, &c, 1) == 1) {
-	    if (c == '\n') goto err_noexec;
-	    if (c != '\t' && c != ' ') {
-		*p++ = c;
-		break;
-	    }
-	}
-	/* read in command name */
-	while (read(fd, p, 1) == 1) {
-	    if (*p == '\n' || *p == '\t' || *p == ' ') break;
-	    p++;
-	    if (p-buf >= MAXPATHLEN) {
-		dln_errno = ENAMETOOLONG;
-		return -1;
-	    }
-	}
-	*p = '\0';
+        p = buf;
+        /* skip forwarding spaces */
+        while (read(fd, &c, 1) == 1) {
+            if (c == '\n') goto err_noexec;
+            if (c != '\t' && c != ' ') {
+                *p++ = c;
+                break;
+            }
+        }
+        /* read in command name */
+        while (read(fd, p, 1) == 1) {
+            if (*p == '\n' || *p == '\t' || *p == ' ') break;
+            p++;
+            if (p-buf >= MAXPATHLEN) {
+                dln_errno = ENAMETOOLONG;
+                return -1;
+            }
+        }
+        *p = '\0';
 
-	return dln_init(buf);
+        return dln_init(buf);
     }
     dln_init_p = 1;
     undef_tbl = st_init_strtable();
@@ -432,21 +432,21 @@ load_text_data(int fd, struct exec *hdrp, int bss, long disp)
 
     addr = (unsigned char*)xmalloc(size);
     if (addr == NULL) {
-	dln_errno = errno;
-	return 0;
+        dln_errno = errno;
+        return 0;
     }
 
     if (read(fd, addr, size) !=  size) {
-	dln_errno = errno;
-	free(addr);
-	return 0;
+        dln_errno = errno;
+        free(addr);
+        return 0;
     }
 
     if (bss == -1) {
-	memset(addr +  hdrp->a_text + hdrp->a_data, 0, hdrp->a_bss);
+        memset(addr +  hdrp->a_text + hdrp->a_data, 0, hdrp->a_bss);
     }
     else if (bss > 0) {
-	memset(addr +  hdrp->a_text + hdrp->a_data, 0, bss);
+        memset(addr +  hdrp->a_text + hdrp->a_data, 0, bss);
     }
 
     return (long)addr;
@@ -470,9 +470,9 @@ static void
 dln_undefined(void)
 {
     if (undef_tbl->num_entries > 0) {
-	fprintf(stderr, "dln: Calling undefined function\n");
-	dln_print_undef();
-	dln_exit(1);
+        fprintf(stderr, "dln: Calling undefined function\n");
+        dln_print_undef();
+        dln_exit(1);
     }
 }
 
@@ -482,9 +482,9 @@ struct undef {
     long base;
     char *addr;
     union {
-	char c;
-	short s;
-	long l;
+        char c;
+        short s;
+        long l;
     } u;
 };
 
@@ -501,18 +501,18 @@ link_undef(const char *name, long base, struct relocation_info *reloc)
     obj->reloc = *reloc;
     obj->base = base;
     switch (R_LENGTH(reloc)) {
-      case 0:		/* byte */
-	obj->u.c = *addr;
-	break;
-      case 1:		/* word */
-	obj->u.s = *(short*)addr;
-	break;
-      case 2:		/* long */
-	obj->u.l = *(long*)addr;
-	break;
+      case 0:                /* byte */
+        obj->u.c = *addr;
+        break;
+      case 1:                /* word */
+        obj->u.s = *(short*)addr;
+        break;
+      case 2:                /* long */
+        obj->u.l = *(long*)addr;
+        break;
     }
     if (reloc_tbl == NULL) {
-	reloc_tbl = st_init_numtable();
+        reloc_tbl = st_init_numtable();
     }
     st_insert(reloc_tbl, u_no++, obj);
 }
@@ -544,38 +544,38 @@ reloc_undef(int no, struct undef *undef, struct reloc_arg *arg)
     datum &= mask;
     switch (R_LENGTH(&(undef->reloc))) {
       case 0:
-	*address = undef->u.c;
-	*address &= ~mask;
-	*address |= datum;
-	break;
+        *address = undef->u.c;
+        *address &= ~mask;
+        *address |= datum;
+        break;
       case 1:
-	*(short *)address = undef->u.s;
-	*(short *)address &= ~mask;
-	*(short *)address |= datum;
-	break;
+        *(short *)address = undef->u.s;
+        *(short *)address &= ~mask;
+        *(short *)address |= datum;
+        break;
       case 2:
-	*(long *)address = undef->u.l;
-	*(long *)address &= ~mask;
-	*(long *)address |= datum;
-	break;
+        *(long *)address = undef->u.l;
+        *(long *)address &= ~mask;
+        *(long *)address |= datum;
+        break;
     }
 #else
     switch (R_LENGTH(&(undef->reloc))) {
-      case 0:		/* byte */
-	if (R_MEMORY_SUB(&(undef->reloc)))
-	    *address = datum - *address;
-	else *address = undef->u.c + datum;
-	break;
-      case 1:		/* word */
-	if (R_MEMORY_SUB(&(undef->reloc)))
-	    *(short*)address = datum - *(short*)address;
-	else *(short*)address = undef->u.s + datum;
-	break;
-      case 2:		/* long */
-	if (R_MEMORY_SUB(&(undef->reloc)))
-	    *(long*)address = datum - *(long*)address;
-	else *(long*)address = undef->u.l + datum;
-	break;
+      case 0:                /* byte */
+        if (R_MEMORY_SUB(&(undef->reloc)))
+            *address = datum - *address;
+        else *address = undef->u.c + datum;
+        break;
+      case 1:                /* word */
+        if (R_MEMORY_SUB(&(undef->reloc)))
+            *(short*)address = datum - *(short*)address;
+        else *(short*)address = undef->u.s + datum;
+        break;
+      case 2:                /* long */
+        if (R_MEMORY_SUB(&(undef->reloc)))
+            *(long*)address = datum - *(long*)address;
+        else *(long*)address = undef->u.l + datum;
+        break;
     }
 #endif
     free(undef->name);
@@ -602,8 +602,8 @@ static int
 reloc_repl(int no, struct undef *undef, struct indr_data *data)
 {
     if (strcmp(data->name0, undef->name) == 0) {
-	free(undef->name);
-	undef->name = strdup(data->name1);
+        free(undef->name);
+        undef->name = strdup(data->name1);
     }
     return ST_CONTINUE;
 }
@@ -624,85 +624,85 @@ load_1(int fd, long disp, const char *need_init)
 
     if (load_header(fd, &hdr, disp) == -1) return -1;
     if (INVALID_OBJECT(hdr)) {
-	dln_errno = DLN_ENOEXEC;
-	return -1;
+        dln_errno = DLN_ENOEXEC;
+        return -1;
     }
     reloc = load_reloc(fd, &hdr, disp);
     if (reloc == NULL) return -1;
 
     syms = load_sym(fd, &hdr, disp);
     if (syms == NULL) {
-	free(reloc);
-	return -1;
+        free(reloc);
+        return -1;
     }
 
     sym = syms;
     end = syms + (hdr.a_syms / sizeof(struct nlist));
     while (sym < end) {
-	struct nlist *old_sym;
-	int value = sym->n_value;
+        struct nlist *old_sym;
+        int value = sym->n_value;
 
 #ifdef N_INDR
-	if (sym->n_type == (N_INDR | N_EXT)) {
-	    char *key = sym->n_un.n_name;
+        if (sym->n_type == (N_INDR | N_EXT)) {
+            char *key = sym->n_un.n_name;
 
-	    if (st_lookup(sym_tbl, sym[1].n_un.n_name, &old_sym)) {
-		if (st_delete(undef_tbl, (st_data_t*)&key, NULL)) {
-		    unlink_undef(key, old_sym->n_value);
-		    free(key);
-		}
-	    }
-	    else {
-		struct indr_data data;
+            if (st_lookup(sym_tbl, sym[1].n_un.n_name, &old_sym)) {
+                if (st_delete(undef_tbl, (st_data_t*)&key, NULL)) {
+                    unlink_undef(key, old_sym->n_value);
+                    free(key);
+                }
+            }
+            else {
+                struct indr_data data;
 
-		data.name0 = sym->n_un.n_name;
-		data.name1 = sym[1].n_un.n_name;
-		st_foreach(reloc_tbl, reloc_repl, &data);
+                data.name0 = sym->n_un.n_name;
+                data.name1 = sym[1].n_un.n_name;
+                st_foreach(reloc_tbl, reloc_repl, &data);
 
-		st_insert(undef_tbl, strdup(sym[1].n_un.n_name), NULL);
-		if (st_delete(undef_tbl, (st_data_t*)&key, NULL)) {
-		    free(key);
-		}
-	    }
-	    sym += 2;
-	    continue;
-	}
+                st_insert(undef_tbl, strdup(sym[1].n_un.n_name), NULL);
+                if (st_delete(undef_tbl, (st_data_t*)&key, NULL)) {
+                    free(key);
+                }
+            }
+            sym += 2;
+            continue;
+        }
 #endif
-	if (sym->n_type == (N_UNDF | N_EXT)) {
-	    if (st_lookup(sym_tbl, sym->n_un.n_name, &old_sym) == 0) {
-		old_sym = NULL;
-	    }
+        if (sym->n_type == (N_UNDF | N_EXT)) {
+            if (st_lookup(sym_tbl, sym->n_un.n_name, &old_sym) == 0) {
+                old_sym = NULL;
+            }
 
-	    if (value) {
-		if (old_sym) {
-		    sym->n_type = N_EXT | N_COMM;
-		    sym->n_value = old_sym->n_value;
-		}
-		else {
-		    int rnd =
-			value >= sizeof(double) ? sizeof(double) - 1
-			    : value >= sizeof(long) ? sizeof(long) - 1
-				: sizeof(short) - 1;
+            if (value) {
+                if (old_sym) {
+                    sym->n_type = N_EXT | N_COMM;
+                    sym->n_value = old_sym->n_value;
+                }
+                else {
+                    int rnd =
+                        value >= sizeof(double) ? sizeof(double) - 1
+                            : value >= sizeof(long) ? sizeof(long) - 1
+                                : sizeof(short) - 1;
 
-		    sym->n_type = N_COMM;
-		    new_common += rnd;
-		    new_common &= ~(long)rnd;
-		    sym->n_value = new_common;
-		    new_common += value;
-		}
-	    }
-	    else {
-		if (old_sym) {
-		    sym->n_type = N_EXT | N_COMM;
-		    sym->n_value = old_sym->n_value;
-		}
-		else {
-		    sym->n_value = (long)dln_undefined;
-		    st_insert(undef_tbl, strdup(sym->n_un.n_name), NULL);
-		}
-	    }
-	}
-	sym++;
+                    sym->n_type = N_COMM;
+                    new_common += rnd;
+                    new_common &= ~(long)rnd;
+                    sym->n_value = new_common;
+                    new_common += value;
+                }
+            }
+            else {
+                if (old_sym) {
+                    sym->n_type = N_EXT | N_COMM;
+                    sym->n_value = old_sym->n_value;
+                }
+                else {
+                    sym->n_value = (long)dln_undefined;
+                    st_insert(undef_tbl, strdup(sym->n_un.n_name), NULL);
+                }
+            }
+        }
+        sym++;
     }
 
     block = load_text_data(fd, &hdr, hdr.a_bss + new_common, disp);
@@ -710,175 +710,175 @@ load_1(int fd, long disp, const char *need_init)
 
     sym = syms;
     while (sym < end) {
-	struct nlist *new_sym;
-	char *key;
+        struct nlist *new_sym;
+        char *key;
 
-	switch (sym->n_type) {
-	  case N_COMM:
-	    sym->n_value += hdr.a_text + hdr.a_data;
-	  case N_TEXT|N_EXT:
-	  case N_DATA|N_EXT:
+        switch (sym->n_type) {
+          case N_COMM:
+            sym->n_value += hdr.a_text + hdr.a_data;
+          case N_TEXT|N_EXT:
+          case N_DATA|N_EXT:
 
-	    sym->n_value += block;
+            sym->n_value += block;
 
-	    if (st_lookup(sym_tbl, sym->n_un.n_name, &new_sym) != 0
-		&& new_sym->n_value != (long)dln_undefined) {
-		dln_errno = DLN_ECONFL;
-		goto err_exit;
-	    }
+            if (st_lookup(sym_tbl, sym->n_un.n_name, &new_sym) != 0
+                && new_sym->n_value != (long)dln_undefined) {
+                dln_errno = DLN_ECONFL;
+                goto err_exit;
+            }
 
-	    key = sym->n_un.n_name;
-	    if (st_delete(undef_tbl, (st_data_t*)&key, NULL) != 0) {
-		unlink_undef(key, sym->n_value);
-		free(key);
-	    }
+            key = sym->n_un.n_name;
+            if (st_delete(undef_tbl, (st_data_t*)&key, NULL) != 0) {
+                unlink_undef(key, sym->n_value);
+                free(key);
+            }
 
-	    new_sym = (struct nlist*)xmalloc(sizeof(struct nlist));
-	    *new_sym = *sym;
-	    new_sym->n_un.n_name = strdup(sym->n_un.n_name);
-	    st_insert(sym_tbl, new_sym->n_un.n_name, new_sym);
-	    break;
+            new_sym = (struct nlist*)xmalloc(sizeof(struct nlist));
+            *new_sym = *sym;
+            new_sym->n_un.n_name = strdup(sym->n_un.n_name);
+            st_insert(sym_tbl, new_sym->n_un.n_name, new_sym);
+            break;
 
-	  case N_TEXT:
-	  case N_DATA:
-	    sym->n_value += block;
-	    break;
-	}
-	sym++;
+          case N_TEXT:
+          case N_DATA:
+            sym->n_value += block;
+            break;
+        }
+        sym++;
     }
 
     /*
      * First comes the text-relocation
      */
     {
-	struct relocation_info * rel = reloc;
-	struct relocation_info * rel_beg = reloc +
-	    (hdr.a_trsize/sizeof(struct relocation_info));
-	struct relocation_info * rel_end = reloc +
-	    (hdr.a_trsize+hdr.a_drsize)/sizeof(struct relocation_info);
+        struct relocation_info * rel = reloc;
+        struct relocation_info * rel_beg = reloc +
+            (hdr.a_trsize/sizeof(struct relocation_info));
+        struct relocation_info * rel_end = reloc +
+            (hdr.a_trsize+hdr.a_drsize)/sizeof(struct relocation_info);
 
-	while (rel < rel_end) {
-	    char *address = (char*)(rel->r_address + block);
-	    long datum = 0;
+        while (rel < rel_end) {
+            char *address = (char*)(rel->r_address + block);
+            long datum = 0;
 #if defined(__sun) && defined(__sparc)
-	    unsigned int mask = 0;
+            unsigned int mask = 0;
 #endif
 
-	    if (rel >= rel_beg)
-		address += hdr.a_text;
+            if (rel >= rel_beg)
+                address += hdr.a_text;
 
-	    if (rel->r_extern) { /* Look it up in symbol-table */
-		sym = &(syms[R_SYMBOL(rel)]);
-		switch (sym->n_type) {
-		  case N_EXT|N_UNDF:
-		    link_undef(sym->n_un.n_name, block, rel);
-		  case N_EXT|N_COMM:
-		  case N_COMM:
-		    datum = sym->n_value;
-		    break;
-		  default:
-		    goto err_exit;
-		}
-	    } /* end.. look it up */
-	    else { /* is static */
-		switch (R_SYMBOL(rel)) {
-		  case N_TEXT:
-		  case N_DATA:
-		    datum = block;
-		    break;
-		  case N_BSS:
-		    datum = block +  new_common;
-		    break;
-		  case N_ABS:
-		    break;
-		}
-	    } /* end .. is static */
-	    if (R_PCREL(rel)) datum -= block;
+            if (rel->r_extern) { /* Look it up in symbol-table */
+                sym = &(syms[R_SYMBOL(rel)]);
+                switch (sym->n_type) {
+                  case N_EXT|N_UNDF:
+                    link_undef(sym->n_un.n_name, block, rel);
+                  case N_EXT|N_COMM:
+                  case N_COMM:
+                    datum = sym->n_value;
+                    break;
+                  default:
+                    goto err_exit;
+                }
+            } /* end.. look it up */
+            else { /* is static */
+                switch (R_SYMBOL(rel)) {
+                  case N_TEXT:
+                  case N_DATA:
+                    datum = block;
+                    break;
+                  case N_BSS:
+                    datum = block +  new_common;
+                    break;
+                  case N_ABS:
+                    break;
+                }
+            } /* end .. is static */
+            if (R_PCREL(rel)) datum -= block;
 
 #if defined(__sun) && defined(__sparc)
-	    datum += rel->r_addend;
-	    datum >>= R_RIGHTSHIFT(rel);
-	    mask = (1 << R_BITSIZE(rel)) - 1;
-	    mask |= mask -1;
-	    datum &= mask;
+            datum += rel->r_addend;
+            datum >>= R_RIGHTSHIFT(rel);
+            mask = (1 << R_BITSIZE(rel)) - 1;
+            mask |= mask -1;
+            datum &= mask;
 
-	    switch (R_LENGTH(rel)) {
-	      case 0:
-		*address &= ~mask;
-		*address |= datum;
-		break;
-	      case 1:
-		*(short *)address &= ~mask;
-		*(short *)address |= datum;
-		break;
-	      case 2:
-		*(long *)address &= ~mask;
-		*(long *)address |= datum;
-		break;
-	    }
+            switch (R_LENGTH(rel)) {
+              case 0:
+                *address &= ~mask;
+                *address |= datum;
+                break;
+              case 1:
+                *(short *)address &= ~mask;
+                *(short *)address |= datum;
+                break;
+              case 2:
+                *(long *)address &= ~mask;
+                *(long *)address |= datum;
+                break;
+            }
 #else
-	    switch (R_LENGTH(rel)) {
-	      case 0:		/* byte */
-		if (datum < -128 || datum > 127) goto err_exit;
-		*address += datum;
-		break;
-	      case 1:		/* word */
-		*(short *)address += datum;
-		break;
-	      case 2:		/* long */
-		*(long *)address += datum;
-		break;
-	    }
+            switch (R_LENGTH(rel)) {
+              case 0:                /* byte */
+                if (datum < -128 || datum > 127) goto err_exit;
+                *address += datum;
+                break;
+              case 1:                /* word */
+                *(short *)address += datum;
+                break;
+              case 2:                /* long */
+                *(long *)address += datum;
+                break;
+            }
 #endif
-	    rel++;
-	}
+            rel++;
+        }
     }
 
     if (need_init) {
-	int len;
-	char **libs_to_be_linked = 0;
-	char *buf;
+        int len;
+        char **libs_to_be_linked = 0;
+        char *buf;
 
-	if (undef_tbl->num_entries > 0) {
-	    if (load_lib(libc) == -1) goto err_exit;
-	}
+        if (undef_tbl->num_entries > 0) {
+            if (load_lib(libc) == -1) goto err_exit;
+        }
 
-	init_funcname(&buf, need_init);
-	len = strlen(buf);
+        init_funcname(&buf, need_init);
+        len = strlen(buf);
 
-	for (sym = syms; sym<end; sym++) {
-	    char *name = sym->n_un.n_name;
-	    if (name[0] == '_' && sym->n_value >= block) {
-		if (strcmp(name+1, "dln_libs_to_be_linked") == 0) {
-		    libs_to_be_linked = (char**)sym->n_value;
-		}
-		else if (strcmp(name+1, buf) == 0) {
-		    init_p = 1;
-		    ((int (*)())sym->n_value)();
-		}
-	    }
-	}
-	if (libs_to_be_linked && undef_tbl->num_entries > 0) {
-	    while (*libs_to_be_linked) {
-		load_lib(*libs_to_be_linked);
-		libs_to_be_linked++;
-	    }
-	}
+        for (sym = syms; sym<end; sym++) {
+            char *name = sym->n_un.n_name;
+            if (name[0] == '_' && sym->n_value >= block) {
+                if (strcmp(name+1, "dln_libs_to_be_linked") == 0) {
+                    libs_to_be_linked = (char**)sym->n_value;
+                }
+                else if (strcmp(name+1, buf) == 0) {
+                    init_p = 1;
+                    ((int (*)())sym->n_value)();
+                }
+            }
+        }
+        if (libs_to_be_linked && undef_tbl->num_entries > 0) {
+            while (*libs_to_be_linked) {
+                load_lib(*libs_to_be_linked);
+                libs_to_be_linked++;
+            }
+        }
     }
     free(reloc);
     free(syms);
     if (need_init) {
-	if (init_p == 0) {
-	    dln_errno = DLN_ENOINIT;
-	    return -1;
-	}
-	if (undef_tbl->num_entries > 0) {
-	    if (load_lib(libc) == -1) goto err_exit;
-	    if (undef_tbl->num_entries > 0) {
-		dln_errno = DLN_EUNDEF;
-		return -1;
-	    }
-	}
+        if (init_p == 0) {
+            dln_errno = DLN_ENOINIT;
+            return -1;
+        }
+        if (undef_tbl->num_entries > 0) {
+            if (load_lib(libc) == -1) goto err_exit;
+            if (undef_tbl->num_entries > 0) {
+                dln_errno = DLN_EUNDEF;
+                return -1;
+            }
+        }
     }
     return 0;
 
@@ -921,18 +921,18 @@ load_lib(const char *lib)
     char *name_base;
 
     if (dln_init_p == 0) {
-	dln_errno = DLN_ENOINIT;
-	return -1;
+        dln_errno = DLN_ENOINIT;
+        return -1;
     }
 
     if (undef_tbl->num_entries == 0) return 0;
     dln_errno = DLN_EBADLIB;
 
     if (lib[0] == '-' && lib[1] == 'l') {
-	long len = strlen(lib) + 4;
-	char *p = alloca(len);
-	snprintf(p, len, "lib%s.a", lib+2);
-	lib = p;
+        long len = strlen(lib) + 4;
+        char *p = alloca(len);
+        snprintf(p, len, "lib%s.a", lib+2);
+        lib = p;
     }
 
     /* library search path: */
@@ -951,91 +951,91 @@ load_lib(const char *lib)
     if (size == -1) goto syserr;
 
     if (size != SARMAG) {
-	dln_errno = DLN_ENOTLIB;
-	goto badlib;
+        dln_errno = DLN_ENOTLIB;
+        goto badlib;
     }
     size = read(fd, &ahdr, sizeof(ahdr));
     if (size == -1) goto syserr;
     if (size != sizeof(ahdr) || sscanf(ahdr.ar_size, "%d", &size) != 1) {
-	goto badlib;
+        goto badlib;
     }
 
     if (strncmp(ahdr.ar_name, "__.SYMDEF", 9) == 0) {
-	/* make hash table from __.SYMDEF */
+        /* make hash table from __.SYMDEF */
 
-	lib_tbl = st_init_strtable();
-	data = (int*)xmalloc(size);
-	if (data == NULL) goto syserr;
-	size = read(fd, data, size);
-	nsym = *data / sizeof(struct symdef);
-	base = (struct symdef*)(data + 1);
-	name_base = (char*)(base + nsym) + sizeof(int);
-	while (nsym > 0) {
-	    char *name = name_base + base->rb_str_index;
+        lib_tbl = st_init_strtable();
+        data = (int*)xmalloc(size);
+        if (data == NULL) goto syserr;
+        size = read(fd, data, size);
+        nsym = *data / sizeof(struct symdef);
+        base = (struct symdef*)(data + 1);
+        name_base = (char*)(base + nsym) + sizeof(int);
+        while (nsym > 0) {
+            char *name = name_base + base->rb_str_index;
 
-	    st_insert(lib_tbl, name, base->lib_offset + sizeof(ahdr));
-	    nsym--;
-	    base++;
-	}
-	for (;;) {
-	    target_offset = -1;
-	    st_foreach(undef_tbl, search_undef, lib_tbl);
-	    if (target_offset == -1) break;
-	    if (load_1(fd, target_offset, 0) == -1) {
-		st_free_table(lib_tbl);
-		free(data);
-		goto badlib;
-	    }
-	    if (undef_tbl->num_entries == 0) break;
-	}
-	free(data);
-	st_free_table(lib_tbl);
+            st_insert(lib_tbl, name, base->lib_offset + sizeof(ahdr));
+            nsym--;
+            base++;
+        }
+        for (;;) {
+            target_offset = -1;
+            st_foreach(undef_tbl, search_undef, lib_tbl);
+            if (target_offset == -1) break;
+            if (load_1(fd, target_offset, 0) == -1) {
+                st_free_table(lib_tbl);
+                free(data);
+                goto badlib;
+            }
+            if (undef_tbl->num_entries == 0) break;
+        }
+        free(data);
+        st_free_table(lib_tbl);
     }
     else {
-	/* linear library, need to scan (FUTURE) */
+        /* linear library, need to scan (FUTURE) */
 
-	for (;;) {
-	    int offset = SARMAG;
-	    int found = 0;
-	    struct exec hdr;
-	    struct nlist *syms, *sym, *end;
+        for (;;) {
+            int offset = SARMAG;
+            int found = 0;
+            struct exec hdr;
+            struct nlist *syms, *sym, *end;
 
-	    while (undef_tbl->num_entries > 0) {
-		found = 0;
-		lseek(fd, offset, 0);
-		size = read(fd, &ahdr, sizeof(ahdr));
-		if (size == -1) goto syserr;
-		if (size == 0) break;
-		if (size != sizeof(ahdr)
-		    || sscanf(ahdr.ar_size, "%d", &size) != 1) {
-		    goto badlib;
-		}
-		offset += sizeof(ahdr);
-		if (load_header(fd, &hdr, offset) == -1)
-		    goto badlib;
-		syms = load_sym(fd, &hdr, offset);
-		if (syms == NULL) goto badlib;
-		sym = syms;
-		end = syms + (hdr.a_syms / sizeof(struct nlist));
-		while (sym < end) {
-		    if (sym->n_type == N_EXT|N_TEXT
-			&& st_lookup(undef_tbl, sym->n_un.n_name, NULL)) {
-			break;
-		    }
-		    sym++;
-		}
-		if (sym < end) {
-		    found++;
-		    free(syms);
-		    if (load_1(fd, offset, 0) == -1) {
-			goto badlib;
-		    }
-		}
-		offset += size;
-		if (offset & 1) offset++;
-	    }
-	    if (found) break;
-	}
+            while (undef_tbl->num_entries > 0) {
+                found = 0;
+                lseek(fd, offset, 0);
+                size = read(fd, &ahdr, sizeof(ahdr));
+                if (size == -1) goto syserr;
+                if (size == 0) break;
+                if (size != sizeof(ahdr)
+                    || sscanf(ahdr.ar_size, "%d", &size) != 1) {
+                    goto badlib;
+                }
+                offset += sizeof(ahdr);
+                if (load_header(fd, &hdr, offset) == -1)
+                    goto badlib;
+                syms = load_sym(fd, &hdr, offset);
+                if (syms == NULL) goto badlib;
+                sym = syms;
+                end = syms + (hdr.a_syms / sizeof(struct nlist));
+                while (sym < end) {
+                    if (sym->n_type == N_EXT|N_TEXT
+                        && st_lookup(undef_tbl, sym->n_un.n_name, NULL)) {
+                        break;
+                    }
+                    sym++;
+                }
+                if (sym < end) {
+                    found++;
+                    free(syms);
+                    if (load_1(fd, offset, 0) == -1) {
+                        goto badlib;
+                    }
+                }
+                offset += size;
+                if (offset & 1) offset++;
+            }
+            if (found) break;
+        }
     }
     close(fd);
     return 0;
@@ -1054,17 +1054,17 @@ load(const char *file)
     int result;
 
     if (dln_init_p == 0) {
-	if (dln_init(dln_argv0) == -1) return -1;
+        if (dln_init(dln_argv0) == -1) return -1;
     }
     result = strlen(file);
     if (file[result-1] == 'a') {
-	return load_lib(file);
+        return load_lib(file);
     }
 
     fd = open(file, O_RDONLY);
     if (fd == -1) {
-	dln_errno = errno;
-	return -1;
+        dln_errno = errno;
+        return -1;
     }
     result = load_1(fd, 0, file);
     close(fd);
@@ -1078,7 +1078,7 @@ dln_sym(const char *name)
     struct nlist *sym;
 
     if (st_lookup(sym_tbl, name, &sym))
-	return (void*)sym->n_value;
+        return (void*)sym->n_value;
     return NULL;
 }
 
@@ -1094,8 +1094,8 @@ dln_sym(const char *name)
 #endif
 
 #if defined(_AIX)
-#include <ctype.h>	/* for isdigit()	*/
-#include <errno.h>	/* for global errno	*/
+#include <ctype.h>        /* for isdigit()        */
+#include <errno.h>        /* for global errno        */
 #include <sys/ldr.h>
 #endif
 
@@ -1128,14 +1128,14 @@ dln_strerror(char *message, size_t size)
     size_t len = snprintf(message, size, "%d: ", error);
 
 #define format_message(sublang) FormatMessage(\
-	FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,	\
-	NULL, error, MAKELANGID(LANG_NEUTRAL, (sublang)),		\
-	message + len, size - len, NULL)
+        FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,        \
+        NULL, error, MAKELANGID(LANG_NEUTRAL, (sublang)),                \
+        message + len, size - len, NULL)
     if (format_message(SUBLANG_ENGLISH_US) == 0)
-	format_message(SUBLANG_DEFAULT);
+        format_message(SUBLANG_DEFAULT);
     for (p = message + len; *p; p++) {
-	if (*p == '\n' || *p == '\r')
-	    *p = ' ';
+        if (*p == '\n' || *p == '\r')
+            *p = ' ';
     }
     return message;
 }
@@ -1149,19 +1149,19 @@ dln_strerror(void)
 
     switch (dln_errno) {
       case DLN_ECONFL:
-	return "Symbol name conflict";
+        return "Symbol name conflict";
       case DLN_ENOINIT:
-	return "No initializer given";
+        return "No initializer given";
       case DLN_EUNDEF:
-	return "Unresolved symbols";
+        return "Unresolved symbols";
       case DLN_ENOTLIB:
-	return "Not a library file";
+        return "Not a library file";
       case DLN_EBADLIB:
-	return "Malformed library file";
+        return "Malformed library file";
       case DLN_EINIT:
-	return "Not initialized";
+        return "Not initialized";
       default:
-	return strerror(dln_errno);
+        return strerror(dln_errno);
     }
 #endif
 
@@ -1181,18 +1181,18 @@ aix_loaderror(const char *pathname)
     snprintf(errbuf, sizeof(errbuf), "load failed - %s. ", pathname);
 
     if (loadquery(L_GETMESSAGES, &message[0], sizeof(message)) != -1) {
-	ERRBUF_APPEND("Please issue below command for detailed reasons:\n\t");
-	ERRBUF_APPEND("/usr/sbin/execerror ruby ");
-	for (i=0; message[i]; i++) {
-	    ERRBUF_APPEND("\"");
-	    ERRBUF_APPEND(message[i]);
-	    ERRBUF_APPEND("\" ");
-	}
-	ERRBUF_APPEND("\n");
+        ERRBUF_APPEND("Please issue below command for detailed reasons:\n\t");
+        ERRBUF_APPEND("/usr/sbin/execerror ruby ");
+        for (i=0; message[i]; i++) {
+            ERRBUF_APPEND("\"");
+            ERRBUF_APPEND(message[i]);
+            ERRBUF_APPEND("\" ");
+        }
+        ERRBUF_APPEND("\n");
     }
     else {
-	ERRBUF_APPEND(strerror(errno));
-	ERRBUF_APPEND("[loadquery failed]");
+        ERRBUF_APPEND(strerror(errno));
+        ERRBUF_APPEND("[loadquery failed]");
     }
     dln_loaderror("%s", errbuf);
 }
@@ -1210,22 +1210,22 @@ rb_w32_check_imported(HMODULE ext, HMODULE mine)
     desc = ImageDirectoryEntryToData(ext, TRUE, IMAGE_DIRECTORY_ENTRY_IMPORT, &size);
     if (!desc) return 0;
     while (desc->Name) {
-	PIMAGE_THUNK_DATA pint = (PIMAGE_THUNK_DATA)((char *)ext + desc->Characteristics);
-	PIMAGE_THUNK_DATA piat = (PIMAGE_THUNK_DATA)((char *)ext + desc->FirstThunk);
-	for (; piat->u1.Function; piat++, pint++) {
-	    static const char prefix[] = "rb_";
-	    PIMAGE_IMPORT_BY_NAME pii;
-	    const char *name;
+        PIMAGE_THUNK_DATA pint = (PIMAGE_THUNK_DATA)((char *)ext + desc->Characteristics);
+        PIMAGE_THUNK_DATA piat = (PIMAGE_THUNK_DATA)((char *)ext + desc->FirstThunk);
+        for (; piat->u1.Function; piat++, pint++) {
+            static const char prefix[] = "rb_";
+            PIMAGE_IMPORT_BY_NAME pii;
+            const char *name;
 
-	    if (IMAGE_SNAP_BY_ORDINAL(pint->u1.Ordinal)) continue;
-	    pii = (PIMAGE_IMPORT_BY_NAME)((char *)ext + (size_t)pint->u1.AddressOfData);
-	    name = (const char *)pii->Name;
-	    if (strncmp(name, prefix, sizeof(prefix) - 1) == 0) {
-		FARPROC addr = GetProcAddress(mine, name);
-		if (addr) return (FARPROC)piat->u1.Function == addr;
-	    }
-	}
-	desc++;
+            if (IMAGE_SNAP_BY_ORDINAL(pint->u1.Ordinal)) continue;
+            pii = (PIMAGE_IMPORT_BY_NAME)((char *)ext + (size_t)pint->u1.AddressOfData);
+            name = (const char *)pii->Name;
+            if (strncmp(name, prefix, sizeof(prefix) - 1) == 0) {
+                FARPROC addr = GetProcAddress(mine, name);
+                if (addr) return (FARPROC)piat->u1.Function == addr;
+            }
+        }
+        desc++;
     }
     return 1;
 }
@@ -1233,11 +1233,11 @@ rb_w32_check_imported(HMODULE ext, HMODULE mine)
 
 #if defined(DLN_NEEDS_ALT_SEPARATOR) && DLN_NEEDS_ALT_SEPARATOR
 #define translit_separator(src) do { \
-	char *tmp = ALLOCA_N(char, strlen(src) + 1), *p = tmp, c; \
-	do { \
-	    *p++ = ((c = *file++) == '/') ? DLN_NEEDS_ALT_SEPARATOR : c; \
-	} while (c); \
-	(src) = tmp; \
+        char *tmp = ALLOCA_N(char, strlen(src) + 1), *p = tmp, c; \
+        do { \
+            *p++ = ((c = *file++) == '/') ? DLN_NEEDS_ALT_SEPARATOR : c; \
+        } while (c); \
+        (src) = tmp; \
     } while (0)
 #else
 #define translit_separator(str) (void)(str)
@@ -1287,7 +1287,7 @@ dln_load(const char *file)
     /* Convert the file path to wide char */
     winfile = rb_w32_mbstr_to_wstr(CP_UTF8, file, -1, NULL);
     if (!winfile) {
-	dln_memerror();
+        dln_memerror();
     }
 
     /* Load file */
@@ -1295,20 +1295,20 @@ dln_load(const char *file)
     free(winfile);
 
     if (!handle) {
-	error = dln_strerror();
-	goto failed;
+        error = dln_strerror();
+        goto failed;
     }
 
 #if defined _WIN32 && defined RUBY_EXPORT
     if (!rb_w32_check_imported(handle, rb_libruby_handle())) {
-	FreeLibrary(handle);
-	error = incompatible;
-	goto failed;
+        FreeLibrary(handle);
+        error = incompatible;
+        goto failed;
     }
 #endif
 
     if ((init_fct = (void(*)())GetProcAddress(handle, buf)) == NULL) {
-	dln_loaderror("%s - %s\n%s", dln_strerror(), buf, file);
+        dln_loaderror("%s - %s\n%s", dln_strerror(), buf, file);
     }
 
     /* Call the init code */
@@ -1317,8 +1317,8 @@ dln_load(const char *file)
 #else
 #ifdef USE_DLN_A_OUT
     if (load(file) == -1) {
-	error = dln_strerror();
-	goto failed;
+        error = dln_strerror();
+        goto failed;
     }
     return 0;
 #else
@@ -1331,8 +1331,8 @@ dln_load(const char *file)
 #ifdef USE_DLN_DLOPEN
 #define DLN_DEFINED
     {
-	void *handle;
-	void (*init_fct)();
+        void *handle;
+        void (*init_fct)();
 
 #ifndef RTLD_LAZY
 # define RTLD_LAZY 1
@@ -1344,83 +1344,83 @@ dln_load(const char *file)
 # define RTLD_GLOBAL 0
 #endif
 
-	/* Load file */
-	if ((handle = (void*)dlopen(file, RTLD_LAZY|RTLD_GLOBAL)) == NULL) {
-	    error = dln_strerror();
-	    goto failed;
-	}
+        /* Load file */
+        if ((handle = (void*)dlopen(file, RTLD_LAZY|RTLD_GLOBAL)) == NULL) {
+            error = dln_strerror();
+            goto failed;
+        }
 # if defined RUBY_EXPORT
-	{
-	    if (dln_incompatible_library_p(handle)) {
+        {
+            if (dln_incompatible_library_p(handle)) {
 
 #   if defined __APPLE__ && \
     defined(MAC_OS_X_VERSION_MIN_REQUIRED) && \
     (MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_11)
-		/* dlclose() segfaults */
-		rb_fatal("%s - %s", incompatible, file);
+                /* dlclose() segfaults */
+                rb_fatal("%s - %s", incompatible, file);
 #   else
-		dlclose(handle);
-		error = incompatible;
-		goto failed;
+                dlclose(handle);
+                error = incompatible;
+                goto failed;
 #   endif
-	    }
-	}
+            }
+        }
 # endif
 
-	init_fct = (void(*)())(VALUE)dlsym(handle, buf);
-	if (init_fct == NULL) {
-	    const size_t errlen = strlen(error = dln_strerror()) + 1;
-	    error = memcpy(ALLOCA_N(char, errlen), error, errlen);
-	    dlclose(handle);
-	    goto failed;
-	}
-	/* Call the init code */
-	(*init_fct)();
+        init_fct = (void(*)())(VALUE)dlsym(handle, buf);
+        if (init_fct == NULL) {
+            const size_t errlen = strlen(error = dln_strerror()) + 1;
+            error = memcpy(ALLOCA_N(char, errlen), error, errlen);
+            dlclose(handle);
+            goto failed;
+        }
+        /* Call the init code */
+        (*init_fct)();
 
-	return handle;
+        return handle;
     }
 #endif /* USE_DLN_DLOPEN */
 
 #ifdef __hpux
 #define DLN_DEFINED
     {
-	shl_t lib = NULL;
-	int flags;
-	void (*init_fct)();
+        shl_t lib = NULL;
+        int flags;
+        void (*init_fct)();
 
-	flags = BIND_DEFERRED;
-	lib = shl_load(file, flags, 0);
-	if (lib == NULL) {
-	    extern int errno;
-	    dln_loaderror("%s - %s", strerror(errno), file);
-	}
-	shl_findsym(&lib, buf, TYPE_PROCEDURE, (void*)&init_fct);
-	if (init_fct == NULL) {
-	    shl_findsym(&lib, buf, TYPE_UNDEFINED, (void*)&init_fct);
-	    if (init_fct == NULL) {
-		errno = ENOSYM;
-		dln_loaderror("%s - %s", strerror(ENOSYM), file);
-	    }
-	}
-	(*init_fct)();
-	return (void*)lib;
+        flags = BIND_DEFERRED;
+        lib = shl_load(file, flags, 0);
+        if (lib == NULL) {
+            extern int errno;
+            dln_loaderror("%s - %s", strerror(errno), file);
+        }
+        shl_findsym(&lib, buf, TYPE_PROCEDURE, (void*)&init_fct);
+        if (init_fct == NULL) {
+            shl_findsym(&lib, buf, TYPE_UNDEFINED, (void*)&init_fct);
+            if (init_fct == NULL) {
+                errno = ENOSYM;
+                dln_loaderror("%s - %s", strerror(ENOSYM), file);
+            }
+        }
+        (*init_fct)();
+        return (void*)lib;
     }
 #endif /* hpux */
 
 #if defined(_AIX) && ! defined(_IA64)
 #define DLN_DEFINED
     {
-	void (*init_fct)();
+        void (*init_fct)();
 
-	init_fct = (void(*)())load((char*)file, 1, 0);
-	if (init_fct == NULL) {
-	    aix_loaderror(file);
-	}
-	if (loadbind(0, (void*)dln_load, (void*)init_fct) == -1) {
-	    aix_loaderror(file);
-	}
-	(*init_fct)();
-	return (void*)init_fct;
+        init_fct = (void(*)())load((char*)file, 1, 0);
+        if (init_fct == NULL) {
+            aix_loaderror(file);
+        }
+        if (loadbind(0, (void*)dln_load, (void*)init_fct) == -1) {
+            aix_loaderror(file);
+        }
+        (*init_fct)();
+        return (void*)init_fct;
     }
 #endif /* _AIX */
 
@@ -1436,30 +1436,30 @@ dln_load(const char *file)
     and... Miss ARAI Akino(^^;)
  ----------------------------------------------------*/
     {
-	int dyld_result;
-	NSObjectFileImage obj_file; /* handle, but not use it */
-	/* "file" is module file name .
-	   "buf" is pointer to initial function name with "_" . */
+        int dyld_result;
+        NSObjectFileImage obj_file; /* handle, but not use it */
+        /* "file" is module file name .
+           "buf" is pointer to initial function name with "_" . */
 
-	void (*init_fct)();
+        void (*init_fct)();
 
 
-	dyld_result = NSCreateObjectFileImageFromFile(file, &obj_file);
+        dyld_result = NSCreateObjectFileImageFromFile(file, &obj_file);
 
-	if (dyld_result != NSObjectFileImageSuccess) {
-	    dln_loaderror("Failed to load %.200s", file);
-	}
+        if (dyld_result != NSObjectFileImageSuccess) {
+            dln_loaderror("Failed to load %.200s", file);
+        }
 
-	NSLinkModule(obj_file, file, NSLINKMODULE_OPTION_BINDNOW);
+        NSLinkModule(obj_file, file, NSLINKMODULE_OPTION_BINDNOW);
 
-	/* lookup the initial function */
-	if (!NSIsSymbolNameDefined(buf)) {
-	    dln_loaderror("Failed to lookup Init function %.200s",file);
-	}
-	init_fct = NSAddressOfSymbol(NSLookupAndBindSymbol(buf));
-	(*init_fct)();
+        /* lookup the initial function */
+        if (!NSIsSymbolNameDefined(buf)) {
+            dln_loaderror("Failed to lookup Init function %.200s",file);
+        }
+        init_fct = NSAddressOfSymbol(NSLookupAndBindSymbol(buf));
+        (*init_fct)();
 
-	return (void*)init_fct;
+        return (void*)init_fct;
     }
 #endif
 
@@ -1474,5 +1474,5 @@ dln_load(const char *file)
     dln_loaderror("%s - %s", error, file);
 #endif
 
-    return 0;			/* dummy return */
+    return 0;                        /* dummy return */
 }

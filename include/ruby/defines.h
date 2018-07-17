@@ -366,7 +366,7 @@ ruby_xrealloc2_with_location(void *ptr, size_t s1, size_t s2, const char *file, 
     RUBY_EXTERN
 # elif defined _MSC_VER
 #   define EXTERN __pragma(message(__FILE__"("STRINGIZE(__LINE__)"): warning: "\
-				   "EXTERN is deprecated, use RUBY_EXTERN instead")); \
+                                   "EXTERN is deprecated, use RUBY_EXTERN instead")); \
     RUBY_EXTERN
 # else
 #   define EXTERN <-<-"EXTERN is deprecated, use RUBY_EXTERN instead"->->

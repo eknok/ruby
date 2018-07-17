@@ -33,7 +33,7 @@ enum ruby_encoding_consts {
     RUBY_ENCODING_INLINE_MAX = 127,
     RUBY_ENCODING_SHIFT = (RUBY_FL_USHIFT+10),
     RUBY_ENCODING_MASK = (RUBY_ENCODING_INLINE_MAX<<RUBY_ENCODING_SHIFT
-			  /* RUBY_FL_USER10..RUBY_FL_USER16 */),
+                          /* RUBY_FL_USER10..RUBY_FL_USER16 */),
     RUBY_ENCODING_MAXNAMELEN = 42
 };
 
@@ -64,13 +64,13 @@ enum ruby_encoding_consts {
 #define ENCODING_MAXNAMELEN RUBY_ENCODING_MAXNAMELEN
 
 enum ruby_coderange_type {
-    RUBY_ENC_CODERANGE_UNKNOWN	= 0,
-    RUBY_ENC_CODERANGE_7BIT	= ((int)RUBY_FL_USER8),
-    RUBY_ENC_CODERANGE_VALID	= ((int)RUBY_FL_USER9),
-    RUBY_ENC_CODERANGE_BROKEN	= ((int)(RUBY_FL_USER8|RUBY_FL_USER9)),
-    RUBY_ENC_CODERANGE_MASK	= (RUBY_ENC_CODERANGE_7BIT|
-				   RUBY_ENC_CODERANGE_VALID|
-				   RUBY_ENC_CODERANGE_BROKEN)
+    RUBY_ENC_CODERANGE_UNKNOWN        = 0,
+    RUBY_ENC_CODERANGE_7BIT        = ((int)RUBY_FL_USER8),
+    RUBY_ENC_CODERANGE_VALID        = ((int)RUBY_FL_USER9),
+    RUBY_ENC_CODERANGE_BROKEN        = ((int)(RUBY_FL_USER8|RUBY_FL_USER9)),
+    RUBY_ENC_CODERANGE_MASK        = (RUBY_ENC_CODERANGE_7BIT|
+                                   RUBY_ENC_CODERANGE_VALID|
+                                   RUBY_ENC_CODERANGE_BROKEN)
 };
 
 static inline int
@@ -82,8 +82,8 @@ rb_enc_coderange_clean_p(int cr)
 #define RB_ENC_CODERANGE(obj) ((int)RBASIC(obj)->flags & RUBY_ENC_CODERANGE_MASK)
 #define RB_ENC_CODERANGE_ASCIIONLY(obj) (RB_ENC_CODERANGE(obj) == RUBY_ENC_CODERANGE_7BIT)
 #define RB_ENC_CODERANGE_SET(obj,cr) (\
-	RBASIC(obj)->flags = \
-	(RBASIC(obj)->flags & ~RUBY_ENC_CODERANGE_MASK) | (cr))
+        RBASIC(obj)->flags = \
+        (RBASIC(obj)->flags & ~RUBY_ENC_CODERANGE_MASK) | (cr))
 #define RB_ENC_CODERANGE_CLEAR(obj) RB_ENC_CODERANGE_SET((obj),0)
 
 /* assumed ASCII compatibility */
@@ -99,11 +99,11 @@ rb_enc_coderange_clean_p(int cr)
         RB_ENC_CODERANGE_SET(rb_encoding_coderange_obj, (cr)); \
     } while (0)
 
-#define ENC_CODERANGE_MASK	RUBY_ENC_CODERANGE_MASK
-#define ENC_CODERANGE_UNKNOWN	RUBY_ENC_CODERANGE_UNKNOWN
-#define ENC_CODERANGE_7BIT	RUBY_ENC_CODERANGE_7BIT
-#define ENC_CODERANGE_VALID	RUBY_ENC_CODERANGE_VALID
-#define ENC_CODERANGE_BROKEN	RUBY_ENC_CODERANGE_BROKEN
+#define ENC_CODERANGE_MASK        RUBY_ENC_CODERANGE_MASK
+#define ENC_CODERANGE_UNKNOWN        RUBY_ENC_CODERANGE_UNKNOWN
+#define ENC_CODERANGE_7BIT        RUBY_ENC_CODERANGE_7BIT
+#define ENC_CODERANGE_VALID        RUBY_ENC_CODERANGE_VALID
+#define ENC_CODERANGE_BROKEN        RUBY_ENC_CODERANGE_BROKEN
 #define ENC_CODERANGE_CLEAN_P(cr)    RB_ENC_CODERANGE_CLEAN_P(cr)
 #define ENC_CODERANGE(obj)           RB_ENC_CODERANGE(obj)
 #define ENC_CODERANGE_ASCIIONLY(obj) RB_ENC_CODERANGE_ASCIIONLY(obj)
@@ -155,13 +155,13 @@ VALUE rb_str_conv_enc_opts(VALUE str, rb_encoding *from, rb_encoding *to, int ec
 #ifdef HAVE_BUILTIN___BUILTIN_CONSTANT_P
 #define rb_enc_str_new(str, len, enc) RB_GNUC_EXTENSION_BLOCK( \
     (__builtin_constant_p(str) && __builtin_constant_p(len)) ? \
-	rb_enc_str_new_static((str), (len), (enc)) : \
-	rb_enc_str_new((str), (len), (enc)) \
+        rb_enc_str_new_static((str), (len), (enc)) : \
+        rb_enc_str_new((str), (len), (enc)) \
 )
-#define rb_enc_str_new_cstr(str, enc) RB_GNUC_EXTENSION_BLOCK(	\
-    (__builtin_constant_p(str)) ?	       \
-	rb_enc_str_new_static((str), (long)strlen(str), (enc)) : \
-	rb_enc_str_new_cstr((str), (enc)) \
+#define rb_enc_str_new_cstr(str, enc) RB_GNUC_EXTENSION_BLOCK(        \
+    (__builtin_constant_p(str)) ?               \
+        rb_enc_str_new_static((str), (long)strlen(str), (enc)) : \
+        rb_enc_str_new_cstr((str), (enc)) \
 )
 #endif
 
@@ -385,9 +385,9 @@ enum ruby_econv_flag_type {
 
     RUBY_ECONV_DEFAULT_NEWLINE_DECORATOR        =
 #if defined(RUBY_TEST_CRLF_ENVIRONMENT) || defined(_WIN32)
-	RUBY_ECONV_CRLF_NEWLINE_DECORATOR,
+        RUBY_ECONV_CRLF_NEWLINE_DECORATOR,
 #else
-	0,
+        0,
 #endif
 #define ECONV_ERROR_HANDLER_MASK                RUBY_ECONV_ERROR_HANDLER_MASK
 #define ECONV_INVALID_MASK                      RUBY_ECONV_INVALID_MASK

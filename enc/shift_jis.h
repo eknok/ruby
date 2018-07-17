@@ -275,7 +275,7 @@ code_to_mbc(OnigCodePoint code, UChar *buf, OnigEncoding enc)
 
 static int
 apply_all_case_fold(OnigCaseFoldType flag,
-		    OnigApplyAllCaseFoldFunc f, void* arg, OnigEncoding enc)
+                    OnigApplyAllCaseFoldFunc f, void* arg, OnigEncoding enc)
 {
   return onigenc_apply_all_case_fold_with_map(
             numberof(CaseFoldMap), CaseFoldMap, 0,
@@ -313,7 +313,7 @@ get_upper_case(OnigCodePoint code)
     return (OnigCodePoint )(code - 0x0020);
   }
   else if (ONIGENC_IS_IN_RANGE(code, 0x8470, 0x847e) ||
-	   ONIGENC_IS_IN_RANGE(code, 0x8480, 0x8491)) {
+           ONIGENC_IS_IN_RANGE(code, 0x8480, 0x8491)) {
     /* Cyrillic */
     int d = (code >= 0x8480) ? 1 : 0;
     return (OnigCodePoint )(code - (0x0030 - d));
@@ -323,8 +323,8 @@ get_upper_case(OnigCodePoint code)
 
 static int
 get_case_fold_codes_by_str(OnigCaseFoldType flag,
-			   const OnigUChar* p, const OnigUChar* end,
-			   OnigCaseFoldCodeItem items[], OnigEncoding enc)
+                           const OnigUChar* p, const OnigUChar* end,
+                           OnigCaseFoldCodeItem items[], OnigEncoding enc)
 {
   int len;
   OnigCodePoint code, code_lo, code_up;
@@ -355,8 +355,8 @@ get_case_fold_codes_by_str(OnigCaseFoldType flag,
 
 static int
 mbc_case_fold(OnigCaseFoldType flag,
-	      const UChar** pp, const UChar* end, UChar* lower,
-	      OnigEncoding enc)
+              const UChar** pp, const UChar* end, UChar* lower,
+              OnigEncoding enc)
 {
   const UChar* p = *pp;
 
@@ -379,7 +379,7 @@ mbc_case_fold(OnigCaseFoldType flag,
 #if 0
 static int
 is_mbc_ambiguous(OnigCaseFoldType flag,
-		 const UChar** pp, const UChar* end)
+                 const UChar** pp, const UChar* end)
 {
   return onigenc_mbn_is_mbc_ambiguous(enc, flag, pp, end);
 
@@ -414,8 +414,8 @@ left_adjust_char_head(const UChar* start, const UChar* s, const UChar* end, Onig
   if (SJIS_ISMB_TRAIL(*p)) {
     while (p > start) {
       if (! SJIS_ISMB_FIRST(*--p)) {
-	p++;
-	break;
+        p++;
+        break;
       }
     }
   }
@@ -450,19 +450,19 @@ static const OnigCodePoint CR_Katakana[] = {
 static const OnigCodePoint CR_Han[] = {
   6,
   0x8157, 0x8157,
-  0x889f, 0x9872,	/* Kanji level 1 */
-  0x989f, 0x9ffc,	/* Kanji level 2 */
-  0xe040, 0xeaa4,	/* Kanji level 2 */
-  0xed40, 0xeeec,	/* NEC-selected IBM extended characters (without symbols) */
-  0xfa5c, 0xfc4b,	/* IBM extended characters (without symbols) */
+  0x889f, 0x9872,        /* Kanji level 1 */
+  0x989f, 0x9ffc,        /* Kanji level 2 */
+  0xe040, 0xeaa4,        /* Kanji level 2 */
+  0xed40, 0xeeec,        /* NEC-selected IBM extended characters (without symbols) */
+  0xfa5c, 0xfc4b,        /* IBM extended characters (without symbols) */
 }; /* CR_Han */
 #else
 static const OnigCodePoint CR_Han[] = {
   4,
   0x8157, 0x8157,
-  0x889f, 0x9872,	/* Kanji level 1 */
-  0x989f, 0x9ffc,	/* Kanji level 2 */
-  0xe040, 0xeaa4,	/* Kanji level 2 */
+  0x889f, 0x9872,        /* Kanji level 1 */
+  0x989f, 0x9ffc,        /* Kanji level 2 */
+  0xe040, 0xeaa4,        /* Kanji level 2 */
 }; /* CR_Han */
 #endif
 
@@ -511,7 +511,7 @@ is_code_ctype(OnigCodePoint code, unsigned int ctype, OnigEncoding enc)
       return ONIGENC_IS_ASCII_CODE_CTYPE(code, ctype);
     else {
       if (CTYPE_IS_WORD_GRAPH_PRINT(ctype)) {
-	return TRUE;
+        return TRUE;
       }
     }
   }
@@ -528,7 +528,7 @@ is_code_ctype(OnigCodePoint code, unsigned int ctype, OnigEncoding enc)
 
 static int
 get_ctype_code_range(OnigCtype ctype, OnigCodePoint* sb_out,
-		     const OnigCodePoint* ranges[], OnigEncoding enc ARG_UNUSED)
+                     const OnigCodePoint* ranges[], OnigEncoding enc ARG_UNUSED)
 {
   if (ctype <= ONIGENC_MAX_STD_CTYPE) {
     return ONIG_NO_SUPPORT_CONFIG;

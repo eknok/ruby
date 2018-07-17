@@ -31,13 +31,13 @@ Init_funcall(void)
     VALUE cRelay = rb_define_module_under(cTestFuncall, "Relay");
 
     rb_define_singleton_method(cRelay,
-			       "with_funcall2",
-			       with_funcall2,
-			       -1);
+                               "with_funcall2",
+                               with_funcall2,
+                               -1);
     rb_define_singleton_method(cRelay,
-			       "with_funcall_passing_block",
-			       with_funcall_passing_block,
-			       -1);
+                               "with_funcall_passing_block",
+                               with_funcall_passing_block,
+                               -1);
     rb_define_singleton_method(cTestFuncall, "extra_args_name",
                                 extra_args_name,
                                 0);

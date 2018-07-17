@@ -258,11 +258,11 @@ is_mbc_newline(const UChar* p, const UChar* end, OnigEncoding enc)
     if (*p == 0x0b || *p == 0x0c || *p == 0x0d) return 1;
     if (p + 1 < end) {
       if (*(p+1) == 0x85 && *p == 0xc2) /* U+0085 */
-	return 1;
+        return 1;
       if (p + 2 < end) {
-	if ((*(p+2) == 0xa8 || *(p+2) == 0xa9)
-	    && *(p+1) == 0x80 && *p == 0xe2)  /* U+2028, U+2029 */
-	  return 1;
+        if ((*(p+2) == 0xa8 || *(p+2) == 0xa9)
+            && *(p+1) == 0x80 && *p == 0xe2)  /* U+2028, U+2029 */
+          return 1;
       }
     }
 #endif
@@ -359,7 +359,7 @@ code_to_mbc(OnigCodePoint code, UChar *buf, OnigEncoding enc ARG_UNUSED)
 
 static int
 mbc_case_fold(OnigCaseFoldType flag, const UChar** pp,
-	      const UChar* end, UChar* fold, OnigEncoding enc)
+              const UChar* end, UChar* fold, OnigEncoding enc)
 {
   const UChar* p = *pp;
 
@@ -367,10 +367,10 @@ mbc_case_fold(OnigCaseFoldType flag, const UChar** pp,
 #ifdef USE_UNICODE_CASE_FOLD_TURKISH_AZERI
     if ((flag & ONIGENC_CASE_FOLD_TURKISH_AZERI) != 0) {
       if (*p == 0x49) {
-	*fold++ = 0xc4;
-	*fold   = 0xb1;
-	(*pp)++;
-	return 2;
+        *fold++ = 0xc4;
+        *fold   = 0xb1;
+        (*pp)++;
+        return 2;
       }
     }
 #endif
@@ -387,7 +387,7 @@ mbc_case_fold(OnigCaseFoldType flag, const UChar** pp,
 
 static int
 get_ctype_code_range(OnigCtype ctype, OnigCodePoint *sb_out,
-		     const OnigCodePoint* ranges[], OnigEncoding enc ARG_UNUSED)
+                     const OnigCodePoint* ranges[], OnigEncoding enc ARG_UNUSED)
 {
   *sb_out = 0x80;
   return onigenc_unicode_ctype_code_range(ctype, ranges);

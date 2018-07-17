@@ -26,13 +26,13 @@ rb_cmperr(VALUE x, VALUE y)
     VALUE classname;
 
     if (SPECIAL_CONST_P(y) || BUILTIN_TYPE(y) == T_FLOAT) {
-	classname = rb_inspect(y);
+        classname = rb_inspect(y);
     }
     else {
-	classname = rb_obj_class(y);
+        classname = rb_obj_class(y);
     }
     rb_raise(rb_eArgError, "comparison of %"PRIsVALUE" with %"PRIsVALUE" failed",
-	     rb_obj_class(x), classname);
+             rb_obj_class(x), classname);
 }
 
 static VALUE
@@ -47,11 +47,11 @@ rb_invcmp(VALUE x, VALUE y)
 {
     VALUE invcmp = rb_exec_recursive(invcmp_recursive, x, y);
     if (invcmp == Qundef || NIL_P(invcmp)) {
-	return Qnil;
+        return Qnil;
     }
     else {
-	int result = -rb_cmpint(invcmp, x, y);
-	return INT2FIX(result);
+        int result = -rb_cmpint(invcmp, x, y);
+        return INT2FIX(result);
     }
 }
 
@@ -195,7 +195,7 @@ cmp_clamp(VALUE x, VALUE min, VALUE max)
     int c;
 
     if (cmpint(min, max) > 0) {
-	rb_raise(rb_eArgError, "min argument must be smaller than max argument");
+        rb_raise(rb_eArgError, "min argument must be smaller than max argument");
     }
 
     c = cmpint(x, min);

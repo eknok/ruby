@@ -100,7 +100,7 @@ static VALUE
 mulv(VALUE x, VALUE y)
 {
     if (FIXNUM_P(x) && FIXNUM_P(y)) {
-	return rb_fix_mul_fix(x, y);
+        return rb_fix_mul_fix(x, y);
     }
     if (RB_TYPE_P(x, T_BIGNUM))
         return rb_big_mul(x, y);
@@ -111,7 +111,7 @@ static VALUE
 divv(VALUE x, VALUE y)
 {
     if (FIXNUM_P(x) && FIXNUM_P(y)) {
-	return rb_fix_div_fix(x, y);
+        return rb_fix_div_fix(x, y);
     }
     if (RB_TYPE_P(x, T_BIGNUM))
         return rb_big_div(x, y);
@@ -122,8 +122,8 @@ static VALUE
 modv(VALUE x, VALUE y)
 {
     if (FIXNUM_P(y)) {
-	if (FIX2LONG(y) == 0) rb_num_zerodiv();
-	if (FIXNUM_P(x)) return rb_fix_mod_fix(x, y);
+        if (FIX2LONG(y) == 0) rb_num_zerodiv();
+        if (FIXNUM_P(x)) return rb_fix_mod_fix(x, y);
     }
     if (RB_TYPE_P(x, T_BIGNUM)) return rb_big_modulo(x, y);
     return rb_funcall(x, '%', 1, y);
@@ -161,17 +161,17 @@ divmodv(VALUE n, VALUE d, VALUE *q, VALUE *r)
 {
     VALUE tmp, ary;
     if (FIXNUM_P(d)) {
-	if (FIX2LONG(d) == 0) rb_num_zerodiv();
-	if (FIXNUM_P(n)) {
-	    rb_fix_divmod_fix(n, d, q, r);
-	    return;
-	}
+        if (FIX2LONG(d) == 0) rb_num_zerodiv();
+        if (FIXNUM_P(n)) {
+            rb_fix_divmod_fix(n, d, q, r);
+            return;
+        }
     }
     tmp = rb_funcall(n, id_divmod, 1, d);
     ary = rb_check_array_type(tmp);
     if (NIL_P(ary)) {
-	rb_raise(rb_eTypeError, "unexpected divmod result: into %"PRIsVALUE,
-		 rb_obj_class(tmp));
+        rb_raise(rb_eTypeError, "unexpected divmod result: into %"PRIsVALUE,
+                 rb_obj_class(tmp));
     }
     *q = rb_ary_entry(ary, 0);
     *r = rb_ary_entry(ary, 1);
@@ -373,8 +373,8 @@ wmul(wideval_t wx, wideval_t wy)
 {
 #if WIDEVALUE_IS_WIDER
     if (FIXWV_P(wx) && FIXWV_P(wy)) {
-	if (!MUL_OVERFLOW_FIXWV_P(FIXWV2WINT(wx), FIXWV2WINT(wy)))
-	    return WINT2WV(FIXWV2WINT(wx) * FIXWV2WINT(wy));
+        if (!MUL_OVERFLOW_FIXWV_P(FIXWV2WINT(wx), FIXWV2WINT(wy)))
+            return WINT2WV(FIXWV2WINT(wx) * FIXWV2WINT(wy));
     }
 #endif
     return v2w(mulv(w2v(wx), w2v(wy)));
@@ -489,13 +489,13 @@ num_exact(VALUE v)
     VALUE tmp;
 
     if (NIL_P(v)) {
-	rb_raise(rb_eTypeError, "can't convert nil into an exact number");
+        rb_raise(rb_eTypeError, "can't convert nil into an exact number");
     }
     else if (RB_INTEGER_TYPE_P(v)) {
         return v;
     }
     else if (RB_TYPE_P(v, T_RATIONAL)) {
-	goto rational;
+        goto rational;
     }
     else if (RB_TYPE_P(v, T_STRING)) {
         goto typeerror;
@@ -525,8 +525,8 @@ num_exact(VALUE v)
     }
     else {
       typeerror:
-	rb_raise(rb_eTypeError, "can't convert %"PRIsVALUE" into an exact number",
-		 rb_obj_class(v));
+        rb_raise(rb_eTypeError, "can't convert %"PRIsVALUE" into an exact number",
+                 rb_obj_class(v));
     }
     return v;
 }
@@ -657,8 +657,8 @@ rb_localtime_r(const time_t *t, struct tm *result)
     result = localtime_r(t, result);
 #else
     {
-	struct tm *tmp = localtime(t);
-	if (tmp) *result = *tmp;
+        struct tm *tmp = localtime(t);
+        if (tmp) *result = *tmp;
     }
 #endif
 #if defined(HAVE_MKTIME) && defined(LOCALTIME_OVERFLOW_PROBLEM)
@@ -692,7 +692,7 @@ rb_gmtime_r(const time_t *t, struct tm *result)
 #endif
 #if defined(HAVE_TIMEGM) && defined(LOCALTIME_OVERFLOW_PROBLEM)
     if (result && *t != timegm(result)) {
-	return NULL;
+        return NULL;
     }
 #endif
     return result;
@@ -745,9 +745,9 @@ calc_tm_yday(long tm_year, int tm_mon, int tm_mday)
     int tm_yday = tm_mday;
 
     if (leap_year_p(tm_year_mod400 + 1900))
-	tm_yday += leap_year_yday_offset[tm_mon];
+        tm_yday += leap_year_yday_offset[tm_mon];
     else
-	tm_yday += common_year_yday_offset[tm_mon];
+        tm_yday += common_year_yday_offset[tm_mon];
 
     return tm_yday;
 }
@@ -802,8 +802,8 @@ zone_str_update(st_data_t *key, st_data_t *value, st_data_t arg, int existing)
     const char **ret = (const char **)arg;
 
     if (existing) {
-	*ret = (const char *)*value;
-	return ST_STOP;
+        *ret = (const char *)*value;
+        return ST_STOP;
     }
     *ret = s = strdup(s);
     *key = *value = (st_data_t)s;
@@ -954,7 +954,7 @@ gmtime_with_leapsecond(const time_t *timep, struct tm *result)
     gmtoff = gmtoff / 60;
     gmtoff_min = (int)(gmtoff % 60);
     gmtoff = gmtoff / 60;
-    gmtoff_hour = (int)gmtoff;	/* <= 12 */
+    gmtoff_hour = (int)gmtoff;        /* <= 12 */
 
     gmtoff_sec *= sign;
     gmtoff_min *= sign;
@@ -1485,27 +1485,27 @@ localtime_with_gmtoff_zone(const time_t *t, struct tm *result, long *gmtoff, con
 
     if (LOCALTIME(t, tm)) {
 #if defined(HAVE_STRUCT_TM_TM_GMTOFF)
-	*gmtoff = tm.tm_gmtoff;
+        *gmtoff = tm.tm_gmtoff;
 #else
-	struct tm *u, *l;
-	long off;
-	struct tm tmbuf;
-	l = &tm;
-	u = GMTIME(t, tmbuf);
-	if (!u)
-	    return NULL;
-	if (l->tm_year != u->tm_year)
-	    off = l->tm_year < u->tm_year ? -1 : 1;
-	else if (l->tm_mon != u->tm_mon)
-	    off = l->tm_mon < u->tm_mon ? -1 : 1;
-	else if (l->tm_mday != u->tm_mday)
-	    off = l->tm_mday < u->tm_mday ? -1 : 1;
-	else
-	    off = 0;
-	off = off * 24 + l->tm_hour - u->tm_hour;
-	off = off * 60 + l->tm_min - u->tm_min;
-	off = off * 60 + l->tm_sec - u->tm_sec;
-	*gmtoff = off;
+        struct tm *u, *l;
+        long off;
+        struct tm tmbuf;
+        l = &tm;
+        u = GMTIME(t, tmbuf);
+        if (!u)
+            return NULL;
+        if (l->tm_year != u->tm_year)
+            off = l->tm_year < u->tm_year ? -1 : 1;
+        else if (l->tm_mon != u->tm_mon)
+            off = l->tm_mon < u->tm_mon ? -1 : 1;
+        else if (l->tm_mday != u->tm_mday)
+            off = l->tm_mday < u->tm_mday ? -1 : 1;
+        else
+            off = 0;
+        off = off * 24 + l->tm_hour - u->tm_hour;
+        off = off * 60 + l->tm_min - u->tm_min;
+        off = off * 60 + l->tm_sec - u->tm_sec;
+        *gmtoff = off;
 #endif
 
         if (zone) {
@@ -1531,7 +1531,7 @@ localtime_with_gmtoff_zone(const time_t *t, struct tm *result, long *gmtoff, con
         }
 
         *result = tm;
-	return result;
+        return result;
     }
     return NULL;
 }
@@ -1579,7 +1579,7 @@ localtimew(wideval_t timew, struct vtm *result)
     if (!timew_out_of_timet_range(timew)) {
         time_t t;
         struct tm tm;
-	long gmtoff;
+        long gmtoff;
         wideval_t timew2;
 
         split_second(timew, &timew2, &subsecx);
@@ -1652,7 +1652,7 @@ static VALUE time_get_tm(VALUE, struct time_object *);
 #define MAKE_TM(time, tobj) \
   do { \
     if ((tobj)->tm_got == 0) { \
-	time_get_tm((time), (tobj)); \
+        time_get_tm((time), (tobj)); \
     } \
   } while (0)
 
@@ -1699,7 +1699,7 @@ get_timeval(VALUE obj)
     struct time_object *tobj;
     TypedData_Get_Struct(obj, struct time_object, &time_data_type, tobj);
     if (!TIME_INIT_P(tobj)) {
-	rb_raise(rb_eTypeError, "uninitialized %"PRIsVALUE, rb_obj_class(obj));
+        rb_raise(rb_eTypeError, "uninitialized %"PRIsVALUE, rb_obj_class(obj));
     }
     return tobj;
 }
@@ -1710,7 +1710,7 @@ get_new_timeval(VALUE obj)
     struct time_object *tobj;
     TypedData_Get_Struct(obj, struct time_object, &time_data_type, tobj);
     if (TIME_INIT_P(tobj)) {
-	rb_raise(rb_eTypeError, "already initialized %"PRIsVALUE, rb_obj_class(obj));
+        rb_raise(rb_eTypeError, "already initialized %"PRIsVALUE, rb_obj_class(obj));
     }
     return tobj;
 }
@@ -1771,7 +1771,7 @@ rb_timespec_now(struct timespec *ts)
 {
 #ifdef HAVE_CLOCK_GETTIME
     if (clock_gettime(CLOCK_REALTIME, ts) == -1) {
-	rb_sys_fail("clock_gettime");
+        rb_sys_fail("clock_gettime");
     }
 #else
     {
@@ -1956,24 +1956,24 @@ utc_offset_arg(VALUE arg)
         int n = 0;
         char *s = RSTRING_PTR(tmp);
         if (!rb_enc_str_asciicompat_p(tmp)) {
-	  invalid_utc_offset:
+          invalid_utc_offset:
             rb_raise(rb_eArgError, "\"+HH:MM\" or \"-HH:MM\" expected for utc_offset");
-	}
-	switch (RSTRING_LEN(tmp)) {
-	  case 9:
-	    if (s[6] != ':') goto invalid_utc_offset;
-	    if (!ISDIGIT(s[7]) || !ISDIGIT(s[8])) goto invalid_utc_offset;
-	    n += (s[7] * 10 + s[8] - '0' * 11);
-	  case 6:
-	    if (s[0] != '+' && s[0] != '-') goto invalid_utc_offset;
-	    if (!ISDIGIT(s[1]) || !ISDIGIT(s[2])) goto invalid_utc_offset;
-	    if (s[3] != ':') goto invalid_utc_offset;
-	    if (!ISDIGIT(s[4]) || !ISDIGIT(s[5])) goto invalid_utc_offset;
-	    if (s[4] > '5') goto invalid_utc_offset;
-	    break;
-	  default:
-	    goto invalid_utc_offset;
-	}
+        }
+        switch (RSTRING_LEN(tmp)) {
+          case 9:
+            if (s[6] != ':') goto invalid_utc_offset;
+            if (!ISDIGIT(s[7]) || !ISDIGIT(s[8])) goto invalid_utc_offset;
+            n += (s[7] * 10 + s[8] - '0' * 11);
+          case 6:
+            if (s[0] != '+' && s[0] != '-') goto invalid_utc_offset;
+            if (!ISDIGIT(s[1]) || !ISDIGIT(s[2])) goto invalid_utc_offset;
+            if (s[3] != ':') goto invalid_utc_offset;
+            if (!ISDIGIT(s[4]) || !ISDIGIT(s[5])) goto invalid_utc_offset;
+            if (s[4] > '5') goto invalid_utc_offset;
+            break;
+          default:
+            goto invalid_utc_offset;
+        }
         n += (s[1] * 10 + s[2] - '0' * 11) * 3600;
         n += (s[4] * 10 + s[5] - '0' * 11) * 60;
         if (s[0] == '-')
@@ -2113,25 +2113,25 @@ time_overflow_p(time_t *secp, long *nsecp)
     long nsec = *nsecp;
     long sec2;
 
-    if (nsec >= 1000000000) {	/* nsec positive overflow */
+    if (nsec >= 1000000000) {        /* nsec positive overflow */
         sec2 = nsec / 1000000000;
-	if (TIMET_MAX - sec2 < sec) {
-	    rb_raise(rb_eRangeError, "out of Time range");
-	}
-	nsec -= sec2 * 1000000000;
-	sec += sec2;
+        if (TIMET_MAX - sec2 < sec) {
+            rb_raise(rb_eRangeError, "out of Time range");
+        }
+        nsec -= sec2 * 1000000000;
+        sec += sec2;
     }
-    else if (nsec < 0) {		/* nsec negative overflow */
-	sec2 = NDIV(nsec,1000000000); /* negative div */
-	if (sec < TIMET_MIN - sec2) {
-	    rb_raise(rb_eRangeError, "out of Time range");
-	}
-	nsec -= sec2 * 1000000000;
-	sec += sec2;
+    else if (nsec < 0) {                /* nsec negative overflow */
+        sec2 = NDIV(nsec,1000000000); /* negative div */
+        if (sec < TIMET_MIN - sec2) {
+            rb_raise(rb_eRangeError, "out of Time range");
+        }
+        nsec -= sec2 * 1000000000;
+        sec += sec2;
     }
 #ifndef NEGATIVE_TIME_T
     if (sec < 0)
-	rb_raise(rb_eArgError, "time must be positive");
+        rb_raise(rb_eArgError, "time must be positive");
 #endif
     *secp = sec;
     *nsecp = nsec;
@@ -2153,7 +2153,7 @@ time_new_timew(VALUE klass, wideval_t timew)
     VALUE time = time_s_alloc(klass);
     struct time_object *tobj;
 
-    tobj = DATA_PTR(time);	/* skip type check */
+    tobj = DATA_PTR(time);        /* skip type check */
     tobj->gmt = 0;
     tobj->timew = timew;
 
@@ -2166,20 +2166,20 @@ rb_time_new(time_t sec, long usec)
     wideval_t timew;
 
     if (usec >= 1000000) {
-	long sec2 = usec / 1000000;
-	if (sec > TIMET_MAX - sec2) {
-	    rb_raise(rb_eRangeError, "out of Time range");
-	}
-	usec -= sec2 * 1000000;
-	sec += sec2;
+        long sec2 = usec / 1000000;
+        if (sec > TIMET_MAX - sec2) {
+            rb_raise(rb_eRangeError, "out of Time range");
+        }
+        usec -= sec2 * 1000000;
+        sec += sec2;
     }
     else if (usec < 0) {
-	long sec2 = NDIV(usec,1000000); /* negative div */
-	if (sec < TIMET_MIN - sec2) {
-	    rb_raise(rb_eRangeError, "out of Time range");
-	}
-	usec -= sec2 * 1000000;
-	sec += sec2;
+        long sec2 = NDIV(usec,1000000); /* negative div */
+        if (sec < TIMET_MIN - sec2) {
+            rb_raise(rb_eRangeError, "out of Time range");
+        }
+        usec -= sec2 * 1000000;
+        sec += sec2;
     }
 
     timew = nsec2timew(sec, usec * 1000);
@@ -2205,17 +2205,17 @@ rb_time_timespec_new(const struct timespec *ts, int offset)
     VALUE time = time_new_timew(rb_cTime, nsec2timew(ts->tv_sec, ts->tv_nsec));
 
     if (-86400 < offset && offset <  86400) { /* fixoff */
-	GetTimeval(time, tobj);
-	TIME_SET_FIXOFF(tobj, INT2FIX(offset));
+        GetTimeval(time, tobj);
+        TIME_SET_FIXOFF(tobj, INT2FIX(offset));
     }
     else if (offset == INT_MAX) { /* localtime */
     }
     else if (offset == INT_MAX-1) { /* UTC */
-	GetTimeval(time, tobj);
-	TIME_SET_UTC(tobj);
+        GetTimeval(time, tobj);
+        TIME_SET_UTC(tobj);
     }
     else {
-	rb_raise(rb_eArgError, "utc_offset out of range");
+        rb_raise(rb_eArgError, "utc_offset out of range");
     }
 
     return time;
@@ -2248,45 +2248,45 @@ time_timespec(VALUE num, int interval)
 #endif
 
     if (FIXNUM_P(num)) {
-	t.tv_sec = NUM2TIMET(num);
-	if (interval && t.tv_sec < 0)
-	    rb_raise(rb_eArgError, "%s must be positive", tstr);
-	t.tv_nsec = 0;
+        t.tv_sec = NUM2TIMET(num);
+        if (interval && t.tv_sec < 0)
+            rb_raise(rb_eArgError, "%s must be positive", tstr);
+        t.tv_nsec = 0;
     }
     else if (RB_FLOAT_TYPE_P(num)) {
-	if (interval && RFLOAT_VALUE(num) < 0.0)
-	    rb_raise(rb_eArgError, "%s must be positive", tstr);
-	else {
-	    double f, d;
+        if (interval && RFLOAT_VALUE(num) < 0.0)
+            rb_raise(rb_eArgError, "%s must be positive", tstr);
+        else {
+            double f, d;
 
-	    d = modf(RFLOAT_VALUE(num), &f);
-	    if (d >= 0) {
-		t.tv_nsec = (int)(d*1e9+0.5);
-		if (t.tv_nsec >= 1000000000) {
-		    t.tv_nsec -= 1000000000;
-		    f += 1;
-		}
-	    }
-	    else if ((t.tv_nsec = (int)(-d*1e9+0.5)) > 0) {
-		t.tv_nsec = 1000000000 - t.tv_nsec;
-		f -= 1;
-	    }
-	    t.tv_sec = (time_t)f;
-	    if (f != t.tv_sec) {
-		rb_raise(rb_eRangeError, "%f out of Time range", RFLOAT_VALUE(num));
-	    }
-	}
+            d = modf(RFLOAT_VALUE(num), &f);
+            if (d >= 0) {
+                t.tv_nsec = (int)(d*1e9+0.5);
+                if (t.tv_nsec >= 1000000000) {
+                    t.tv_nsec -= 1000000000;
+                    f += 1;
+                }
+            }
+            else if ((t.tv_nsec = (int)(-d*1e9+0.5)) > 0) {
+                t.tv_nsec = 1000000000 - t.tv_nsec;
+                f -= 1;
+            }
+            t.tv_sec = (time_t)f;
+            if (f != t.tv_sec) {
+                rb_raise(rb_eRangeError, "%f out of Time range", RFLOAT_VALUE(num));
+            }
+        }
     }
     else if (RB_TYPE_P(num, T_BIGNUM)) {
-	t.tv_sec = NUM2TIMET(num);
-	if (interval && t.tv_sec < 0)
-	    rb_raise(rb_eArgError, "%s must be positive", tstr);
-	t.tv_nsec = 0;
+        t.tv_sec = NUM2TIMET(num);
+        if (interval && t.tv_sec < 0)
+            rb_raise(rb_eArgError, "%s must be positive", tstr);
+        t.tv_nsec = 0;
     }
     else {
-	i = INT2FIX(1);
-	ary = rb_check_funcall(num, id_divmod, 1, &i);
-	if (ary != Qundef && !NIL_P(ary = rb_check_array_type(ary))) {
+        i = INT2FIX(1);
+        ary = rb_check_funcall(num, id_divmod, 1, &i);
+        if (ary != Qundef && !NIL_P(ary = rb_check_array_type(ary))) {
             i = rb_ary_entry(ary, 0);
             f = rb_ary_entry(ary, 1);
             t.tv_sec = NUM2TIMET(i);
@@ -2296,8 +2296,8 @@ time_timespec(VALUE num, int interval)
             t.tv_nsec = NUM2LONG(f);
         }
         else {
-	    rb_raise(rb_eTypeError, "can't convert %"PRIsVALUE" into %s",
-		     rb_obj_class(num), tstr);
+            rb_raise(rb_eTypeError, "can't convert %"PRIsVALUE" into %s",
+                     rb_obj_class(num), tstr);
         }
     }
     return t;
@@ -2330,11 +2330,11 @@ rb_time_timeval(VALUE time)
     struct timespec ts;
 
     if (IsTimeval(time)) {
-	GetTimeval(time, tobj);
+        GetTimeval(time, tobj);
         ts = timew2timespec(tobj->timew);
         t.tv_sec = (TYPEOF_TIMEVAL_TV_SEC)ts.tv_sec;
         t.tv_usec = (TYPEOF_TIMEVAL_TV_USEC)(ts.tv_nsec / 1000);
-	return t;
+        return t;
     }
     return time_timeval(time, FALSE);
 }
@@ -2346,9 +2346,9 @@ rb_time_timespec(VALUE time)
     struct timespec t;
 
     if (IsTimeval(time)) {
-	GetTimeval(time, tobj);
+        GetTimeval(time, tobj);
         t = timew2timespec(tobj->timew);
-	return t;
+        return t;
     }
     return time_timespec(time, FALSE);
 }
@@ -2428,10 +2428,10 @@ time_s_at(int argc, VALUE *argv, VALUE klass)
         t = time_new_timew(klass, timew);
     }
     else if (IsTimeval(time)) {
-	struct time_object *tobj, *tobj2;
+        struct time_object *tobj, *tobj2;
         GetTimeval(time, tobj);
         t = time_new_timew(klass, tobj->timew);
-	GetTimeval(t, tobj2);
+        GetTimeval(t, tobj2);
         TIME_COPY_GMT(tobj2, tobj);
     }
     else {
@@ -2451,7 +2451,7 @@ static int
 obj2int(VALUE obj)
 {
     if (RB_TYPE_P(obj, T_STRING)) {
-	obj = rb_str_to_inum(obj, 10, FALSE);
+        obj = rb_str_to_inum(obj, 10, FALSE);
     }
 
     return NUM2INT(obj);
@@ -2466,10 +2466,10 @@ obj2ubits(VALUE obj, size_t bits)
     int tmp = obj2int(obj);
 
     if (tmp < 0)
-	rb_raise(rb_eArgError, "argument out of range");
+        rb_raise(rb_eArgError, "argument out of range");
     rv = tmp;
     if ((rv & usable_mask) != rv)
-	rb_raise(rb_eArgError, "argument out of range");
+        rb_raise(rb_eArgError, "argument out of range");
     return rv;
 }
 
@@ -2477,7 +2477,7 @@ static VALUE
 obj2vint(VALUE obj)
 {
     if (RB_TYPE_P(obj, T_STRING)) {
-	obj = rb_str_to_inum(obj, 10, FALSE);
+        obj = rb_str_to_inum(obj, 10, FALSE);
     }
     else {
         obj = rb_to_int(obj);
@@ -2492,7 +2492,7 @@ obj2subsecx(VALUE obj, VALUE *subsecx)
     VALUE subsec;
 
     if (RB_TYPE_P(obj, T_STRING)) {
-	obj = rb_str_to_inum(obj, 10, FALSE);
+        obj = rb_str_to_inum(obj, 10, FALSE);
         *subsecx = INT2FIX(0);
     }
     else {
@@ -2506,7 +2506,7 @@ static VALUE
 usec2subsecx(VALUE obj)
 {
     if (RB_TYPE_P(obj, T_STRING)) {
-	obj = rb_str_to_inum(obj, 10, FALSE);
+        obj = rb_str_to_inum(obj, 10, FALSE);
     }
 
     return mulquov(num_exact(obj), INT2FIX(TIME_SCALE), INT2FIX(1000000));
@@ -2545,7 +2545,7 @@ static VALUE
 validate_utc_offset(VALUE utc_offset)
 {
     if (le(utc_offset, INT2FIX(-86400)) || ge(utc_offset, INT2FIX(86400)))
-	rb_raise(rb_eArgError, "utc_offset out of range");
+        rb_raise(rb_eArgError, "utc_offset out of range");
     return utc_offset;
 }
 
@@ -2568,7 +2568,7 @@ validate_vtm(struct vtm *vtm)
     validate_vtm_range(min, 0, (vtm->hour == 24 ? 0 : 59));
     validate_vtm_range(sec, 0, (vtm->hour == 24 ? 0 : 60));
     if (lt(vtm->subsecx, INT2FIX(0)) || ge(vtm->subsecx, INT2FIX(TIME_SCALE)))
-	rb_raise(rb_eArgError, "subsecx out of range");
+        rb_raise(rb_eArgError, "subsecx out of range");
     if (!NIL_P(vtm->utc_offset)) validate_utc_offset(vtm->utc_offset);
 #undef validate_vtm_range
 }
@@ -2593,21 +2593,21 @@ time_arg(int argc, VALUE *argv, struct vtm *vtm)
     vtm->zone = "";
 
     if (argc == 10) {
-	v[0] = argv[5];
-	v[1] = argv[4];
-	v[2] = argv[3];
-	v[3] = argv[2];
-	v[4] = argv[1];
-	v[5] = argv[0];
-	v[6] = Qnil;
-	vtm->isdst = RTEST(argv[8]) ? 1 : 0;
+        v[0] = argv[5];
+        v[1] = argv[4];
+        v[2] = argv[3];
+        v[3] = argv[2];
+        v[4] = argv[1];
+        v[5] = argv[0];
+        v[6] = Qnil;
+        vtm->isdst = RTEST(argv[8]) ? 1 : 0;
     }
     else {
-	rb_scan_args(argc, argv, "17", &v[0],&v[1],&v[2],&v[3],&v[4],&v[5],&v[6],&v[7]);
-	/* v[6] may be usec or zone (parsedate) */
-	/* v[7] is wday (parsedate; ignored) */
-	vtm->wday = VTM_WDAY_INITVAL;
-	vtm->isdst = VTM_ISDST_INITVAL;
+        rb_scan_args(argc, argv, "17", &v[0],&v[1],&v[2],&v[3],&v[4],&v[5],&v[6],&v[7]);
+        /* v[6] may be usec or zone (parsedate) */
+        /* v[7] is wday (parsedate; ignored) */
+        vtm->wday = VTM_WDAY_INITVAL;
+        vtm->isdst = VTM_ISDST_INITVAL;
     }
 
     vtm->year = obj2vint(v[0]);
@@ -2620,10 +2620,10 @@ time_arg(int argc, VALUE *argv, struct vtm *vtm)
     }
 
     if (NIL_P(v[2])) {
-	vtm->mday = 1;
+        vtm->mday = 1;
     }
     else {
-	vtm->mday = obj2ubits(v[2], 5);
+        vtm->mday = obj2ubits(v[2], 5);
     }
 
     vtm->hour = NIL_P(v[3])?0:obj2ubits(v[3], 5);
@@ -2635,7 +2635,7 @@ time_arg(int argc, VALUE *argv, struct vtm *vtm)
         subsecx  = usec2subsecx(v[6]);
     }
     else {
-	/* when argc == 8, v[6] is timezone, but ignored */
+        /* when argc == 8, v[6] is timezone, but ignored */
         if (NIL_P(v[5])) {
             vtm->sec = 0;
         }
@@ -2661,9 +2661,9 @@ timegm_noleapsecond(struct tm *tm)
     long tm_year = tm->tm_year;
     int tm_yday = tm->tm_mday;
     if (leap_year_p(tm_year + 1900))
-	tm_yday += leap_year_yday_offset[tm->tm_mon];
+        tm_yday += leap_year_yday_offset[tm->tm_mon];
     else
-	tm_yday += common_year_yday_offset[tm->tm_mon];
+        tm_yday += common_year_yday_offset[tm->tm_mon];
 
     /*
      *  `Seconds Since the Epoch' in SUSv3:
@@ -2672,11 +2672,11 @@ timegm_noleapsecond(struct tm *tm)
      *  ((tm_year-1)/100)*86400 + ((tm_year+299)/400)*86400
      */
     return tm->tm_sec + tm->tm_min*60 + tm->tm_hour*3600 +
-	   (time_t)(tm_yday +
-		    (tm_year-70)*365 +
-		    DIV(tm_year-69,4) -
-		    DIV(tm_year-1,100) +
-		    DIV(tm_year+299,400))*86400;
+           (time_t)(tm_yday +
+                    (tm_year-70)*365 +
+                    DIV(tm_year-69,4) -
+                    DIV(tm_year-1,100) +
+                    DIV(tm_year+299,400))*86400;
 }
 
 #if 0
@@ -2732,82 +2732,82 @@ find_time_t(struct tm *tptr, int utc_p, time_t *tp)
 
     tm0 = *tptr;
     if (tm0.tm_mon < 0) {
-	tm0.tm_mon = 0;
-	tm0.tm_mday = 1;
-	tm0.tm_hour = 0;
-	tm0.tm_min = 0;
-	tm0.tm_sec = 0;
+        tm0.tm_mon = 0;
+        tm0.tm_mday = 1;
+        tm0.tm_hour = 0;
+        tm0.tm_min = 0;
+        tm0.tm_sec = 0;
     }
     else if (11 < tm0.tm_mon) {
-	tm0.tm_mon = 11;
-	tm0.tm_mday = 31;
-	tm0.tm_hour = 23;
-	tm0.tm_min = 59;
-	tm0.tm_sec = 60;
+        tm0.tm_mon = 11;
+        tm0.tm_mday = 31;
+        tm0.tm_hour = 23;
+        tm0.tm_min = 59;
+        tm0.tm_sec = 60;
     }
     else if (tm0.tm_mday < 1) {
-	tm0.tm_mday = 1;
-	tm0.tm_hour = 0;
-	tm0.tm_min = 0;
-	tm0.tm_sec = 0;
+        tm0.tm_mday = 1;
+        tm0.tm_hour = 0;
+        tm0.tm_min = 0;
+        tm0.tm_sec = 0;
     }
     else if ((d = (leap_year_p(1900 + tm0.tm_year) ?
                    leap_year_days_in_month :
-		   common_year_days_in_month)[tm0.tm_mon]) < tm0.tm_mday) {
-	tm0.tm_mday = d;
-	tm0.tm_hour = 23;
-	tm0.tm_min = 59;
-	tm0.tm_sec = 60;
+                   common_year_days_in_month)[tm0.tm_mon]) < tm0.tm_mday) {
+        tm0.tm_mday = d;
+        tm0.tm_hour = 23;
+        tm0.tm_min = 59;
+        tm0.tm_sec = 60;
     }
     else if (tm0.tm_hour < 0) {
-	tm0.tm_hour = 0;
-	tm0.tm_min = 0;
-	tm0.tm_sec = 0;
+        tm0.tm_hour = 0;
+        tm0.tm_min = 0;
+        tm0.tm_sec = 0;
     }
     else if (23 < tm0.tm_hour) {
-	tm0.tm_hour = 23;
-	tm0.tm_min = 59;
-	tm0.tm_sec = 60;
+        tm0.tm_hour = 23;
+        tm0.tm_min = 59;
+        tm0.tm_sec = 60;
     }
     else if (tm0.tm_min < 0) {
-	tm0.tm_min = 0;
-	tm0.tm_sec = 0;
+        tm0.tm_min = 0;
+        tm0.tm_sec = 0;
     }
     else if (59 < tm0.tm_min) {
-	tm0.tm_min = 59;
-	tm0.tm_sec = 60;
+        tm0.tm_min = 59;
+        tm0.tm_sec = 60;
     }
     else if (tm0.tm_sec < 0) {
-	tm0.tm_sec = 0;
+        tm0.tm_sec = 0;
     }
     else if (60 < tm0.tm_sec) {
-	tm0.tm_sec = 60;
+        tm0.tm_sec = 60;
     }
 
     DEBUG_REPORT_GUESSRANGE;
     guess0 = guess = timegm_noleapsecond(&tm0);
     tm = GUESS(&guess);
     if (tm) {
-	d = tmcmp(tptr, tm);
-	if (d == 0) { goto found; }
-	if (d < 0) {
-	    guess_hi = guess;
-	    guess -= 24 * 60 * 60;
-	}
-	else {
-	    guess_lo = guess;
-	    guess += 24 * 60 * 60;
-	}
+        d = tmcmp(tptr, tm);
+        if (d == 0) { goto found; }
+        if (d < 0) {
+            guess_hi = guess;
+            guess -= 24 * 60 * 60;
+        }
+        else {
+            guess_lo = guess;
+            guess += 24 * 60 * 60;
+        }
         DEBUG_REPORT_GUESSRANGE;
-	if (guess_lo < guess && guess < guess_hi && (tm = GUESS(&guess)) != NULL) {
-	    d = tmcmp(tptr, tm);
-	    if (d == 0) { goto found; }
-	    if (d < 0)
-		guess_hi = guess;
-	    else
-		guess_lo = guess;
+        if (guess_lo < guess && guess < guess_hi && (tm = GUESS(&guess)) != NULL) {
+            d = tmcmp(tptr, tm);
+            if (d == 0) { goto found; }
+            if (d < 0)
+                guess_hi = guess;
+            else
+                guess_lo = guess;
             DEBUG_REPORT_GUESSRANGE;
-	}
+        }
     }
 
     tm = GUESS(&guess_lo);
@@ -2863,10 +2863,10 @@ find_time_t(struct tm *tptr, int utc_p, time_t *tp)
             }
         }
 
-	tm = GUESS(&guess);
-	if (!tm) goto error;
+        tm = GUESS(&guess);
+        if (!tm) goto error;
 
-	d = tmcmp(tptr, tm);
+        d = tmcmp(tptr, tm);
 
         if (d < 0) {
             guess_hi = guess;
@@ -2880,63 +2880,63 @@ find_time_t(struct tm *tptr, int utc_p, time_t *tp)
         }
         else {
           found:
-	    if (!utc_p) {
-		/* If localtime is nonmonotonic, another result may exist. */
-		time_t guess2;
-		if (find_dst) {
-		    guess2 = guess - 2 * 60 * 60;
-		    tm = LOCALTIME(&guess2, result);
-		    if (tm) {
-			if (tptr->tm_hour != (tm->tm_hour + 2) % 24 ||
-			    tptr->tm_min != tm->tm_min ||
-			    tptr->tm_sec != tm->tm_sec) {
-			    guess2 -= (tm->tm_hour - tptr->tm_hour) * 60 * 60 +
-				      (tm->tm_min - tptr->tm_min) * 60 +
-				      (tm->tm_sec - tptr->tm_sec);
-			    if (tptr->tm_mday != tm->tm_mday)
-				guess2 += 24 * 60 * 60;
-			    if (guess != guess2) {
-				tm = LOCALTIME(&guess2, result);
-				if (tm && tmcmp(tptr, tm) == 0) {
-				    if (guess < guess2)
-					*tp = guess;
-				    else
-					*tp = guess2;
+            if (!utc_p) {
+                /* If localtime is nonmonotonic, another result may exist. */
+                time_t guess2;
+                if (find_dst) {
+                    guess2 = guess - 2 * 60 * 60;
+                    tm = LOCALTIME(&guess2, result);
+                    if (tm) {
+                        if (tptr->tm_hour != (tm->tm_hour + 2) % 24 ||
+                            tptr->tm_min != tm->tm_min ||
+                            tptr->tm_sec != tm->tm_sec) {
+                            guess2 -= (tm->tm_hour - tptr->tm_hour) * 60 * 60 +
+                                      (tm->tm_min - tptr->tm_min) * 60 +
+                                      (tm->tm_sec - tptr->tm_sec);
+                            if (tptr->tm_mday != tm->tm_mday)
+                                guess2 += 24 * 60 * 60;
+                            if (guess != guess2) {
+                                tm = LOCALTIME(&guess2, result);
+                                if (tm && tmcmp(tptr, tm) == 0) {
+                                    if (guess < guess2)
+                                        *tp = guess;
+                                    else
+                                        *tp = guess2;
                                     return NULL;
-				}
-			    }
-			}
-		    }
-		}
-		else {
-		    guess2 = guess + 2 * 60 * 60;
-		    tm = LOCALTIME(&guess2, result);
-		    if (tm) {
-			if ((tptr->tm_hour + 2) % 24 != tm->tm_hour ||
-			    tptr->tm_min != tm->tm_min ||
-			    tptr->tm_sec != tm->tm_sec) {
-			    guess2 -= (tm->tm_hour - tptr->tm_hour) * 60 * 60 +
-				      (tm->tm_min - tptr->tm_min) * 60 +
-				      (tm->tm_sec - tptr->tm_sec);
-			    if (tptr->tm_mday != tm->tm_mday)
-				guess2 -= 24 * 60 * 60;
-			    if (guess != guess2) {
-				tm = LOCALTIME(&guess2, result);
-				if (tm && tmcmp(tptr, tm) == 0) {
-				    if (guess < guess2)
-					*tp = guess2;
-				    else
-					*tp = guess;
+                                }
+                            }
+                        }
+                    }
+                }
+                else {
+                    guess2 = guess + 2 * 60 * 60;
+                    tm = LOCALTIME(&guess2, result);
+                    if (tm) {
+                        if ((tptr->tm_hour + 2) % 24 != tm->tm_hour ||
+                            tptr->tm_min != tm->tm_min ||
+                            tptr->tm_sec != tm->tm_sec) {
+                            guess2 -= (tm->tm_hour - tptr->tm_hour) * 60 * 60 +
+                                      (tm->tm_min - tptr->tm_min) * 60 +
+                                      (tm->tm_sec - tptr->tm_sec);
+                            if (tptr->tm_mday != tm->tm_mday)
+                                guess2 -= 24 * 60 * 60;
+                            if (guess != guess2) {
+                                tm = LOCALTIME(&guess2, result);
+                                if (tm && tmcmp(tptr, tm) == 0) {
+                                    if (guess < guess2)
+                                        *tp = guess2;
+                                    else
+                                        *tp = guess;
                                     return NULL;
-				}
-			    }
-			}
-		    }
-		}
-	    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
             *tp = guess;
             return NULL;
-	}
+        }
     }
 
     /* Given argument has no corresponding time_t. Let's extrapolate. */
@@ -2976,19 +2976,19 @@ static int
 vtmcmp(struct vtm *a, struct vtm *b)
 {
     if (ne(a->year, b->year))
-	return lt(a->year, b->year) ? -1 : 1;
+        return lt(a->year, b->year) ? -1 : 1;
     else if (a->mon != b->mon)
-	return a->mon < b->mon ? -1 : 1;
+        return a->mon < b->mon ? -1 : 1;
     else if (a->mday != b->mday)
-	return a->mday < b->mday ? -1 : 1;
+        return a->mday < b->mday ? -1 : 1;
     else if (a->hour != b->hour)
-	return a->hour < b->hour ? -1 : 1;
+        return a->hour < b->hour ? -1 : 1;
     else if (a->min != b->min)
-	return a->min < b->min ? -1 : 1;
+        return a->min < b->min ? -1 : 1;
     else if (a->sec != b->sec)
-	return a->sec < b->sec ? -1 : 1;
+        return a->sec < b->sec ? -1 : 1;
     else if (ne(a->subsecx, b->subsecx))
-	return lt(a->subsecx, b->subsecx) ? -1 : 1;
+        return lt(a->subsecx, b->subsecx) ? -1 : 1;
     else
         return 0;
 }
@@ -2997,17 +2997,17 @@ static int
 tmcmp(struct tm *a, struct tm *b)
 {
     if (a->tm_year != b->tm_year)
-	return a->tm_year < b->tm_year ? -1 : 1;
+        return a->tm_year < b->tm_year ? -1 : 1;
     else if (a->tm_mon != b->tm_mon)
-	return a->tm_mon < b->tm_mon ? -1 : 1;
+        return a->tm_mon < b->tm_mon ? -1 : 1;
     else if (a->tm_mday != b->tm_mday)
-	return a->tm_mday < b->tm_mday ? -1 : 1;
+        return a->tm_mday < b->tm_mday ? -1 : 1;
     else if (a->tm_hour != b->tm_hour)
-	return a->tm_hour < b->tm_hour ? -1 : 1;
+        return a->tm_hour < b->tm_hour ? -1 : 1;
     else if (a->tm_min != b->tm_min)
-	return a->tm_min < b->tm_min ? -1 : 1;
+        return a->tm_min < b->tm_min ? -1 : 1;
     else if (a->tm_sec != b->tm_sec)
-	return a->tm_sec < b->tm_sec ? -1 : 1;
+        return a->tm_sec < b->tm_sec ? -1 : 1;
     else
         return 0;
 }
@@ -3284,11 +3284,11 @@ time_cmp(VALUE time1, VALUE time2)
 
     GetTimeval(time1, tobj1);
     if (IsTimeval(time2)) {
-	GetTimeval(time2, tobj2);
-	n = wcmp(tobj1->timew, tobj2->timew);
+        GetTimeval(time2, tobj2);
+        n = wcmp(tobj1->timew, tobj2->timew);
     }
     else {
-	return rb_invcmp(time1, time2);
+        return rb_invcmp(time1, time2);
     }
     if (n == 0) return INT2FIX(0);
     if (n > 0) return INT2FIX(1);
@@ -3310,7 +3310,7 @@ time_eql(VALUE time1, VALUE time2)
 
     GetTimeval(time1, tobj1);
     if (IsTimeval(time2)) {
-	GetTimeval(time2, tobj2);
+        GetTimeval(time2, tobj2);
         return rb_equal(w2v(tobj1->timew), w2v(tobj2->timew));
     }
     return Qfalse;
@@ -3392,15 +3392,15 @@ time_localtime(VALUE time)
 
     GetTimeval(time, tobj);
     if (TIME_LOCALTIME_P(tobj)) {
-	if (tobj->tm_got)
-	    return time;
+        if (tobj->tm_got)
+            return time;
     }
     else {
-	time_modify(time);
+        time_modify(time);
     }
 
     if (!localtimew(tobj->timew, &vtm))
-	rb_raise(rb_eArgError, "localtime error");
+        rb_raise(rb_eArgError, "localtime error");
     tobj->vtm = vtm;
 
     tobj->tm_got = 1;
@@ -3474,15 +3474,15 @@ time_gmtime(VALUE time)
 
     GetTimeval(time, tobj);
     if (TIME_UTC_P(tobj)) {
-	if (tobj->tm_got)
-	    return time;
+        if (tobj->tm_got)
+            return time;
     }
     else {
-	time_modify(time);
+        time_modify(time);
     }
 
     if (!gmtimew(tobj->timew, &vtm))
-	rb_raise(rb_eArgError, "gmtime error");
+        rb_raise(rb_eArgError, "gmtime error");
     tobj->vtm = vtm;
 
     tobj->tm_got = 1;
@@ -3654,7 +3654,7 @@ time_add(struct time_object *tobj, VALUE torig, VALUE offset, int sign)
     else
         result = time_new_timew(rb_cTime, wadd(tobj->timew, rb_time_magnify(v2w(offset))));
     if (TIME_UTC_P(tobj)) {
-	GetTimeval(result, tobj);
+        GetTimeval(result, tobj);
         TIME_SET_UTC(tobj);
     }
     else if (TIME_FIXOFF_P(tobj)) {
@@ -3663,8 +3663,8 @@ time_add(struct time_object *tobj, VALUE torig, VALUE offset, int sign)
         TIME_SET_FIXOFF(tobj, off);
     }
     if (!tobj->vtm.zone && !NIL_P(zone = rb_attr_get(torig, id_zone))) {
-	tobj->vtm.zone = StringValueCStr(zone);
-	rb_ivar_set(result, id_zone, zone);
+        tobj->vtm.zone = StringValueCStr(zone);
+        rb_ivar_set(result, id_zone, zone);
     }
 
     return result;
@@ -3688,7 +3688,7 @@ time_plus(VALUE time1, VALUE time2)
     GetTimeval(time1, tobj);
 
     if (IsTimeval(time2)) {
-	rb_raise(rb_eTypeError, "time + time?");
+        rb_raise(rb_eTypeError, "time + time?");
     }
     return time_add(tobj, time1, time2, 1);
 }
@@ -3715,9 +3715,9 @@ time_minus(VALUE time1, VALUE time2)
 
     GetTimeval(time1, tobj);
     if (IsTimeval(time2)) {
-	struct time_object *tobj2;
+        struct time_object *tobj2;
 
-	GetTimeval(time2, tobj2);
+        GetTimeval(time2, tobj2);
         return rb_Float(rb_time_unmagnify_to_float(wsub(tobj->timew, tobj2->timew)));
     }
     return time_add(tobj, time1, time2, -1);
@@ -3807,7 +3807,7 @@ time_round(int argc, VALUE *argv, VALUE time)
 
     nd = NUM2LONG(ndigits);
     if (nd < 0)
-	rb_raise(rb_eArgError, "negative ndigits given");
+        rb_raise(rb_eArgError, "negative ndigits given");
 
     GetTimeval(time, tobj);
     v = w2v(rb_time_unmagnify(tobj->timew));
@@ -4163,10 +4163,10 @@ time_zone_name(const char *zone)
 {
     VALUE name = rb_str_new_cstr(zone);
     if (!rb_enc_str_asciionly_p(name)) {
-	name = rb_external_str_with_enc(name, rb_locale_encoding());
+        name = rb_external_str_with_enc(name, rb_locale_encoding());
     }
     else {
-	rb_enc_associate(name, rb_usascii_encoding());
+        rb_enc_associate(name, rb_usascii_encoding());
     }
     return name;
 }
@@ -4193,7 +4193,7 @@ time_zone(VALUE time)
     MAKE_TM(time, tobj);
 
     if (TIME_UTC_P(tobj)) {
-	return rb_usascii_str_new_cstr("UTC");
+        return rb_usascii_str_new_cstr("UTC");
     }
     if (tobj->vtm.zone == NULL)
         return Qnil;
@@ -4224,11 +4224,11 @@ rb_time_utc_offset(VALUE time)
     GetTimeval(time, tobj);
 
     if (TIME_UTC_P(tobj)) {
-	return INT2FIX(0);
+        return INT2FIX(0);
     }
     else {
-	MAKE_TM(time, tobj);
-	return tobj->vtm.utc_offset;
+        MAKE_TM(time, tobj);
+        return tobj->vtm.utc_offset;
     }
 }
 
@@ -4257,16 +4257,16 @@ time_to_a(VALUE time)
     GetTimeval(time, tobj);
     MAKE_TM(time, tobj);
     return rb_ary_new3(10,
-		    INT2FIX(tobj->vtm.sec),
-		    INT2FIX(tobj->vtm.min),
-		    INT2FIX(tobj->vtm.hour),
-		    INT2FIX(tobj->vtm.mday),
-		    INT2FIX(tobj->vtm.mon),
-		    tobj->vtm.year,
-		    INT2FIX(tobj->vtm.wday),
-		    INT2FIX(tobj->vtm.yday),
-		    tobj->vtm.isdst?Qtrue:Qfalse,
-		    time_zone(time));
+                    INT2FIX(tobj->vtm.sec),
+                    INT2FIX(tobj->vtm.min),
+                    INT2FIX(tobj->vtm.hour),
+                    INT2FIX(tobj->vtm.mday),
+                    INT2FIX(tobj->vtm.mon),
+                    tobj->vtm.year,
+                    INT2FIX(tobj->vtm.wday),
+                    INT2FIX(tobj->vtm.yday),
+                    tobj->vtm.isdst?Qtrue:Qfalse,
+                    time_zone(time));
 }
 
 static VALUE
@@ -4277,7 +4277,7 @@ rb_strftime_alloc(const char *format, size_t format_len, rb_encoding *enc,
     struct timespec ts;
 
     if (!timew2timespec_exact(timew, &ts))
-	timev = w2v(rb_time_unmagnify(timew));
+        timev = w2v(rb_time_unmagnify(timew));
 
     if (NIL_P(timev)) {
         return rb_strftime_timespec(format, format_len, enc, vtm, &ts, gmt);
@@ -4500,22 +4500,22 @@ time_strftime(VALUE time, VALUE format)
     MAKE_TM(time, tobj);
     StringValue(format);
     if (!rb_enc_str_asciicompat_p(format)) {
-	rb_raise(rb_eArgError, "format should have ASCII compatible encoding");
+        rb_raise(rb_eArgError, "format should have ASCII compatible encoding");
     }
     tmp = rb_str_tmp_frozen_acquire(format);
     fmt = RSTRING_PTR(tmp);
     len = RSTRING_LEN(tmp);
     enc = rb_enc_get(format);
     if (len == 0) {
-	rb_warning("strftime called with empty format string");
-	return rb_enc_str_new(0, 0, enc);
+        rb_warning("strftime called with empty format string");
+        return rb_enc_str_new(0, 0, enc);
     }
     else {
-	VALUE str = rb_strftime_alloc(fmt, len, enc, &tobj->vtm, tobj->timew,
-				      TIME_UTC_P(tobj));
-	rb_str_tmp_frozen_release(format, tmp);
-	if (!str) rb_raise(rb_eArgError, "invalid format: %"PRIsVALUE, format);
-	return str;
+        VALUE str = rb_strftime_alloc(fmt, len, enc, &tobj->vtm, tobj->timew,
+                                      TIME_UTC_P(tobj));
+        rb_str_tmp_frozen_release(format, tmp);
+        if (!str) rb_raise(rb_eArgError, "invalid format: %"PRIsVALUE, format);
+        return str;
     }
 }
 
@@ -4558,22 +4558,22 @@ time_mdump(VALUE time)
     nano = addv(LONG2FIX(nsec), subnano);
 
     p = 0x1UL            << 31 | /*  1 */
-	TIME_UTC_P(tobj) << 30 | /*  1 */
-	(year-1900)      << 14 | /* 16 */
-	(vtm.mon-1)      << 10 | /*  4 */
-	vtm.mday         <<  5 | /*  5 */
-	vtm.hour;                /*  5 */
+        TIME_UTC_P(tobj) << 30 | /*  1 */
+        (year-1900)      << 14 | /* 16 */
+        (vtm.mon-1)      << 10 | /*  4 */
+        vtm.mday         <<  5 | /*  5 */
+        vtm.hour;                /*  5 */
     s = (unsigned long)vtm.min << 26 | /*  6 */
-	vtm.sec          << 20 | /*  6 */
-	usec;    /* 20 */
+        vtm.sec          << 20 | /*  6 */
+        usec;    /* 20 */
 
     for (i=0; i<4; i++) {
-	buf[i] = (unsigned char)p;
-	p = RSHIFT(p, 8);
+        buf[i] = (unsigned char)p;
+        p = RSHIFT(p, 8);
     }
     for (i=4; i<8; i++) {
-	buf[i] = (unsigned char)s;
-	s = RSHIFT(s, 8);
+        buf[i] = (unsigned char)s;
+        s = RSHIFT(s, 8);
     }
 
     str = rb_str_new(buf, 8);
@@ -4608,14 +4608,14 @@ time_mdump(VALUE time)
         rb_ivar_set(str, id_submicro, rb_str_new(buf, len));
     }
     if (!TIME_UTC_P(tobj)) {
-	VALUE off = rb_time_utc_offset(time), div, mod;
-	divmodv(off, INT2FIX(1), &div, &mod);
-	if (rb_equal(mod, INT2FIX(0)))
-	    off = rb_Integer(div);
-	rb_ivar_set(str, id_offset, off);
+        VALUE off = rb_time_utc_offset(time), div, mod;
+        divmodv(off, INT2FIX(1), &div, &mod);
+        if (rb_equal(mod, INT2FIX(0)))
+            off = rb_Integer(div);
+        rb_ivar_set(str, id_offset, off);
     }
     if (tobj->vtm.zone) {
-	rb_ivar_set(str, id_zone, time_zone_name(tobj->vtm.zone));
+        rb_ivar_set(str, id_zone, time_zone_name(tobj->vtm.zone));
     }
     return str;
 }
@@ -4652,7 +4652,7 @@ time_mload(VALUE time, VALUE str)
 #define get_attr(attr, iffound) \
     attr = rb_attr_delete(str, id_##attr); \
     if (!NIL_P(attr)) { \
-	iffound; \
+        iffound; \
     }
 
     get_attr(nano_num, {});
@@ -4668,41 +4668,41 @@ time_mload(VALUE time, VALUE str)
     StringValue(str);
     buf = (unsigned char *)RSTRING_PTR(str);
     if (RSTRING_LEN(str) != 8) {
-	rb_raise(rb_eTypeError, "marshaled time format differ");
+        rb_raise(rb_eTypeError, "marshaled time format differ");
     }
 
     p = s = 0;
     for (i=0; i<4; i++) {
-	p |= (unsigned long)buf[i]<<(8*i);
+        p |= (unsigned long)buf[i]<<(8*i);
     }
     for (i=4; i<8; i++) {
-	s |= (unsigned long)buf[i]<<(8*(i-4));
+        s |= (unsigned long)buf[i]<<(8*(i-4));
     }
 
     if ((p & (1UL<<31)) == 0) {
         gmt = 0;
-	offset = Qnil;
-	sec = p;
-	usec = s;
+        offset = Qnil;
+        sec = p;
+        usec = s;
         nsec = usec * 1000;
         timew = wadd(rb_time_magnify(TIMET2WV(sec)), wmulquoll(WINT2FIXWV(usec), TIME_SCALE, 1000000));
     }
     else {
-	p &= ~(1UL<<31);
-	gmt        = (int)((p >> 30) & 0x1);
+        p &= ~(1UL<<31);
+        gmt        = (int)((p >> 30) & 0x1);
 
-	vtm.year = INT2FIX(((int)(p >> 14) & 0xffff) + 1900);
-	vtm.mon  = ((int)(p >> 10) & 0xf) + 1;
-	vtm.mday = (int)(p >>  5) & 0x1f;
-	vtm.hour = (int) p        & 0x1f;
-	vtm.min  = (int)(s >> 26) & 0x3f;
-	vtm.sec  = (int)(s >> 20) & 0x3f;
+        vtm.year = INT2FIX(((int)(p >> 14) & 0xffff) + 1900);
+        vtm.mon  = ((int)(p >> 10) & 0xf) + 1;
+        vtm.mday = (int)(p >>  5) & 0x1f;
+        vtm.hour = (int) p        & 0x1f;
+        vtm.min  = (int)(s >> 26) & 0x3f;
+        vtm.sec  = (int)(s >> 20) & 0x3f;
         vtm.utc_offset = INT2FIX(0);
-	vtm.yday = vtm.wday = 0;
-	vtm.isdst = 0;
-	vtm.zone = "";
+        vtm.yday = vtm.wday = 0;
+        vtm.isdst = 0;
+        vtm.zone = "";
 
-	usec = (long)(s & 0xfffff);
+        usec = (long)(s & 0xfffff);
         nsec = usec * 1000;
 
 
@@ -4739,17 +4739,17 @@ end_submicro: ;
     tobj->tm_got = 0;
     tobj->timew = timew;
     if (gmt) {
-	TIME_SET_UTC(tobj);
+        TIME_SET_UTC(tobj);
     }
     else if (!NIL_P(offset)) {
-	time_set_utc_offset(time, offset);
-	time_fixoff(time);
+        time_set_utc_offset(time, offset);
+        time_fixoff(time);
     }
     if (!NIL_P(zone)) {
-	if (TIME_FIXOFF_P(tobj)) TIME_SET_LOCALTIME(tobj);
-	zone = rb_fstring(zone);
-	tobj->vtm.zone = StringValueCStr(zone);
-	rb_ivar_set(time, id_zone, zone);
+        if (TIME_FIXOFF_P(tobj)) TIME_SET_LOCALTIME(tobj);
+        zone = rb_fstring(zone);
+        tobj->vtm.zone = StringValueCStr(zone);
+        rb_ivar_set(time, id_zone, zone);
     }
 
     return time;

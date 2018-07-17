@@ -20,12 +20,12 @@ VALUE cFiddleFunction;
     Check_Max_Args_(name, len, "l")
 #define Check_Max_Args_(name, len, fmt) \
     if ((size_t)(len) < MAX_ARGS) { \
-	/* OK */ \
+        /* OK */ \
     } \
     else { \
-	rb_raise(rb_eTypeError, \
-		 name" is so large that it can cause integer overflow (%"fmt"d)", \
-		 (len)); \
+        rb_raise(rb_eTypeError, \
+                 name" is so large that it can cause integer overflow (%"fmt"d)", \
+                 (len)); \
     }
 
 static void
@@ -79,10 +79,10 @@ static int
 parse_keyword_arg_i(VALUE key, VALUE value, VALUE self)
 {
     if (key == ID2SYM(rb_intern("name"))) {
-	rb_iv_set(self, "@name", value);
+        rb_iv_set(self, "@name", value);
     } else {
-	rb_raise(rb_eArgError, "unknown keyword: %"PRIsVALUE,
-		 RB_OBJ_STRING(key));
+        rb_raise(rb_eArgError, "unknown keyword: %"PRIsVALUE,
+                 RB_OBJ_STRING(key));
     }
     return ST_CONTINUE;
 }
@@ -113,10 +113,10 @@ initialize(int argc, VALUE argv[], VALUE self)
     Check_Max_Args("args", len);
     ary = rb_ary_subseq(args, 0, len);
     for (i = 0; i < RARRAY_LEN(args); i++) {
-	VALUE a = RARRAY_PTR(args)[i];
-	int type = NUM2INT(a);
-	(void)INT2FFI_TYPE(type); /* raise */
-	if (INT2FIX(type) != a) rb_ary_store(ary, i, INT2FIX(type));
+        VALUE a = RARRAY_PTR(args)[i];
+        int type = NUM2INT(a);
+        (void)INT2FFI_TYPE(type); /* raise */
+        if (INT2FIX(type) != a) rb_ary_store(ary, i, INT2FIX(type));
     }
     OBJ_FREEZE(ary);
 
@@ -132,15 +132,15 @@ initialize(int argc, VALUE argv[], VALUE self)
     arg_types = xcalloc(len + 1, sizeof(ffi_type *));
 
     for (i = 0; i < RARRAY_LEN(args); i++) {
-	int type = NUM2INT(RARRAY_AREF(args, i));
-	arg_types[i] = INT2FFI_TYPE(type);
+        int type = NUM2INT(RARRAY_AREF(args, i));
+        arg_types[i] = INT2FFI_TYPE(type);
     }
     arg_types[len] = NULL;
 
     result = ffi_prep_cif(cif, nabi, len, rtype, arg_types);
 
     if (result)
-	rb_raise(rb_eRuntimeError, "error creating CIF %d", result);
+        rb_raise(rb_eRuntimeError, "error creating CIF %d", result);
 
     return self;
 }
@@ -177,41 +177,41 @@ function_call(int argc, VALUE argv[], VALUE self)
 
     Check_Max_Args("number of arguments", argc);
     if (argc != (i = RARRAY_LENINT(types))) {
-	rb_error_arity(argc, i, i);
+        rb_error_arity(argc, i, i);
     }
 
     TypedData_Get_Struct(self, ffi_cif, &function_data_type, args.cif);
 
     if (rb_safe_level() >= 1) {
-	for (i = 0; i < argc; i++) {
-	    VALUE src = argv[i];
-	    if (OBJ_TAINTED(src)) {
-		rb_raise(rb_eSecurityError, "tainted parameter not allowed");
-	    }
-	}
+        for (i = 0; i < argc; i++) {
+            VALUE src = argv[i];
+            if (OBJ_TAINTED(src)) {
+                rb_raise(rb_eSecurityError, "tainted parameter not allowed");
+            }
+        }
     }
 
     generic_args = ALLOCV(alloc_buffer,
-	(size_t)(argc + 1) * sizeof(void *) + (size_t)argc * sizeof(fiddle_generic));
+        (size_t)(argc + 1) * sizeof(void *) + (size_t)argc * sizeof(fiddle_generic));
     args.values = (void **)((char *)generic_args +
-			    (size_t)argc * sizeof(fiddle_generic));
+                            (size_t)argc * sizeof(fiddle_generic));
 
     for (i = 0; i < argc; i++) {
-	VALUE type = RARRAY_AREF(types, i);
-	VALUE src = argv[i];
-	int argtype = FIX2INT(type);
+        VALUE type = RARRAY_AREF(types, i);
+        VALUE src = argv[i];
+        int argtype = FIX2INT(type);
 
-	if (argtype == TYPE_VOIDP) {
-	    if(NIL_P(src)) {
-		src = INT2FIX(0);
-	    } else if(cPointer != CLASS_OF(src)) {
-		src = rb_funcall(cPointer, rb_intern("[]"), 1, src);
-	    }
-	    src = rb_Integer(src);
-	}
+        if (argtype == TYPE_VOIDP) {
+            if(NIL_P(src)) {
+                src = INT2FIX(0);
+            } else if(cPointer != CLASS_OF(src)) {
+                src = rb_funcall(cPointer, rb_intern("[]"), 1, src);
+            }
+            src = rb_Integer(src);
+        }
 
-	VALUE2GENERIC(argtype, src, &generic_args[i]);
-	args.values[i] = (void *)&generic_args[i];
+        VALUE2GENERIC(argtype, src, &generic_args[i]);
+        args.values[i] = (void *)&generic_args[i];
     }
     args.values[argc] = NULL;
     args.fn = (void(*)(void))NUM2PTR(cfunc);
@@ -243,27 +243,27 @@ Init_fiddle_function(void)
      * === 'strcpy'
      *
      *   @libc = Fiddle.dlopen "/lib/libc.so.6"
-     *	    #=> #<Fiddle::Handle:0x00000001d7a8d8>
+     *            #=> #<Fiddle::Handle:0x00000001d7a8d8>
      *   f = Fiddle::Function.new(
      *     @libc['strcpy'],
      *     [Fiddle::TYPE_VOIDP, Fiddle::TYPE_VOIDP],
      *     Fiddle::TYPE_VOIDP)
-     *	    #=> #<Fiddle::Function:0x00000001d8ee00>
+     *            #=> #<Fiddle::Function:0x00000001d8ee00>
      *   buff = "000"
-     *	    #=> "000"
+     *            #=> "000"
      *   str = f.call(buff, "123")
-     *	    #=> #<Fiddle::Pointer:0x00000001d0c380 ptr=0x000000018a21b8 size=0 free=0x00000000000000>
+     *            #=> #<Fiddle::Pointer:0x00000001d0c380 ptr=0x000000018a21b8 size=0 free=0x00000000000000>
      *   str.to_s
      *   => "123"
      *
      * === ABI check
      *
      *   @libc = Fiddle.dlopen "/lib/libc.so.6"
-     *	    #=> #<Fiddle::Handle:0x00000001d7a8d8>
+     *            #=> #<Fiddle::Handle:0x00000001d7a8d8>
      *   f = Fiddle::Function.new(@libc['strcpy'], [TYPE_VOIDP, TYPE_VOIDP], TYPE_VOIDP)
-     *	    #=> #<Fiddle::Function:0x00000001d8ee00>
+     *            #=> #<Fiddle::Function:0x00000001d8ee00>
      *   f.abi == Fiddle::Function::DEFAULT
-     *	    #=> true
+     *            #=> true
      */
     cFiddleFunction = rb_define_class_under(mFiddle, "Function", rb_cObject);
 

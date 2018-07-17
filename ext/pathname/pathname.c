@@ -178,12 +178,12 @@ path_eq(VALUE self, VALUE other)
 /*
  *  Provides a case-sensitive comparison operator for pathnames.
  *
- *	Pathname.new('/usr') <=> Pathname.new('/usr/bin')
- *	    #=> -1
- *	Pathname.new('/usr/bin') <=> Pathname.new('/usr/bin')
- *	    #=> 0
- *	Pathname.new('/usr/bin') <=> Pathname.new('/USR/BIN')
- *	    #=> 1
+ *        Pathname.new('/usr') <=> Pathname.new('/usr/bin')
+ *            #=> -1
+ *        Pathname.new('/usr/bin') <=> Pathname.new('/usr/bin')
+ *            #=> 0
+ *        Pathname.new('/usr/bin') <=> Pathname.new('/USR/BIN')
+ *            #=> 1
  *
  *  It will return +-1+, +0+ or +1+ depending on the value of the left argument
  *  relative to the right argument. Or it will return +nil+ if the arguments
@@ -261,9 +261,9 @@ path_inspect(VALUE self)
 /*
  * Return a pathname which is substituted by String#sub.
  *
- *	path1 = Pathname.new('/usr/bin/perl')
- *	path1.sub('perl', 'ruby')
- *	    #=> #<Pathname:/usr/bin/ruby>
+ *        path1 = Pathname.new('/usr/bin/perl')
+ *        path1.sub('perl', 'ruby')
+ *            #=> #<Pathname:/usr/bin/ruby>
  */
 static VALUE
 path_sub(int argc, VALUE *argv, VALUE self)
@@ -284,8 +284,8 @@ path_sub(int argc, VALUE *argv, VALUE self)
  *
  * If self has no extension part, +repl+ is appended.
  *
- *	Pathname.new('/usr/bin/shutdown').sub_ext('.rb')
- *	    #=> #<Pathname:/usr/bin/shutdown.rb>
+ *        Pathname.new('/usr/bin/shutdown').sub_ext('.rb')
+ *            #=> #<Pathname:/usr/bin/shutdown.rb>
  */
 static VALUE
 path_sub_ext(VALUE self, VALUE repl)
@@ -500,7 +500,7 @@ path_sysopen(int argc, VALUE *argv, VALUE self)
 
 /*
  * call-seq:
- *   pathname.atime	-> time
+ *   pathname.atime        -> time
  *
  * Returns the last access time for the file.
  *
@@ -515,7 +515,7 @@ path_atime(VALUE self)
 #if defined(HAVE_STRUCT_STAT_ST_BIRTHTIMESPEC) || defined(_WIN32)
 /*
  * call-seq:
- *   pathname.birthtime	-> time
+ *   pathname.birthtime        -> time
  *
  * Returns the birth time for the file.
  * If the platform doesn't have birthtime, raises NotImplementedError.
@@ -533,7 +533,7 @@ path_birthtime(VALUE self)
 
 /*
  * call-seq:
- *   pathname.ctime	-> time
+ *   pathname.ctime        -> time
  *
  * Returns the last change time, using directory information, not the file itself.
  *
@@ -547,7 +547,7 @@ path_ctime(VALUE self)
 
 /*
  * call-seq:
- *   pathname.mtime	-> time
+ *   pathname.mtime        -> time
  *
  * Returns the last modified time of the file.
  *
@@ -561,7 +561,7 @@ path_mtime(VALUE self)
 
 /*
  * call-seq:
- *   pathname.chmod	-> integer
+ *   pathname.chmod        -> integer
  *
  * Changes file permissions.
  *
@@ -575,7 +575,7 @@ path_chmod(VALUE self, VALUE mode)
 
 /*
  * call-seq:
- *   pathname.lchmod	-> integer
+ *   pathname.lchmod        -> integer
  *
  * Same as Pathname.chmod, but does not follow symbolic links.
  *
@@ -589,7 +589,7 @@ path_lchmod(VALUE self, VALUE mode)
 
 /*
  * call-seq:
- *   pathname.chown	-> integer
+ *   pathname.chown        -> integer
  *
  * Change owner and group of the file.
  *
@@ -603,7 +603,7 @@ path_chown(VALUE self, VALUE owner, VALUE group)
 
 /*
  * call-seq:
- *   pathname.lchown	-> integer
+ *   pathname.lchown        -> integer
  *
  * Same as Pathname.chown, but does not follow symbolic links.
  *
@@ -637,7 +637,7 @@ path_fnmatch(int argc, VALUE *argv, VALUE self)
 
 /*
  * call-seq:
- *   pathname.ftype	-> string
+ *   pathname.ftype        -> string
  *
  * Returns "type" of file ("file", "directory", etc).
  *
@@ -1084,7 +1084,7 @@ s_glob_i(RB_BLOCK_CALL_FUNC_ARGLIST(elt, klass))
  * Returns or yields Pathname objects.
  *
  *  Pathname.glob("lib/i*.rb")
- *	#=> [#<Pathname:lib/ipaddr.rb>, #<Pathname:lib/irb.rb>]
+ *        #=> [#<Pathname:lib/ipaddr.rb>, #<Pathname:lib/irb.rb>]
  *
  * See Dir.glob.
  */
@@ -1163,8 +1163,8 @@ path_glob(int argc, VALUE *argv, VALUE self)
 /*
  * Returns the current working directory as a Pathname.
  *
- *	Pathname.getwd
- *	    #=> #<Pathname:/home/zzak/projects/ruby>
+ *        Pathname.getwd
+ *            #=> #<Pathname:/home/zzak/projects/ruby>
  *
  * See Dir.getwd.
  */
@@ -1212,7 +1212,7 @@ path_entries(VALUE self)
     ary = rb_funcall(rb_cDir, id_entries, 1, str);
     ary = rb_convert_type(ary, T_ARRAY, "Array", "to_ary");
     for (i = 0; i < RARRAY_LEN(ary); i++) {
-	VALUE elt = RARRAY_AREF(ary, i);
+        VALUE elt = RARRAY_AREF(ary, i);
         elt = rb_class_new_instance(1, &elt, klass);
         rb_ary_store(ary, i, elt);
     }
@@ -1313,9 +1313,9 @@ path_unlink(VALUE self)
  * In order to use this constructor, you must first require the Pathname
  * standard library extension.
  *
- *	require 'pathname'
- *	Pathname("/home/zzak")
- *	#=> #<Pathname:/home/zzak>
+ *        require 'pathname'
+ *        Pathname("/home/zzak")
+ *        #=> #<Pathname:/home/zzak>
  *
  * See also Pathname::new for more information.
  */

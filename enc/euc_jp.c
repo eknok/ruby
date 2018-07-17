@@ -290,7 +290,7 @@ code_to_mbc(OnigCodePoint code, UChar *buf, OnigEncoding enc)
 
 static int
 apply_all_case_fold(OnigCaseFoldType flag,
-		    OnigApplyAllCaseFoldFunc f, void* arg, OnigEncoding enc)
+                    OnigApplyAllCaseFoldFunc f, void* arg, OnigEncoding enc)
 {
   return onigenc_apply_all_case_fold_with_map(
             numberof(CaseFoldMap), CaseFoldMap, 0,
@@ -335,8 +335,8 @@ get_upper_case(OnigCodePoint code)
 
 static int
 get_case_fold_codes_by_str(OnigCaseFoldType flag,
-			   const OnigUChar* p, const OnigUChar* end,
-			   OnigCaseFoldCodeItem items[], OnigEncoding enc)
+                           const OnigUChar* p, const OnigUChar* end,
+                           OnigCaseFoldCodeItem items[], OnigEncoding enc)
 {
   int len;
   OnigCodePoint code, code_lo, code_up;
@@ -367,8 +367,8 @@ get_case_fold_codes_by_str(OnigCaseFoldType flag,
 
 static int
 mbc_case_fold(OnigCaseFoldType flag,
-	      const UChar** pp, const UChar* end, UChar* lower,
-	      OnigEncoding enc)
+              const UChar** pp, const UChar* end, UChar* lower,
+              OnigEncoding enc)
 {
   const UChar* p = *pp;
 
@@ -432,8 +432,8 @@ static const OnigCodePoint CR_Hiragana[] = {
 #ifdef ENC_EUC_JIS_2004
 static const OnigCodePoint CR_Katakana[] = {
   5,
-  0x8ea6, 0x8eaf,	/* JIS X 0201 Katakana */
-  0x8eb1, 0x8edd,	/* JIS X 0201 Katakana */
+  0x8ea6, 0x8eaf,        /* JIS X 0201 Katakana */
+  0x8eb1, 0x8edd,        /* JIS X 0201 Katakana */
   0xa5a1, 0xa5fe,
   0xa6ee, 0xa6fe,
   0xa7f2, 0xa7f5,
@@ -441,8 +441,8 @@ static const OnigCodePoint CR_Katakana[] = {
 #else
 static const OnigCodePoint CR_Katakana[] = {
   3,
-  0x8ea6, 0x8eaf,	/* JIS X 0201 Katakana */
-  0x8eb1, 0x8edd,	/* JIS X 0201 Katakana */
+  0x8ea6, 0x8eaf,        /* JIS X 0201 Katakana */
+  0x8eb1, 0x8edd,        /* JIS X 0201 Katakana */
   0xa5a1, 0xa5f6,
 }; /* CR_Katakana */
 #endif
@@ -453,22 +453,22 @@ static const OnigCodePoint CR_Han[] = {
   7,
   /* plane 1 */
   0xa1b8, 0xa1b8,
-  0xaea1, 0xfefe,	/* Kanji level 1, 2 and 3 */
+  0xaea1, 0xfefe,        /* Kanji level 1, 2 and 3 */
   /* plane 2 */
-  0x8fa1a1, 0x8fa1fe,	/* row 1 */
-  0x8fa3a1, 0x8fa5fe,	/* row 3 .. 5 */
-  0x8fa8a1, 0x8fa8fe,	/* row 8 */
-  0x8faca1, 0x8faffe,	/* row 12 .. 15 */
-  0x8feea1, 0x8ffef6,	/* row 78 .. 94 */
+  0x8fa1a1, 0x8fa1fe,        /* row 1 */
+  0x8fa3a1, 0x8fa5fe,        /* row 3 .. 5 */
+  0x8fa8a1, 0x8fa8fe,        /* row 8 */
+  0x8faca1, 0x8faffe,        /* row 12 .. 15 */
+  0x8feea1, 0x8ffef6,        /* row 78 .. 94 */
 }; /* CR_Han */
 #else
 static const OnigCodePoint CR_Han[] = {
   /* EUC-JP (JIS X 0208 based) */
   4,
   0xa1b8, 0xa1b8,
-  0xb0a1, 0xcfd3,	/* Kanji level 1 */
-  0xd0a1, 0xf4a6,	/* Kanji level 2 */
-  0x8fb0a1, 0x8fedf3	/* JIS X 0212 Supplemental Kanji (row 16 .. 77) */
+  0xb0a1, 0xcfd3,        /* Kanji level 1 */
+  0xd0a1, 0xf4a6,        /* Kanji level 2 */
+  0x8fb0a1, 0x8fedf3        /* JIS X 0212 Supplemental Kanji (row 16 .. 77) */
 }; /* CR_Han */
 #endif
 
@@ -524,7 +524,7 @@ is_code_ctype(OnigCodePoint code, unsigned int ctype, OnigEncoding enc ARG_UNUSE
       return ONIGENC_IS_ASCII_CODE_CTYPE(code, ctype);
     else {
       if (CTYPE_IS_WORD_GRAPH_PRINT(ctype)) {
-	return (code_to_mbclen(code, enc) > 1 ? TRUE : FALSE);
+        return (code_to_mbclen(code, enc) > 1 ? TRUE : FALSE);
       }
     }
   }
@@ -541,7 +541,7 @@ is_code_ctype(OnigCodePoint code, unsigned int ctype, OnigEncoding enc ARG_UNUSE
 
 static int
 get_ctype_code_range(OnigCtype ctype, OnigCodePoint* sb_out,
-		     const OnigCodePoint* ranges[], OnigEncoding enc ARG_UNUSED)
+                     const OnigCodePoint* ranges[], OnigEncoding enc ARG_UNUSED)
 {
   if (ctype <= ONIGENC_MAX_STD_CTYPE) {
     return ONIG_NO_SUPPORT_CONFIG;

@@ -121,8 +121,8 @@ typedef int rb_atomic_t;
 #define NEED_RUBY_ATOMIC_OPS
 extern rb_atomic_t ruby_atomic_exchange(rb_atomic_t *ptr, rb_atomic_t val);
 extern rb_atomic_t ruby_atomic_compare_and_swap(rb_atomic_t *ptr,
-						rb_atomic_t cmp,
-						rb_atomic_t newval);
+                                                rb_atomic_t cmp,
+                                                rb_atomic_t newval);
 
 # define ATOMIC_SET(var, val) (void)((var) = (val))
 # define ATOMIC_INC(var) ((var)++)

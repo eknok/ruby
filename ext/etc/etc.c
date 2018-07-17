@@ -55,7 +55,7 @@ char *getlogin();
 #include "constdefs.h"
 
 /* call-seq:
- *	getlogin	->  String
+ *        getlogin        ->  String
  *
  * Returns the short user name of the currently logged in user.
  * Unfortunately, it is often rather easy to fool ::getlogin.
@@ -83,11 +83,11 @@ etc_getlogin(VALUE obj)
 
     if (login) {
 #ifdef _WIN32
-	rb_encoding *extenc = rb_utf8_encoding();
+        rb_encoding *extenc = rb_utf8_encoding();
 #else
-	rb_encoding *extenc = rb_locale_encoding();
+        rb_encoding *extenc = rb_locale_encoding();
 #endif
-	return rb_external_str_new_with_enc(login, strlen(login), extenc);
+        return rb_external_str_new_with_enc(login, strlen(login), extenc);
     }
 
     return Qnil;
@@ -122,42 +122,42 @@ setup_passwd(struct passwd *pwd)
 {
     if (pwd == 0) rb_sys_fail("/etc/passwd");
     return rb_struct_new(sPasswd,
-			 safe_setup_locale_str(pwd->pw_name),
+                         safe_setup_locale_str(pwd->pw_name),
 #ifdef HAVE_STRUCT_PASSWD_PW_PASSWD
-			 safe_setup_str(pwd->pw_passwd),
+                         safe_setup_str(pwd->pw_passwd),
 #endif
-			 UIDT2NUM(pwd->pw_uid),
-			 GIDT2NUM(pwd->pw_gid),
+                         UIDT2NUM(pwd->pw_uid),
+                         GIDT2NUM(pwd->pw_gid),
 #ifdef HAVE_STRUCT_PASSWD_PW_GECOS
-			 safe_setup_locale_str(pwd->pw_gecos),
+                         safe_setup_locale_str(pwd->pw_gecos),
 #endif
-			 safe_setup_filesystem_str(pwd->pw_dir),
-			 safe_setup_filesystem_str(pwd->pw_shell),
+                         safe_setup_filesystem_str(pwd->pw_dir),
+                         safe_setup_filesystem_str(pwd->pw_shell),
 #ifdef HAVE_STRUCT_PASSWD_PW_CHANGE
-			 INT2NUM(pwd->pw_change),
+                         INT2NUM(pwd->pw_change),
 #endif
 #ifdef HAVE_STRUCT_PASSWD_PW_QUOTA
-			 INT2NUM(pwd->pw_quota),
+                         INT2NUM(pwd->pw_quota),
 #endif
 #ifdef HAVE_STRUCT_PASSWD_PW_AGE
-			 PW_AGE2VAL(pwd->pw_age),
+                         PW_AGE2VAL(pwd->pw_age),
 #endif
 #ifdef HAVE_STRUCT_PASSWD_PW_CLASS
-			 safe_setup_locale_str(pwd->pw_class),
+                         safe_setup_locale_str(pwd->pw_class),
 #endif
 #ifdef HAVE_STRUCT_PASSWD_PW_COMMENT
-			 safe_setup_locale_str(pwd->pw_comment),
+                         safe_setup_locale_str(pwd->pw_comment),
 #endif
 #ifdef HAVE_STRUCT_PASSWD_PW_EXPIRE
-			 INT2NUM(pwd->pw_expire),
+                         INT2NUM(pwd->pw_expire),
 #endif
-			 0		/*dummy*/
-	);
+                         0                /*dummy*/
+        );
 }
 #endif
 
 /* call-seq:
- *	getpwuid(uid)	->  Passwd
+ *        getpwuid(uid)        ->  Passwd
  *
  * Returns the /etc/passwd information for the user with the given integer +uid+.
  *
@@ -170,8 +170,8 @@ setup_passwd(struct passwd *pwd)
  *
  * === Example:
  *
- *	Etc.getpwuid(0)
- *	#=> #<struct Etc::Passwd name="root", passwd="x", uid=0, gid=0, gecos="root",dir="/root", shell="/bin/bash">
+ *        Etc.getpwuid(0)
+ *        #=> #<struct Etc::Passwd name="root", passwd="x", uid=0, gid=0, gecos="root",dir="/root", shell="/bin/bash">
  */
 static VALUE
 etc_getpwuid(int argc, VALUE *argv, VALUE obj)
@@ -182,10 +182,10 @@ etc_getpwuid(int argc, VALUE *argv, VALUE obj)
     struct passwd *pwd;
 
     if (rb_scan_args(argc, argv, "01", &id) == 1) {
-	uid = NUM2UIDT(id);
+        uid = NUM2UIDT(id);
     }
     else {
-	uid = getuid();
+        uid = getuid();
     }
     pwd = getpwuid(uid);
     if (pwd == 0) rb_raise(rb_eArgError, "can't find user for %d", (int)uid);
@@ -196,7 +196,7 @@ etc_getpwuid(int argc, VALUE *argv, VALUE obj)
 }
 
 /* call-seq:
- *	getpwnam(name)	->  Passwd
+ *        getpwnam(name)        ->  Passwd
  *
  * Returns the /etc/passwd information for the user with specified login
  * +name+.
@@ -207,8 +207,8 @@ etc_getpwuid(int argc, VALUE *argv, VALUE obj)
  *
  * === Example:
  *
- *	Etc.getpwnam('root')
- *	#=> #<struct Etc::Passwd name="root", passwd="x", uid=0, gid=0, gecos="root",dir="/root", shell="/bin/bash">
+ *        Etc.getpwnam('root')
+ *        #=> #<struct Etc::Passwd name="root", passwd="x", uid=0, gid=0, gecos="root",dir="/root", shell="/bin/bash">
  */
 static VALUE
 etc_getpwnam(VALUE obj, VALUE nam)
@@ -243,7 +243,7 @@ passwd_iterate(void)
 
     setpwent();
     while ((pw = getpwent()) != 0) {
-	rb_yield(setup_passwd(pw));
+        rb_yield(setup_passwd(pw));
     }
     return Qnil;
 }
@@ -252,7 +252,7 @@ static void
 each_passwd(void)
 {
     if (passwd_blocking) {
-	rb_raise(rb_eRuntimeError, "parallel passwd iteration");
+        rb_raise(rb_eRuntimeError, "parallel passwd iteration");
     }
     passwd_blocking = (int)Qtrue;
     rb_ensure(passwd_iterate, 0, passwd_ensure, 0);
@@ -260,8 +260,8 @@ each_passwd(void)
 #endif
 
 /* call-seq:
- *	Etc.passwd { |struct| block }	->  Passwd
- *	Etc.passwd			->  Passwd
+ *        Etc.passwd { |struct| block }        ->  Passwd
+ *        Etc.passwd                        ->  Passwd
  *
  * Provides a convenient Ruby iterator which executes a block for each entry
  * in the /etc/passwd file.
@@ -286,18 +286,18 @@ etc_passwd(VALUE obj)
     struct passwd *pw;
 
     if (rb_block_given_p()) {
-	each_passwd();
+        each_passwd();
     }
     else if ((pw = getpwent()) != 0) {
-	return setup_passwd(pw);
+        return setup_passwd(pw);
     }
 #endif
     return Qnil;
 }
 
 /* call-seq:
- *	Etc::Passwd.each { |struct| block }	->  Passwd
- *	Etc::Passwd.each			->  Enumerator
+ *        Etc::Passwd.each { |struct| block }        ->  Passwd
+ *        Etc::Passwd.each                        ->  Enumerator
  *
  * Iterates for each entry in the /etc/passwd file if a block is given.
  *
@@ -371,7 +371,7 @@ etc_getpwent(VALUE obj)
     struct passwd *pw;
 
     if ((pw = getpwent()) != 0) {
-	return setup_passwd(pw);
+        return setup_passwd(pw);
     }
 #endif
     return Qnil;
@@ -387,21 +387,21 @@ setup_group(struct group *grp)
     mem = rb_ary_new();
     tbl = grp->gr_mem;
     while (*tbl) {
-	rb_ary_push(mem, safe_setup_locale_str(*tbl));
-	tbl++;
+        rb_ary_push(mem, safe_setup_locale_str(*tbl));
+        tbl++;
     }
     return rb_struct_new(sGroup,
-			 safe_setup_locale_str(grp->gr_name),
+                         safe_setup_locale_str(grp->gr_name),
 #ifdef HAVE_STRUCT_GROUP_GR_PASSWD
-			 safe_setup_str(grp->gr_passwd),
+                         safe_setup_str(grp->gr_passwd),
 #endif
-			 GIDT2NUM(grp->gr_gid),
-			 mem);
+                         GIDT2NUM(grp->gr_gid),
+                         mem);
 }
 #endif
 
 /* call-seq:
- *	getgrgid(group_id)  ->	Group
+ *        getgrgid(group_id)  ->        Group
  *
  * Returns information about the group with specified integer +group_id+,
  * as found in /etc/group.
@@ -412,8 +412,8 @@ setup_group(struct group *grp)
  *
  * === Example:
  *
- *	Etc.getgrgid(100)
- *	#=> #<struct Etc::Group name="users", passwd="x", gid=100, mem=["meta", "root"]>
+ *        Etc.getgrgid(100)
+ *        #=> #<struct Etc::Group name="users", passwd="x", gid=100, mem=["meta", "root"]>
  *
  */
 static VALUE
@@ -425,10 +425,10 @@ etc_getgrgid(int argc, VALUE *argv, VALUE obj)
     struct group *grp;
 
     if (rb_scan_args(argc, argv, "01", &id) == 1) {
-	gid = NUM2GIDT(id);
+        gid = NUM2GIDT(id);
     }
     else {
-	gid = getgid();
+        gid = getgid();
     }
     grp = getgrgid(gid);
     if (grp == 0) rb_raise(rb_eArgError, "can't find group for %d", (int)gid);
@@ -439,7 +439,7 @@ etc_getgrgid(int argc, VALUE *argv, VALUE obj)
 }
 
 /* call-seq:
- *	getgrnam(name)	->  Group
+ *        getgrnam(name)        ->  Group
  *
  * Returns information about the group with specified +name+, as found in
  * /etc/group.
@@ -450,8 +450,8 @@ etc_getgrgid(int argc, VALUE *argv, VALUE obj)
  *
  * === Example:
  *
- *	Etc.getgrnam('users')
- *	#=> #<struct Etc::Group name="users", passwd="x", gid=100, mem=["meta", "root"]>
+ *        Etc.getgrnam('users')
+ *        #=> #<struct Etc::Group name="users", passwd="x", gid=100, mem=["meta", "root"]>
  *
  */
 static VALUE
@@ -488,7 +488,7 @@ group_iterate(void)
 
     setgrent();
     while ((pw = getgrent()) != 0) {
-	rb_yield(setup_group(pw));
+        rb_yield(setup_group(pw));
     }
     return Qnil;
 }
@@ -497,7 +497,7 @@ static void
 each_group(void)
 {
     if (group_blocking) {
-	rb_raise(rb_eRuntimeError, "parallel group iteration");
+        rb_raise(rb_eRuntimeError, "parallel group iteration");
     }
     group_blocking = (int)Qtrue;
     rb_ensure(group_iterate, 0, group_ensure, 0);
@@ -527,10 +527,10 @@ etc_group(VALUE obj)
     struct group *grp;
 
     if (rb_block_given_p()) {
-	each_group();
+        each_group();
     }
     else if ((grp = getgrent()) != 0) {
-	return setup_group(grp);
+        return setup_group(grp);
     }
 #endif
     return Qnil;
@@ -538,8 +538,8 @@ etc_group(VALUE obj)
 
 #ifdef HAVE_GETGRENT
 /* call-seq:
- *	Etc::Group.each { |group| block }   ->	obj
- *	Etc::Group.each			    ->	Enumerator
+ *        Etc::Group.each { |group| block }   ->        obj
+ *        Etc::Group.each                            ->        Enumerator
  *
  * Iterates for each entry in the /etc/group file if a block is given.
  *
@@ -609,7 +609,7 @@ etc_getgrent(VALUE obj)
     struct group *gr;
 
     if ((gr = getgrent()) != 0) {
-	return setup_group(gr);
+        return setup_group(gr);
     }
 #endif
     return Qnil;
@@ -665,15 +665,15 @@ etc_systmpdir(void)
     size_t len;
     len = confstr(_CS_DARWIN_USER_TEMP_DIR, path, sizeof(path));
     if (len > 0) {
-	tmpstr = path;
-	tmplen = len - 1;
-	if (len > sizeof(path)) tmpstr = 0;
+        tmpstr = path;
+        tmplen = len - 1;
+        if (len > sizeof(path)) tmpstr = 0;
     }
 # endif
     tmpdir = rb_filesystem_str_new(tmpstr, tmplen);
 # if defined _CS_DARWIN_USER_TEMP_DIR
     if (!tmpstr) {
-	confstr(_CS_DARWIN_USER_TEMP_DIR, RSTRING_PTR(tmpdir), len);
+        confstr(_CS_DARWIN_USER_TEMP_DIR, RSTRING_PTR(tmpdir), len);
     }
 # endif
 #endif
@@ -720,21 +720,21 @@ etc_uname(VALUE obj)
     result = rb_hash_new();
     switch (v.dwPlatformId) {
       case VER_PLATFORM_WIN32s:
-	sysname = "Win32s";
-	break;
+        sysname = "Win32s";
+        break;
       case VER_PLATFORM_WIN32_NT:
-	sysname = "Windows_NT";
-	break;
+        sysname = "Windows_NT";
+        break;
       case VER_PLATFORM_WIN32_WINDOWS:
       default:
-	sysname = "Windows";
-	break;
+        sysname = "Windows";
+        break;
     }
     rb_hash_aset(result, ID2SYM(rb_intern("sysname")), rb_str_new_cstr(sysname));
     release = rb_sprintf("%lu.%lu.%lu", v.dwMajorVersion, v.dwMinorVersion, v.dwBuildNumber);
     rb_hash_aset(result, ID2SYM(rb_intern("release")), release);
     version = rb_sprintf("%s Version %"PRIsVALUE": %"PRIsVALUE, sysname, release,
-			 rb_w32_conv_from_wchar(v.szCSDVersion, rb_utf8_encoding()));
+                         rb_w32_conv_from_wchar(v.szCSDVersion, rb_utf8_encoding()));
     rb_hash_aset(result, ID2SYM(rb_intern("version")), version);
 
 # if defined _MSC_VER && _MSC_VER < 1300
@@ -745,7 +745,7 @@ etc_uname(VALUE obj)
     GET_COMPUTER_NAME(NULL, &len);
     buf = ALLOCV_N(WCHAR, vbuf, len);
     if (GET_COMPUTER_NAME(buf, &len)) {
-	nodename = rb_w32_conv_from_wchar(buf, rb_utf8_encoding());
+        nodename = rb_w32_conv_from_wchar(buf, rb_utf8_encoding());
     }
     ALLOCV_END(vbuf);
     if (NIL_P(nodename)) nodename = rb_str_new(0, 0);
@@ -763,20 +763,20 @@ etc_uname(VALUE obj)
     GetSystemInfo(&s);
     switch (s.wProcessorArchitecture) {
       case PROCESSOR_ARCHITECTURE_AMD64:
-	mach = "x64";
-	break;
+        mach = "x64";
+        break;
       case PROCESSOR_ARCHITECTURE_ARM:
-	mach = "ARM";
-	break;
+        mach = "ARM";
+        break;
       case PROCESSOR_ARCHITECTURE_IA64:
-	mach = "IA64";
-	break;
+        mach = "IA64";
+        break;
       case PROCESSOR_ARCHITECTURE_INTEL:
-	mach = "x86";
-	break;
+        mach = "x86";
+        break;
       default:
-	mach = "unknown";
-	break;
+        mach = "unknown";
+        break;
     }
 
     rb_hash_aset(result, ID2SYM(rb_intern("machine")), rb_str_new_cstr(mach));
@@ -951,28 +951,28 @@ etc_nprocessors_affin(void)
      * (Linux 3.17) support 8192 cpus at maximum. Then 16384 must be enough.
      */
     for (n=64; n <= 16384; n *= 2) {
-	size = CPU_ALLOC_SIZE(n);
-	if (size >= 1024) {
-	    cpuset = xcalloc(1, size);
-	    if (!cpuset)
-		return -1;
-	} else {
-	    cpuset = alloca(size);
-	    CPU_ZERO_S(size, cpuset);
-	}
+        size = CPU_ALLOC_SIZE(n);
+        if (size >= 1024) {
+            cpuset = xcalloc(1, size);
+            if (!cpuset)
+                return -1;
+        } else {
+            cpuset = alloca(size);
+            CPU_ZERO_S(size, cpuset);
+        }
 
-	ret = sched_getaffinity(0, size, cpuset);
-	if (ret == 0) {
-	    /* On success, count number of cpus. */
-	    ret = CPU_COUNT_S(size, cpuset);
-	}
+        ret = sched_getaffinity(0, size, cpuset);
+        if (ret == 0) {
+            /* On success, count number of cpus. */
+            ret = CPU_COUNT_S(size, cpuset);
+        }
 
-	if (size >= 1024) {
-	    xfree(cpuset);
-	}
-	if (ret > 0) {
-	    return ret;
-	}
+        if (size >= 1024) {
+            xfree(cpuset);
+        }
+        if (ret > 0) {
+            return ret;
+        }
     }
 
     return ret;
@@ -1015,7 +1015,7 @@ etc_nprocessors(VALUE obj)
 
     ncpus = etc_nprocessors_affin();
     if (ncpus != -1) {
-	return INT2NUM(ncpus);
+        return INT2NUM(ncpus);
     }
     /* fallback to _SC_NPROCESSORS_ONLN */
 #endif
@@ -1094,61 +1094,61 @@ Init_etc(void)
     rb_define_module_function(mEtc, "nprocessors", etc_nprocessors, 0);
 
     sPasswd =  rb_struct_define_under(mEtc, "Passwd",
-				      "name",
+                                      "name",
 #ifdef HAVE_STRUCT_PASSWD_PW_PASSWD
-				      "passwd",
+                                      "passwd",
 #endif
-				      "uid",
-				      "gid",
+                                      "uid",
+                                      "gid",
 #ifdef HAVE_STRUCT_PASSWD_PW_GECOS
-				      "gecos",
+                                      "gecos",
 #endif
-				      "dir",
-				      "shell",
+                                      "dir",
+                                      "shell",
 #ifdef HAVE_STRUCT_PASSWD_PW_CHANGE
-				      "change",
+                                      "change",
 #endif
 #ifdef HAVE_STRUCT_PASSWD_PW_QUOTA
-				      "quota",
+                                      "quota",
 #endif
 #ifdef HAVE_STRUCT_PASSWD_PW_AGE
-				      "age",
+                                      "age",
 #endif
 #ifdef HAVE_STRUCT_PASSWD_PW_CLASS
-				      "uclass",
+                                      "uclass",
 #endif
 #ifdef HAVE_STRUCT_PASSWD_PW_COMMENT
-				      "comment",
+                                      "comment",
 #endif
 #ifdef HAVE_STRUCT_PASSWD_PW_EXPIRE
-				      "expire",
+                                      "expire",
 #endif
-				      NULL);
+                                      NULL);
 #if 0
     /* Define-const: Passwd
      *
      * Passwd is a Struct that contains the following members:
      *
      * name::
-     *	    contains the short login name of the user as a String.
+     *            contains the short login name of the user as a String.
      * passwd::
-     *	    contains the encrypted password of the user as a String.
-     *	    an 'x' is returned if shadow passwords are in use. An '*' is returned
+     *            contains the encrypted password of the user as a String.
+     *            an 'x' is returned if shadow passwords are in use. An '*' is returned
      *      if the user cannot log in using a password.
      * uid::
-     *	    contains the integer user ID (uid) of the user.
+     *            contains the integer user ID (uid) of the user.
      * gid::
-     *	    contains the integer group ID (gid) of the user's primary group.
+     *            contains the integer group ID (gid) of the user's primary group.
      * dir::
-     *	    contains the path to the home directory of the user as a String.
+     *            contains the path to the home directory of the user as a String.
      * shell::
-     *	    contains the path to the login shell of the user as a String.
+     *            contains the path to the login shell of the user as a String.
      *
      * === The following members below are optional, and must be compiled with special flags:
      *
      * gecos::
      *     contains a longer String description of the user, such as
-     *	   a full name. Some Unix systems provide structured information in the
+     *           a full name. Some Unix systems provide structured information in the
      *     gecos field, but this is system-dependent.
      *     must be compiled with +HAVE_STRUCT_PASSWD_PW_GECOS+
      * change::
@@ -1162,7 +1162,7 @@ Init_etc(void)
      * comment::
      *     comment(string) must be compiled with +HAVE_STRUCT_PASSWD_PW_COMMENT+
      * expire::
-     *	    account expiration time(integer) must be compiled with +HAVE_STRUCT_PASSWD_PW_EXPIRE+
+     *            account expiration time(integer) must be compiled with +HAVE_STRUCT_PASSWD_PW_EXPIRE+
      */
     rb_define_const(mEtc, "Passwd", sPasswd);
 #endif
@@ -1173,9 +1173,9 @@ Init_etc(void)
 #ifdef HAVE_GETGRENT
     sGroup = rb_struct_define_under(mEtc, "Group", "name",
 #ifdef HAVE_STRUCT_GROUP_GR_PASSWD
-				    "passwd",
+                                    "passwd",
 #endif
-				    "gid", "mem", NULL);
+                                    "gid", "mem", NULL);
 
 #if 0
     /* Define-const: Group
@@ -1185,19 +1185,19 @@ Init_etc(void)
      * The struct contains the following members:
      *
      * name::
-     *	    contains the name of the group as a String.
+     *            contains the name of the group as a String.
      * passwd::
-     *	    contains the encrypted password as a String. An 'x' is
-     *	    returned if password access to the group is not available; an empty
-     *	    string is returned if no password is needed to obtain membership of
-     *	    the group.
+     *            contains the encrypted password as a String. An 'x' is
+     *            returned if password access to the group is not available; an empty
+     *            string is returned if no password is needed to obtain membership of
+     *            the group.
      *
-     *	    Must be compiled with +HAVE_STRUCT_GROUP_GR_PASSWD+.
+     *            Must be compiled with +HAVE_STRUCT_GROUP_GR_PASSWD+.
      * gid::
-     *	    contains the group's numeric ID as an integer.
+     *            contains the group's numeric ID as an integer.
      * mem::
-     *	    is an Array of Strings containing the short login names of the
-     *	    members of the group.
+     *            is an Array of Strings containing the short login names of the
+     *            members of the group.
      */
     rb_define_const(mEtc, "Group", sGroup);
 #endif

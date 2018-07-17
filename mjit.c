@@ -1287,7 +1287,7 @@ init_header_filename(void)
 # else
         "-L"
 # endif
-	;
+        ;
     const size_t libpathflag_len = sizeof(libpathflag) - 1;
 #endif
 

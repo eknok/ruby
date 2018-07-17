@@ -44,16 +44,16 @@ DupConfigPtr(VALUE obj)
     bio = ossl_obj2bio(&str);
     conf = NCONF_new(NULL);
     if(!conf){
-	BIO_free(bio);
-	ossl_raise(eConfigError, NULL);
+        BIO_free(bio);
+        ossl_raise(eConfigError, NULL);
     }
     if(!NCONF_load_bio(conf, bio, &eline)){
-	BIO_free(bio);
-	NCONF_free(conf);
-	if (eline <= 0)
-	    ossl_raise(eConfigError, "wrong config format");
-	else
-	    ossl_raise(eConfigError, "error in line %d", eline);
+        BIO_free(bio);
+        NCONF_free(conf);
+        if (eline <= 0)
+            ossl_raise(eConfigError, "wrong config format");
+        else
+            ossl_raise(eConfigError, "error in line %d", eline);
     }
     BIO_free(bio);
 
@@ -83,7 +83,7 @@ Init_ossl_config(void)
 
     default_config_file = CONF_get1_default_config_file();
     rb_define_const(cConfig, "DEFAULT_CONFIG_FILE",
-		    rb_str_new2(default_config_file));
+                    rb_str_new2(default_config_file));
     OPENSSL_free(default_config_file);
     /* methods are defined by openssl/config.rb */
 }

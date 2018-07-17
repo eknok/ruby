@@ -16,7 +16,7 @@
 #define GetHMAC(obj, ctx) do { \
     TypedData_Get_Struct((obj), HMAC_CTX, &ossl_hmac_type, (ctx)); \
     if (!(ctx)) { \
-	ossl_raise(rb_eRuntimeError, "HMAC wasn't initialized"); \
+        ossl_raise(rb_eRuntimeError, "HMAC wasn't initialized"); \
     } \
 } while (0)
 
@@ -42,7 +42,7 @@ ossl_hmac_free(void *ctx)
 static const rb_data_type_t ossl_hmac_type = {
     "OpenSSL/HMAC",
     {
-	0, ossl_hmac_free,
+        0, ossl_hmac_free,
     },
     0, 0, RUBY_TYPED_FREE_IMMEDIATELY,
 };
@@ -56,7 +56,7 @@ ossl_hmac_alloc(VALUE klass)
     obj = NewHMAC(klass);
     ctx = HMAC_CTX_new();
     if (!ctx)
-	ossl_raise(eHMACError, NULL);
+        ossl_raise(eHMACError, NULL);
     RTYPEDDATA_DATA(obj) = ctx;
 
     return obj;
@@ -75,12 +75,12 @@ ossl_hmac_alloc(VALUE klass)
  *
  * === Example
  *
- *	key = 'key'
- * 	digest = OpenSSL::Digest.new('sha1')
- * 	instance = OpenSSL::HMAC.new(key, digest)
- * 	#=> f42bb0eeb018ebbd4597ae7213711ec60760843f
- * 	instance.class
- * 	#=> OpenSSL::HMAC
+ *        key = 'key'
+ *         digest = OpenSSL::Digest.new('sha1')
+ *         instance = OpenSSL::HMAC.new(key, digest)
+ *         #=> f42bb0eeb018ebbd4597ae7213711ec60760843f
+ *         instance.class
+ *         #=> OpenSSL::HMAC
  *
  * === A note about comparisons
  *
@@ -88,14 +88,14 @@ ossl_hmac_alloc(VALUE klass)
  * same value. Use #to_s or #hexdigest to return the authentication code that
  * the instance represents. For example:
  *
- *	other_instance = OpenSSL::HMAC.new('key', OpenSSL::Digest.new('sha1'))
- *  	#=> f42bb0eeb018ebbd4597ae7213711ec60760843f
- *  	instance
- *  	#=> f42bb0eeb018ebbd4597ae7213711ec60760843f
- *  	instance == other_instance
- *  	#=> false
- *  	instance.to_s == other_instance.to_s
- *  	#=> true
+ *        other_instance = OpenSSL::HMAC.new('key', OpenSSL::Digest.new('sha1'))
+ *          #=> f42bb0eeb018ebbd4597ae7213711ec60760843f
+ *          instance
+ *          #=> f42bb0eeb018ebbd4597ae7213711ec60760843f
+ *          instance == other_instance
+ *          #=> false
+ *          instance.to_s == other_instance.to_s
+ *          #=> true
  *
  */
 static VALUE
@@ -106,7 +106,7 @@ ossl_hmac_initialize(VALUE self, VALUE key, VALUE digest)
     StringValue(key);
     GetHMAC(self, ctx);
     HMAC_Init_ex(ctx, RSTRING_PTR(key), RSTRING_LENINT(key),
-		 ossl_evp_get_digestbyname(digest), NULL);
+                 ossl_evp_get_digestbyname(digest), NULL);
 
     return self;
 }
@@ -123,7 +123,7 @@ ossl_hmac_copy(VALUE self, VALUE other)
     GetHMAC(other, ctx2);
 
     if (!HMAC_CTX_copy(ctx1, ctx2))
-	ossl_raise(eHMACError, "HMAC_CTX_copy");
+        ossl_raise(eHMACError, "HMAC_CTX_copy");
     return self;
 }
 
@@ -136,13 +136,13 @@ ossl_hmac_copy(VALUE self, VALUE other)
  *
  * === Example
  *
- *	first_chunk = 'The quick brown fox jumps '
- * 	second_chunk = 'over the lazy dog'
+ *        first_chunk = 'The quick brown fox jumps '
+ *         second_chunk = 'over the lazy dog'
  *
- * 	instance.update(first_chunk)
- * 	#=> 5b9a8038a65d571076d97fe783989e52278a492a
- * 	instance.update(second_chunk)
- * 	#=> de7c9b85b8b78aa6bc8a7a36f70a90701c9db4d9
+ *         instance.update(first_chunk)
+ *         #=> 5b9a8038a65d571076d97fe783989e52278a492a
+ *         instance.update(second_chunk)
+ *         #=> de7c9b85b8b78aa6bc8a7a36f70a90701c9db4d9
  *
  */
 static VALUE
@@ -164,11 +164,11 @@ hmac_final(HMAC_CTX *ctx, unsigned char *buf, unsigned int *buf_len)
 
     final = HMAC_CTX_new();
     if (!final)
-	ossl_raise(eHMACError, "HMAC_CTX_new");
+        ossl_raise(eHMACError, "HMAC_CTX_new");
 
     if (!HMAC_CTX_copy(final, ctx)) {
-	HMAC_CTX_free(final);
-	ossl_raise(eHMACError, "HMAC_CTX_copy");
+        HMAC_CTX_free(final);
+        ossl_raise(eHMACError, "HMAC_CTX_copy");
     }
 
     HMAC_Final(final, buf, buf_len);
@@ -235,14 +235,14 @@ ossl_hmac_hexdigest(VALUE self)
  *
  * === Example
  *
- *	data = "The quick brown fox jumps over the lazy dog"
- * 	instance = OpenSSL::HMAC.new('key', OpenSSL::Digest.new('sha1'))
- * 	#=> f42bb0eeb018ebbd4597ae7213711ec60760843f
+ *        data = "The quick brown fox jumps over the lazy dog"
+ *         instance = OpenSSL::HMAC.new('key', OpenSSL::Digest.new('sha1'))
+ *         #=> f42bb0eeb018ebbd4597ae7213711ec60760843f
  *
- * 	instance.update(data)
- * 	#=> de7c9b85b8b78aa6bc8a7a36f70a90701c9db4d9
- * 	instance.reset
- * 	#=> f42bb0eeb018ebbd4597ae7213711ec60760843f
+ *         instance.update(data)
+ *         #=> de7c9b85b8b78aa6bc8a7a36f70a90701c9db4d9
+ *         instance.reset
+ *         #=> f42bb0eeb018ebbd4597ae7213711ec60760843f
  *
  */
 static VALUE
@@ -266,11 +266,11 @@ ossl_hmac_reset(VALUE self)
  *
  * === Example
  *
- *	key = 'key'
- * 	data = 'The quick brown fox jumps over the lazy dog'
+ *        key = 'key'
+ *         data = 'The quick brown fox jumps over the lazy dog'
  *
- * 	hmac = OpenSSL::HMAC.digest('sha1', key, data)
- * 	#=> "\xDE|\x9B\x85\xB8\xB7\x8A\xA6\xBC\x8Az6\xF7\n\x90p\x1C\x9D\xB4\xD9"
+ *         hmac = OpenSSL::HMAC.digest('sha1', key, data)
+ *         #=> "\xDE|\x9B\x85\xB8\xB7\x8A\xA6\xBC\x8Az6\xF7\n\x90p\x1C\x9D\xB4\xD9"
  *
  */
 static VALUE
@@ -282,8 +282,8 @@ ossl_hmac_s_digest(VALUE klass, VALUE digest, VALUE key, VALUE data)
     StringValue(key);
     StringValue(data);
     buf = HMAC(ossl_evp_get_digestbyname(digest), RSTRING_PTR(key),
-	       RSTRING_LENINT(key), (unsigned char *)RSTRING_PTR(data),
-	       RSTRING_LEN(data), NULL, &buf_len);
+               RSTRING_LENINT(key), (unsigned char *)RSTRING_PTR(data),
+               RSTRING_LEN(data), NULL, &buf_len);
 
     return rb_str_new((const char *)buf, buf_len);
 }
@@ -298,11 +298,11 @@ ossl_hmac_s_digest(VALUE klass, VALUE digest, VALUE key, VALUE data)
  *
  * === Example
  *
- *	key = 'key'
- * 	data = 'The quick brown fox jumps over the lazy dog'
+ *        key = 'key'
+ *         data = 'The quick brown fox jumps over the lazy dog'
  *
- * 	hmac = OpenSSL::HMAC.hexdigest('sha1', key, data)
- * 	#=> "de7c9b85b8b78aa6bc8a7a36f70a90701c9db4d9"
+ *         hmac = OpenSSL::HMAC.hexdigest('sha1', key, data)
+ *         #=> "de7c9b85b8b78aa6bc8a7a36f70a90701c9db4d9"
  *
  */
 static VALUE
@@ -316,9 +316,9 @@ ossl_hmac_s_hexdigest(VALUE klass, VALUE digest, VALUE key, VALUE data)
     StringValue(data);
 
     if (!HMAC(ossl_evp_get_digestbyname(digest), RSTRING_PTR(key),
-	      RSTRING_LENINT(key), (unsigned char *)RSTRING_PTR(data),
-	      RSTRING_LEN(data), buf, &buf_len))
-	ossl_raise(eHMACError, "HMAC");
+              RSTRING_LENINT(key), (unsigned char *)RSTRING_PTR(data),
+              RSTRING_LEN(data), buf, &buf_len))
+        ossl_raise(eHMACError, "HMAC");
 
     ret = rb_str_new(NULL, buf_len * 2);
     ossl_bin2hex(buf, RSTRING_PTR(ret), buf_len);

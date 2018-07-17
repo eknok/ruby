@@ -14,78 +14,78 @@
 /*
  * Data Conversion
  */
-#define OSSL_IMPL_ARY2SK(name, type, expected_class, dup)	\
-STACK_OF(type) *						\
-ossl_##name##_ary2sk0(VALUE ary)				\
-{								\
-    STACK_OF(type) *sk;						\
-    VALUE val;							\
-    type *x;							\
-    int i;							\
-    								\
-    Check_Type(ary, T_ARRAY);					\
-    sk = sk_##type##_new_null();				\
-    if (!sk) ossl_raise(eOSSLError, NULL);			\
-    								\
-    for (i = 0; i < RARRAY_LEN(ary); i++) {			\
-	val = rb_ary_entry(ary, i);				\
-	if (!rb_obj_is_kind_of(val, expected_class)) {		\
-	    sk_##type##_pop_free(sk, type##_free);		\
-	    ossl_raise(eOSSLError, "object in array not"	\
-		       " of class ##type##");			\
-	}							\
-	x = dup(val); /* NEED TO DUP */				\
-	sk_##type##_push(sk, x);				\
-    }								\
-    return sk;							\
-}								\
-								\
-STACK_OF(type) *						\
-ossl_protect_##name##_ary2sk(VALUE ary, int *status)		\
-{								\
-    return (STACK_OF(type)*)rb_protect(				\
-	    (VALUE (*)(VALUE))ossl_##name##_ary2sk0,		\
-	    ary,						\
-	    status);						\
-}								\
-								\
-STACK_OF(type) *						\
-ossl_##name##_ary2sk(VALUE ary)					\
-{								\
-    STACK_OF(type) *sk;						\
-    int status = 0;						\
-    								\
-    sk = ossl_protect_##name##_ary2sk(ary, &status);		\
-    if (status) rb_jump_tag(status);				\
-								\
-    return sk;							\
+#define OSSL_IMPL_ARY2SK(name, type, expected_class, dup)        \
+STACK_OF(type) *                                                \
+ossl_##name##_ary2sk0(VALUE ary)                                \
+{                                                                \
+    STACK_OF(type) *sk;                                                \
+    VALUE val;                                                        \
+    type *x;                                                        \
+    int i;                                                        \
+                                                                    \
+    Check_Type(ary, T_ARRAY);                                        \
+    sk = sk_##type##_new_null();                                \
+    if (!sk) ossl_raise(eOSSLError, NULL);                        \
+                                                                    \
+    for (i = 0; i < RARRAY_LEN(ary); i++) {                        \
+        val = rb_ary_entry(ary, i);                                \
+        if (!rb_obj_is_kind_of(val, expected_class)) {                \
+            sk_##type##_pop_free(sk, type##_free);                \
+            ossl_raise(eOSSLError, "object in array not"        \
+                       " of class ##type##");                        \
+        }                                                        \
+        x = dup(val); /* NEED TO DUP */                                \
+        sk_##type##_push(sk, x);                                \
+    }                                                                \
+    return sk;                                                        \
+}                                                                \
+                                                                \
+STACK_OF(type) *                                                \
+ossl_protect_##name##_ary2sk(VALUE ary, int *status)                \
+{                                                                \
+    return (STACK_OF(type)*)rb_protect(                                \
+            (VALUE (*)(VALUE))ossl_##name##_ary2sk0,                \
+            ary,                                                \
+            status);                                                \
+}                                                                \
+                                                                \
+STACK_OF(type) *                                                \
+ossl_##name##_ary2sk(VALUE ary)                                        \
+{                                                                \
+    STACK_OF(type) *sk;                                                \
+    int status = 0;                                                \
+                                                                    \
+    sk = ossl_protect_##name##_ary2sk(ary, &status);                \
+    if (status) rb_jump_tag(status);                                \
+                                                                \
+    return sk;                                                        \
 }
 OSSL_IMPL_ARY2SK(x509, X509, cX509Cert, DupX509CertPtr)
 
-#define OSSL_IMPL_SK2ARY(name, type)	        \
-VALUE						\
-ossl_##name##_sk2ary(const STACK_OF(type) *sk)	\
-{						\
-    type *t;					\
-    int i, num;					\
-    VALUE ary;					\
-						\
-    if (!sk) {					\
-	OSSL_Debug("empty sk!");		\
-	return Qnil;				\
-    }						\
-    num = sk_##type##_num(sk);			\
-    if (num < 0) {				\
-	OSSL_Debug("items in sk < -1???");	\
-	return rb_ary_new();			\
-    }						\
-    ary = rb_ary_new2(num);			\
-						\
-    for (i=0; i<num; i++) {			\
-	t = sk_##type##_value(sk, i);		\
-	rb_ary_push(ary, ossl_##name##_new(t));	\
-    }						\
-    return ary;					\
+#define OSSL_IMPL_SK2ARY(name, type)                \
+VALUE                                                \
+ossl_##name##_sk2ary(const STACK_OF(type) *sk)        \
+{                                                \
+    type *t;                                        \
+    int i, num;                                        \
+    VALUE ary;                                        \
+                                                \
+    if (!sk) {                                        \
+        OSSL_Debug("empty sk!");                \
+        return Qnil;                                \
+    }                                                \
+    num = sk_##type##_num(sk);                        \
+    if (num < 0) {                                \
+        OSSL_Debug("items in sk < -1???");        \
+        return rb_ary_new();                        \
+    }                                                \
+    ary = rb_ary_new2(num);                        \
+                                                \
+    for (i=0; i<num; i++) {                        \
+        t = sk_##type##_value(sk, i);                \
+        rb_ary_push(ary, ossl_##name##_new(t));        \
+    }                                                \
+    return ary;                                        \
 }
 OSSL_IMPL_SK2ARY(x509, X509)
 OSSL_IMPL_SK2ARY(x509crl, X509_CRL)
@@ -105,14 +105,14 @@ ossl_str_new(const char *ptr, long len, int *pstate)
 
     str = rb_protect(ossl_str_new_i, len, &state);
     if (pstate)
-	*pstate = state;
+        *pstate = state;
     if (state) {
-	if (!pstate)
-	    rb_set_errinfo(Qnil);
-	return Qnil;
+        if (!pstate)
+            rb_set_errinfo(Qnil);
+        return Qnil;
     }
     if (ptr)
-	memcpy(RSTRING_PTR(str), ptr, len);
+        memcpy(RSTRING_PTR(str), ptr, len);
     return str;
 }
 
@@ -125,7 +125,7 @@ ossl_buf2str(char *buf, int len)
     str = ossl_str_new(buf, len, &state);
     OPENSSL_free(buf);
     if (state)
-	rb_jump_tag(state);
+        rb_jump_tag(state);
     return str;
 }
 
@@ -137,10 +137,10 @@ ossl_bin2hex(unsigned char *in, char *out, size_t inlen)
 
     assert(inlen <= LONG_MAX / 2);
     for (i = 0; i < inlen; i++) {
-	unsigned char p = in[i];
+        unsigned char p = in[i];
 
-	out[i * 2 + 0] = hex[p >> 4];
-	out[i * 2 + 1] = hex[p & 0x0f];
+        out[i * 2 + 0] = hex[p >> 4];
+        out[i * 2 + 1] = hex[p & 0x0f];
     }
 }
 
@@ -151,14 +151,14 @@ VALUE
 ossl_pem_passwd_value(VALUE pass)
 {
     if (NIL_P(pass))
-	return Qnil;
+        return Qnil;
 
     StringValue(pass);
 
     /* PEM_BUFSIZE is currently used as the second argument of pem_password_cb,
      * that is +max_len+ of ossl_pem_passwd_cb() */
     if (RSTRING_LEN(pass) > PEM_BUFSIZE)
-	ossl_raise(eOSSLError, "password must not be longer than %d bytes", PEM_BUFSIZE);
+        ossl_raise(eOSSLError, "password must not be longer than %d bytes", PEM_BUFSIZE);
 
     return pass;
 }
@@ -168,7 +168,7 @@ ossl_pem_passwd_cb0(VALUE flag)
 {
     VALUE pass = rb_yield(flag);
     if (NIL_P(pass))
-	return Qnil;
+        return Qnil;
     StringValue(pass);
     return pass;
 }
@@ -181,46 +181,46 @@ ossl_pem_passwd_cb(char *buf, int max_len, int flag, void *pwd_)
     VALUE rflag, pass = (VALUE)pwd_;
 
     if (RTEST(pass)) {
-	/* PEM_def_callback(buf, max_len, flag, StringValueCStr(pass)) does not
-	 * work because it does not allow NUL characters and truncates to 1024
-	 * bytes silently if the input is over 1024 bytes */
-	if (RB_TYPE_P(pass, T_STRING)) {
-	    len = RSTRING_LEN(pass);
-	    if (len <= max_len) {
-		memcpy(buf, RSTRING_PTR(pass), len);
-		return (int)len;
-	    }
-	}
-	OSSL_Debug("passed data is not valid String???");
-	return -1;
+        /* PEM_def_callback(buf, max_len, flag, StringValueCStr(pass)) does not
+         * work because it does not allow NUL characters and truncates to 1024
+         * bytes silently if the input is over 1024 bytes */
+        if (RB_TYPE_P(pass, T_STRING)) {
+            len = RSTRING_LEN(pass);
+            if (len <= max_len) {
+                memcpy(buf, RSTRING_PTR(pass), len);
+                return (int)len;
+            }
+        }
+        OSSL_Debug("passed data is not valid String???");
+        return -1;
     }
 
     if (!rb_block_given_p()) {
-	return PEM_def_callback(buf, max_len, flag, NULL);
+        return PEM_def_callback(buf, max_len, flag, NULL);
     }
 
     while (1) {
-	/*
-	 * when the flag is nonzero, this passphrase
-	 * will be used to perform encryption; otherwise it will
-	 * be used to perform decryption.
-	 */
-	rflag = flag ? Qtrue : Qfalse;
-	pass  = rb_protect(ossl_pem_passwd_cb0, rflag, &status);
-	if (status) {
-	    /* ignore an exception raised. */
-	    rb_set_errinfo(Qnil);
-	    return -1;
-	}
-	if (NIL_P(pass))
-	    return -1;
-	len = RSTRING_LEN(pass);
-	if (len > max_len) {
-	    rb_warning("password must not be longer than %d bytes", max_len);
-	    continue;
-	}
-	memcpy(buf, RSTRING_PTR(pass), len);
-	break;
+        /*
+         * when the flag is nonzero, this passphrase
+         * will be used to perform encryption; otherwise it will
+         * be used to perform decryption.
+         */
+        rflag = flag ? Qtrue : Qfalse;
+        pass  = rb_protect(ossl_pem_passwd_cb0, rflag, &status);
+        if (status) {
+            /* ignore an exception raised. */
+            rb_set_errinfo(Qnil);
+            return -1;
+        }
+        if (NIL_P(pass))
+            return -1;
+        len = RSTRING_LEN(pass);
+        if (len > max_len) {
+            rb_warning("password must not be longer than %d bytes", max_len);
+            continue;
+        }
+        memcpy(buf, RSTRING_PTR(pass), len);
+        break;
     }
     return (int)len;
 }
@@ -255,7 +255,7 @@ VALUE
 ossl_to_der_if_possible(VALUE obj)
 {
     if(rb_respond_to(obj, ossl_s_to_der))
-	return ossl_to_der(obj);
+        return ossl_to_der(obj);
     return obj;
 }
 
@@ -269,20 +269,20 @@ ossl_make_error(VALUE exc, const char *fmt, va_list args)
     unsigned long e;
 
     if (fmt) {
-	str = rb_vsprintf(fmt, args);
+        str = rb_vsprintf(fmt, args);
     }
     e = ERR_peek_last_error();
     if (e) {
-	const char *msg = ERR_reason_error_string(e);
+        const char *msg = ERR_reason_error_string(e);
 
-	if (NIL_P(str)) {
-	    if (msg) str = rb_str_new_cstr(msg);
-	}
-	else {
-	    if (RSTRING_LEN(str)) rb_str_cat2(str, ": ");
-	    rb_str_cat2(str, msg ? msg : "(null)");
-	}
-	ossl_clear_error();
+        if (NIL_P(str)) {
+            if (msg) str = rb_str_new_cstr(msg);
+        }
+        else {
+            if (RSTRING_LEN(str)) rb_str_cat2(str, ": ");
+            rb_str_cat2(str, msg ? msg : "(null)");
+        }
+        ossl_clear_error();
     }
 
     if (NIL_P(str)) str = rb_str_new(0, 0);
@@ -304,27 +304,27 @@ void
 ossl_clear_error(void)
 {
     if (dOSSL == Qtrue) {
-	unsigned long e;
-	const char *file, *data, *errstr;
-	int line, flags;
+        unsigned long e;
+        const char *file, *data, *errstr;
+        int line, flags;
 
-	while ((e = ERR_get_error_line_data(&file, &line, &data, &flags))) {
-	    errstr = ERR_error_string(e, NULL);
-	    if (!errstr)
-		errstr = "(null)";
+        while ((e = ERR_get_error_line_data(&file, &line, &data, &flags))) {
+            errstr = ERR_error_string(e, NULL);
+            if (!errstr)
+                errstr = "(null)";
 
-	    if (flags & ERR_TXT_STRING) {
-		if (!data)
-		    data = "(null)";
-		rb_warn("error on stack: %s (%s)", errstr, data);
-	    }
-	    else {
-		rb_warn("error on stack: %s", errstr);
-	    }
-	}
+            if (flags & ERR_TXT_STRING) {
+                if (!data)
+                    data = "(null)";
+                rb_warn("error on stack: %s (%s)", errstr, data);
+            }
+            else {
+                rb_warn("error on stack: %s", errstr);
+            }
+        }
     }
     else {
-	ERR_clear_error();
+        ERR_clear_error();
     }
 }
 
@@ -363,11 +363,11 @@ ossl_debug(const char *fmt, ...)
     va_list args;
 
     if (dOSSL == Qtrue) {
-	fprintf(stderr, "OSSL_DEBUG: ");
-	va_start(args, fmt);
-	vfprintf(stderr, fmt, args);
-	va_end(args);
-	fprintf(stderr, " [CONTEXT N/A]\n");
+        fprintf(stderr, "OSSL_DEBUG: ");
+        va_start(args, fmt);
+        vfprintf(stderr, fmt, args);
+        va_end(args);
+        fprintf(stderr, " [CONTEXT N/A]\n");
     }
 }
 #endif
@@ -432,17 +432,17 @@ ossl_fips_mode_set(VALUE self, VALUE enabled)
 
 #ifdef OPENSSL_FIPS
     if (RTEST(enabled)) {
-	int mode = FIPS_mode();
-	if(!mode && !FIPS_mode_set(1)) /* turning on twice leads to an error */
-	    ossl_raise(eOSSLError, "Turning on FIPS mode failed");
+        int mode = FIPS_mode();
+        if(!mode && !FIPS_mode_set(1)) /* turning on twice leads to an error */
+            ossl_raise(eOSSLError, "Turning on FIPS mode failed");
     } else {
-	if(!FIPS_mode_set(0)) /* turning off twice is OK */
-	    ossl_raise(eOSSLError, "Turning off FIPS mode failed");
+        if(!FIPS_mode_set(0)) /* turning off twice is OK */
+            ossl_raise(eOSSLError, "Turning off FIPS mode failed");
     }
     return enabled;
 #else
     if (RTEST(enabled))
-	ossl_raise(eOSSLError, "This version of OpenSSL does not support FIPS mode");
+        ossl_raise(eOSSLError, "This version of OpenSSL does not support FIPS mode");
     return enabled;
 #endif
 }
@@ -464,8 +464,8 @@ ossl_fips_mode_set(VALUE self, VALUE enabled)
 static VALUE
 mem_check_start(VALUE self)
 {
-	CRYPTO_mem_ctrl(CRYPTO_MEM_CHECK_ON);
-	return Qnil;
+        CRYPTO_mem_ctrl(CRYPTO_MEM_CHECK_ON);
+        return Qnil;
 }
 
 /*
@@ -503,7 +503,7 @@ print_mem_leaks(VALUE self)
 #if OPENSSL_VERSION_NUMBER >= 0x10100000
     ret = CRYPTO_mem_leaks_fp(stderr);
     if (ret < 0)
-	ossl_raise(eOSSLError, "CRYPTO_mem_leaks_fp");
+        ossl_raise(eOSSLError, "CRYPTO_mem_leaks_fp");
     return ret ? Qfalse : Qtrue;
 #else
     CRYPTO_mem_leaks_fp(stderr);
@@ -534,18 +534,18 @@ static void
 ossl_lock_unlock(int mode, struct CRYPTO_dynlock_value *l)
 {
     if (mode & CRYPTO_LOCK) {
-	/* TODO: rb_nativethread_id_t is not necessarily compared with ==. */
-	rb_nativethread_id_t tid = rb_nativethread_self();
-	if (l->count && l->owner == tid) {
-	    l->count++;
-	    return;
-	}
-	rb_nativethread_lock_lock(&l->lock);
-	l->owner = tid;
-	l->count = 1;
+        /* TODO: rb_nativethread_id_t is not necessarily compared with ==. */
+        rb_nativethread_id_t tid = rb_nativethread_self();
+        if (l->count && l->owner == tid) {
+            l->count++;
+            return;
+        }
+        rb_nativethread_lock_lock(&l->lock);
+        l->owner = tid;
+        l->count = 1;
     } else {
-	if (!--l->count)
-	    rb_nativethread_lock_unlock(&l->lock);
+        if (!--l->count)
+            rb_nativethread_lock_unlock(&l->lock);
     }
 }
 
@@ -554,9 +554,9 @@ ossl_dyn_create_callback(const char *file, int line)
 {
     /* Do not use xmalloc() here, since it may raise NoMemoryError */
     struct CRYPTO_dynlock_value *dynlock =
-	OPENSSL_malloc(sizeof(struct CRYPTO_dynlock_value));
+        OPENSSL_malloc(sizeof(struct CRYPTO_dynlock_value));
     if (dynlock)
-	ossl_lock_init(dynlock);
+        ossl_lock_init(dynlock);
     return dynlock;
 }
 
@@ -594,7 +594,7 @@ static void Init_ossl_locks(void)
 
     ossl_locks = ALLOC_N(struct CRYPTO_dynlock_value, num_locks);
     for (i = 0; i < num_locks; i++)
-	ossl_lock_init(&ossl_locks[i]);
+        ossl_lock_init(&ossl_locks[i]);
 
     CRYPTO_THREADID_set_callback(ossl_threadid_func);
     CRYPTO_set_locking_callback(ossl_lock_callback);
@@ -1156,11 +1156,11 @@ Init_openssl(void)
      */
     rb_define_const(mOSSL, "OPENSSL_FIPS",
 #ifdef OPENSSL_FIPS
-		    Qtrue
+                    Qtrue
 #else
-		    Qfalse
+                    Qfalse
 #endif
-		   );
+                   );
 
     rb_define_module_function(mOSSL, "fips_mode", ossl_fips_mode_get, 0);
     rb_define_module_function(mOSSL, "fips_mode=", ossl_fips_mode_set, 1);
@@ -1231,17 +1231,17 @@ Init_openssl(void)
 
 #if OPENSSL_VERSION_NUMBER < 0x10100000 /* <= 1.0.2 */
     {
-	int i;
-	/*
-	 * See crypto/ex_data.c; call def_get_class() immediately to avoid
-	 * allocations. 15 is the maximum number that is used as the class index
-	 * in OpenSSL 1.0.2.
-	 */
-	for (i = 0; i <= 15; i++) {
-	    if (CRYPTO_get_ex_new_index(i, 0, (void *)"ossl-mdebug-dummy", 0, 0, 0) < 0)
-		rb_raise(rb_eRuntimeError, "CRYPTO_get_ex_new_index for "
-			 "class index %d failed", i);
-	}
+        int i;
+        /*
+         * See crypto/ex_data.c; call def_get_class() immediately to avoid
+         * allocations. 15 is the maximum number that is used as the class index
+         * in OpenSSL 1.0.2.
+         */
+        for (i = 0; i <= 15; i++) {
+            if (CRYPTO_get_ex_new_index(i, 0, (void *)"ossl-mdebug-dummy", 0, 0, 0) < 0)
+                rb_raise(rb_eRuntimeError, "CRYPTO_get_ex_new_index for "
+                         "class index %d failed", i);
+        }
     }
 #endif
 #endif

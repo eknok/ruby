@@ -79,9 +79,9 @@ explicit_bzero(void *b, size_t len)
     volatile char* p = (volatile char*)b;
 
     while(len) {
-	*p = 0;
-	p++;
-	len--;
+        *p = 0;
+        p++;
+        len--;
     }
 }
  #endif

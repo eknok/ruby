@@ -56,8 +56,8 @@ has_extra_methods(VALUE klass)
     const VALUE base = rb_cHash;
     VALUE c = klass;
     while (c != base) {
-	if (rb_class_has_methods(c)) return klass;
-	c = RCLASS_SUPER(c);
+        if (rb_class_has_methods(c)) return klass;
+        c = RCLASS_SUPER(c);
     }
     return 0;
 }
@@ -97,15 +97,15 @@ rb_any_cmp(VALUE a, VALUE b)
 {
     if (a == b) return 0;
     if (FIXNUM_P(a) && FIXNUM_P(b)) {
-	return a != b;
+        return a != b;
     }
     if (RB_TYPE_P(a, T_STRING) && RBASIC(a)->klass == rb_cString &&
-	RB_TYPE_P(b, T_STRING) && RBASIC(b)->klass == rb_cString) {
-	return rb_str_hash_cmp(a, b);
+        RB_TYPE_P(b, T_STRING) && RBASIC(b)->klass == rb_cString) {
+        return rb_str_hash_cmp(a, b);
     }
     if (a == Qundef || b == Qundef) return -1;
     if (SYMBOL_P(a) && SYMBOL_P(b)) {
-	return a != b;
+        return a != b;
     }
 
     return !rb_eql(a, b);
@@ -134,7 +134,7 @@ rb_hash(VALUE obj)
                 return LONG2FIX(-(long)ul);
             return LONG2FIX((long)ul);
         }
-	hval = rb_to_int(hval);
+        hval = rb_to_int(hval);
     }
     return hval;
 }
@@ -150,10 +150,10 @@ rb_dbl_long_hash(double d)
     return rb_memhash(&d, sizeof(d));
 #else
     {
-	union {double d; uint64_t i;} u;
+        union {double d; uint64_t i;} u;
 
-	u.d = d;
-	return rb_objid_hash(rb_hash_start(u.i));
+        u.d = d;
+        return rb_objid_hash(rb_hash_start(u.i));
     }
 #endif
 }
@@ -165,40 +165,40 @@ any_hash(VALUE a, st_index_t (*other_func)(VALUE))
     st_index_t hnum;
 
     if (SPECIAL_CONST_P(a)) {
-	if (STATIC_SYM_P(a)) {
-	    hnum = a >> (RUBY_SPECIAL_SHIFT + ID_SCOPE_SHIFT);
-	    hnum = rb_hash_start(hnum);
-	    goto out;
-	}
-	else if (FLONUM_P(a)) {
-	    /* prevent pathological behavior: [Bug #10761] */
-	    goto flt;
-	}
-	hnum = rb_objid_hash((st_index_t)a);
+        if (STATIC_SYM_P(a)) {
+            hnum = a >> (RUBY_SPECIAL_SHIFT + ID_SCOPE_SHIFT);
+            hnum = rb_hash_start(hnum);
+            goto out;
+        }
+        else if (FLONUM_P(a)) {
+            /* prevent pathological behavior: [Bug #10761] */
+            goto flt;
+        }
+        hnum = rb_objid_hash((st_index_t)a);
     }
     else if (BUILTIN_TYPE(a) == T_STRING) {
-	hnum = rb_str_hash(a);
+        hnum = rb_str_hash(a);
     }
     else if (BUILTIN_TYPE(a) == T_SYMBOL) {
-	hnum = RSYMBOL(a)->hashval;
+        hnum = RSYMBOL(a)->hashval;
     }
     else if (BUILTIN_TYPE(a) == T_BIGNUM) {
-	hval = rb_big_hash(a);
-	hnum = FIX2LONG(hval);
+        hval = rb_big_hash(a);
+        hnum = FIX2LONG(hval);
     }
     else if (BUILTIN_TYPE(a) == T_FLOAT) {
       flt:
-	hnum = rb_dbl_long_hash(rb_float_value(a));
+        hnum = rb_dbl_long_hash(rb_float_value(a));
     }
     else {
-	hnum = other_func(a);
+        hnum = other_func(a);
     }
   out:
 #if SIZEOF_LONG < SIZEOF_ST_INDEX_T
     if (hnum > 0)
-	hnum &= (unsigned long)-1 >> 2;
+        hnum &= (unsigned long)-1 >> 2;
     else
-	hnum |= ~((unsigned long)-1 >> 2);
+        hnum |= ~((unsigned long)-1 >> 2);
 #else
     hnum <<= 1;
     hnum = RSHIFT(hnum, 1);
@@ -287,7 +287,7 @@ rb_ident_hash(st_data_t n)
      *   many integers get interpreted as 2.0 or -2.0 [Bug #10761]
      */
     if (FLONUM_P(n)) {
-	n ^= (st_data_t)rb_float_value(n);
+        n ^= (st_data_t)rb_float_value(n);
     }
 #endif
 
@@ -316,7 +316,7 @@ foreach_safe_i(st_data_t key, st_data_t value, st_data_t args, int error)
     if (error) return ST_STOP;
     status = (*arg->func)(key, value, arg->arg);
     if (status == ST_CONTINUE) {
-	return ST_CHECK;
+        return ST_CHECK;
     }
     return status;
 }
@@ -330,7 +330,7 @@ st_foreach_safe(st_table *table, int (*func)(ANYARGS), st_data_t a)
     arg.func = (st_foreach_func *)func;
     arg.arg = a;
     if (st_foreach_check(table, foreach_safe_i, (st_data_t)&arg, 0)) {
-	rb_raise(rb_eRuntimeError, "hash modified during iteration");
+        rb_raise(rb_eRuntimeError, "hash modified during iteration");
     }
 }
 
@@ -353,15 +353,15 @@ hash_foreach_iter(st_data_t key, st_data_t value, st_data_t argp, int error)
     tbl = RHASH(arg->hash)->ntbl;
     status = (*arg->func)((VALUE)key, (VALUE)value, arg->arg);
     if (RHASH(arg->hash)->ntbl != tbl) {
-	rb_raise(rb_eRuntimeError, "rehash occurred during iteration");
+        rb_raise(rb_eRuntimeError, "rehash occurred during iteration");
     }
     switch (status) {
       case ST_DELETE:
-	return ST_DELETE;
+        return ST_DELETE;
       case ST_CONTINUE:
-	break;
+        break;
       case ST_STOP:
-	return ST_STOP;
+        return ST_STOP;
     }
     return ST_CHECK;
 }
@@ -385,7 +385,7 @@ hash_foreach_call(VALUE arg)
 {
     VALUE hash = ((struct hash_foreach_arg *)arg)->hash;
     if (st_foreach_check(RHASH(hash)->ntbl, hash_foreach_iter, (st_data_t)arg, (st_data_t)Qundef)) {
-	rb_raise(rb_eRuntimeError, "hash modified during iteration");
+        rb_raise(rb_eRuntimeError, "hash modified during iteration");
     }
     return Qnil;
 }
@@ -456,9 +456,9 @@ static VALUE
 hash_dup(VALUE hash, VALUE klass, VALUE flags)
 {
     VALUE ret = hash_alloc_flags(klass, flags,
-				 RHASH_IFNONE(hash));
+                                 RHASH_IFNONE(hash));
     if (!RHASH_EMPTY_P(hash))
-	RHASH(ret)->ntbl = st_copy(RHASH(hash)->ntbl);
+        RHASH(ret)->ntbl = st_copy(RHASH(hash)->ntbl);
     return ret;
 }
 
@@ -467,7 +467,7 @@ rb_hash_dup(VALUE hash)
 {
     const VALUE flags = RBASIC(hash)->flags;
     VALUE ret = hash_dup(hash, rb_obj_class(hash),
-			 flags & (FL_EXIVAR|FL_TAINT|HASH_PROC_DEFAULT));
+                         flags & (FL_EXIVAR|FL_TAINT|HASH_PROC_DEFAULT));
     if (flags & FL_EXIVAR)
         rb_copy_generic_ivar(ret, hash);
     return ret;
@@ -580,12 +580,12 @@ static void
 set_proc_default(VALUE hash, VALUE proc)
 {
     if (rb_proc_lambda_p(proc)) {
-	int n = rb_proc_arity(proc);
+        int n = rb_proc_arity(proc);
 
-	if (n != 2 && (n >= 0 || n < -3)) {
-	    if (n < 0) n = -n-1;
-	    rb_raise(rb_eTypeError, "default_proc takes two arguments (2 for %d)", n);
-	}
+        if (n != 2 && (n >= 0 || n < -3)) {
+            if (n < 0) n = -n-1;
+            rb_raise(rb_eTypeError, "default_proc takes two arguments (2 for %d)", n);
+        }
     }
 
     FL_SET_RAW(hash, HASH_PROC_DEFAULT);
@@ -634,14 +634,14 @@ rb_hash_initialize(int argc, VALUE *argv, VALUE hash)
 
     rb_hash_modify(hash);
     if (rb_block_given_p()) {
-	rb_check_arity(argc, 0, 0);
-	ifnone = rb_block_proc();
-	SET_PROC_DEFAULT(hash, ifnone);
+        rb_check_arity(argc, 0, 0);
+        ifnone = rb_block_proc();
+        SET_PROC_DEFAULT(hash, ifnone);
     }
     else {
-	rb_check_arity(argc, 0, 1);
-	ifnone = argc == 0 ? Qnil : argv[0];
-	RHASH_SET_IFNONE(hash, ifnone);
+        rb_check_arity(argc, 0, 1);
+        ifnone = argc == 0 ? Qnil : argv[0];
+        RHASH_SET_IFNONE(hash, ifnone);
     }
 
     return hash;
@@ -673,54 +673,54 @@ rb_hash_s_create(int argc, VALUE *argv, VALUE klass)
     VALUE hash, tmp;
 
     if (argc == 1) {
-	tmp = rb_hash_s_try_convert(Qnil, argv[0]);
-	if (!NIL_P(tmp)) {
-	    hash = hash_alloc(klass);
-	    if (RHASH(tmp)->ntbl) {
-		RHASH(hash)->ntbl = st_copy(RHASH(tmp)->ntbl);
-	    }
-	    return hash;
-	}
+        tmp = rb_hash_s_try_convert(Qnil, argv[0]);
+        if (!NIL_P(tmp)) {
+            hash = hash_alloc(klass);
+            if (RHASH(tmp)->ntbl) {
+                RHASH(hash)->ntbl = st_copy(RHASH(tmp)->ntbl);
+            }
+            return hash;
+        }
 
-	tmp = rb_check_array_type(argv[0]);
-	if (!NIL_P(tmp)) {
-	    long i;
+        tmp = rb_check_array_type(argv[0]);
+        if (!NIL_P(tmp)) {
+            long i;
 
-	    hash = hash_alloc(klass);
-	    for (i = 0; i < RARRAY_LEN(tmp); ++i) {
-		VALUE e = RARRAY_AREF(tmp, i);
-		VALUE v = rb_check_array_type(e);
-		VALUE key, val = Qnil;
+            hash = hash_alloc(klass);
+            for (i = 0; i < RARRAY_LEN(tmp); ++i) {
+                VALUE e = RARRAY_AREF(tmp, i);
+                VALUE v = rb_check_array_type(e);
+                VALUE key, val = Qnil;
 
-		if (NIL_P(v)) {
+                if (NIL_P(v)) {
 #if 0 /* refix in the next release */
-		    rb_raise(rb_eArgError, "wrong element type %s at %ld (expected array)",
-			     rb_builtin_class_name(e), i);
+                    rb_raise(rb_eArgError, "wrong element type %s at %ld (expected array)",
+                             rb_builtin_class_name(e), i);
 
 #else
-		    rb_warn("wrong element type %s at %ld (expected array)",
-			    rb_builtin_class_name(e), i);
-		    rb_warn("ignoring wrong elements is deprecated, remove them explicitly");
-		    rb_warn("this causes ArgumentError in the next release");
-		    continue;
+                    rb_warn("wrong element type %s at %ld (expected array)",
+                            rb_builtin_class_name(e), i);
+                    rb_warn("ignoring wrong elements is deprecated, remove them explicitly");
+                    rb_warn("this causes ArgumentError in the next release");
+                    continue;
 #endif
-		}
-		switch (RARRAY_LEN(v)) {
-		  default:
-		    rb_raise(rb_eArgError, "invalid number of elements (%ld for 1..2)",
-			     RARRAY_LEN(v));
-		  case 2:
-		    val = RARRAY_AREF(v, 1);
-		  case 1:
-		    key = RARRAY_AREF(v, 0);
-		    rb_hash_aset(hash, key, val);
-		}
-	    }
-	    return hash;
-	}
+                }
+                switch (RARRAY_LEN(v)) {
+                  default:
+                    rb_raise(rb_eArgError, "invalid number of elements (%ld for 1..2)",
+                             RARRAY_LEN(v));
+                  case 2:
+                    val = RARRAY_AREF(v, 1);
+                  case 1:
+                    key = RARRAY_AREF(v, 0);
+                    rb_hash_aset(hash, key, val);
+                }
+            }
+            return hash;
+        }
     }
     if (argc % 2 != 0) {
-	rb_raise(rb_eArgError, "odd number of arguments for Hash");
+        rb_raise(rb_eArgError, "odd number of arguments for Hash");
     }
 
     hash = hash_alloc(klass);
@@ -800,7 +800,7 @@ rb_hash_rehash(VALUE hash)
     st_table *tbl;
 
     if (RHASH_ITER_LEV(hash) > 0) {
-	rb_raise(rb_eRuntimeError, "rehash during iteration");
+        rb_raise(rb_eRuntimeError, "rehash during iteration");
     }
     rb_hash_modify_check(hash);
     if (!RHASH(hash)->ntbl)
@@ -821,13 +821,13 @@ VALUE
 rb_hash_default_value(VALUE hash, VALUE key)
 {
     if (rb_method_basic_definition_p(CLASS_OF(hash), id_default)) {
-	VALUE ifnone = RHASH_IFNONE(hash);
-	if (!FL_TEST(hash, HASH_PROC_DEFAULT)) return ifnone;
-	if (key == Qundef) return Qnil;
-	return rb_funcall(ifnone, id_yield, 2, hash, key);
+        VALUE ifnone = RHASH_IFNONE(hash);
+        if (!FL_TEST(hash, HASH_PROC_DEFAULT)) return ifnone;
+        if (key == Qundef) return Qnil;
+        return rb_funcall(ifnone, id_yield, 2, hash, key);
     }
     else {
-	return rb_funcall(hash, id_default, 1, key);
+        return rb_funcall(hash, id_default, 1, key);
     }
 }
 
@@ -851,7 +851,7 @@ rb_hash_aref(VALUE hash, VALUE key)
     st_data_t val;
 
     if (!RHASH(hash)->ntbl || !st_lookup(RHASH(hash)->ntbl, key, &val)) {
-	return rb_hash_default_value(hash, key);
+        return rb_hash_default_value(hash, key);
     }
     return (VALUE)val;
 }
@@ -862,7 +862,7 @@ rb_hash_lookup2(VALUE hash, VALUE key, VALUE def)
     st_data_t val;
 
     if (!RHASH(hash)->ntbl || !st_lookup(RHASH(hash)->ntbl, key, &val)) {
-	return def; /* without Hash#default */
+        return def; /* without Hash#default */
     }
     return (VALUE)val;
 }
@@ -914,19 +914,19 @@ rb_hash_fetch_m(int argc, VALUE *argv, VALUE hash)
 
     block_given = rb_block_given_p();
     if (block_given && argc == 2) {
-	rb_warn("block supersedes default value argument");
+        rb_warn("block supersedes default value argument");
     }
     if (!RHASH(hash)->ntbl || !st_lookup(RHASH(hash)->ntbl, key, &val)) {
-	if (block_given) return rb_yield(key);
-	if (argc == 1) {
-	    VALUE desc = rb_protect(rb_inspect, key, 0);
-	    if (NIL_P(desc)) {
-		desc = rb_any_to_s(key);
-	    }
-	    desc = rb_str_ellipsize(desc, 65);
-	    rb_key_err_raise(rb_sprintf("key not found: %"PRIsVALUE, desc), hash, key);
-	}
-	return argv[1];
+        if (block_given) return rb_yield(key);
+        if (argc == 1) {
+            VALUE desc = rb_protect(rb_inspect, key, 0);
+            if (NIL_P(desc)) {
+                desc = rb_any_to_s(key);
+            }
+            desc = rb_str_ellipsize(desc, 65);
+            rb_key_err_raise(rb_sprintf("key not found: %"PRIsVALUE, desc), hash, key);
+        }
+        return argv[1];
     }
     return (VALUE)val;
 }
@@ -966,10 +966,10 @@ rb_hash_default(int argc, VALUE *argv, VALUE hash)
     rb_check_arity(argc, 0, 1);
     ifnone = RHASH_IFNONE(hash);
     if (FL_TEST(hash, HASH_PROC_DEFAULT)) {
-	if (argc == 0) return Qnil;
-	args[0] = hash;
-	args[1] = argv[0];
-	return rb_funcallv(ifnone, id_yield, 2, args);
+        if (argc == 0) return Qnil;
+        args[0] = hash;
+        args[1] = argv[0];
+        return rb_funcallv(ifnone, id_yield, 2, args);
     }
     return ifnone;
 }
@@ -1021,7 +1021,7 @@ static VALUE
 rb_hash_default_proc(VALUE hash)
 {
     if (FL_TEST(hash, HASH_PROC_DEFAULT)) {
-	return RHASH_IFNONE(hash);
+        return RHASH_IFNONE(hash);
     }
     return Qnil;
 }
@@ -1046,14 +1046,14 @@ rb_hash_set_default_proc(VALUE hash, VALUE proc)
 
     rb_hash_modify_check(hash);
     if (NIL_P(proc)) {
-	SET_DEFAULT(hash, proc);
-	return proc;
+        SET_DEFAULT(hash, proc);
+        return proc;
     }
     b = rb_check_convert_type_with_id(proc, T_DATA, "Proc", idTo_proc);
     if (NIL_P(b) || !rb_obj_is_proc(b)) {
-	rb_raise(rb_eTypeError,
-		 "wrong default_proc type %s (expected Proc)",
-		 rb_obj_classname(proc));
+        rb_raise(rb_eTypeError,
+                 "wrong default_proc type %s (expected Proc)",
+                 rb_obj_classname(proc));
     }
     proc = b;
     SET_PROC_DEFAULT(hash, proc);
@@ -1066,8 +1066,8 @@ key_i(VALUE key, VALUE value, VALUE arg)
     VALUE *args = (VALUE *)arg;
 
     if (rb_equal(value, args[0])) {
-	args[1] = key;
-	return ST_STOP;
+        args[1] = key;
+        return ST_STOP;
     }
     return ST_CONTINUE;
 }
@@ -1118,13 +1118,13 @@ rb_hash_delete_entry(VALUE hash, VALUE key)
     st_data_t ktmp = (st_data_t)key, val;
 
     if (!RHASH(hash)->ntbl) {
-	return Qundef;
+        return Qundef;
     }
     else if (st_delete(RHASH(hash)->ntbl, &ktmp, &val)) {
-	return (VALUE)val;
+        return (VALUE)val;
     }
     else {
-	return Qundef;
+        return Qundef;
     }
 }
 
@@ -1139,10 +1139,10 @@ rb_hash_delete(VALUE hash, VALUE key)
     VALUE deleted_value = rb_hash_delete_entry(hash, key);
 
     if (deleted_value != Qundef) { /* likely pass */
-	return deleted_value;
+        return deleted_value;
     }
     else {
-	return Qnil;
+        return Qnil;
     }
 }
 
@@ -1173,15 +1173,15 @@ rb_hash_delete_m(VALUE hash, VALUE key)
     val = rb_hash_delete_entry(hash, key);
 
     if (val != Qundef) {
-	return val;
+        return val;
     }
     else {
-	if (rb_block_given_p()) {
-	    return rb_yield(key);
-	}
-	else {
-	    return Qnil;
-	}
+        if (rb_block_given_p()) {
+            return rb_yield(key);
+        }
+        else {
+            return Qnil;
+        }
     }
 }
 
@@ -1220,19 +1220,19 @@ rb_hash_shift(VALUE hash)
 
     rb_hash_modify_check(hash);
     if (RHASH(hash)->ntbl) {
-	var.key = Qundef;
-	if (RHASH_ITER_LEV(hash) == 0) {
-	    if (st_shift(RHASH(hash)->ntbl, &var.key, &var.val)) {
-		return rb_assoc_new(var.key, var.val);
-	    }
-	}
-	else {
-	    rb_hash_foreach(hash, shift_i_safe, (VALUE)&var);
-	    if (var.key != Qundef) {
-		rb_hash_delete_entry(hash, var.key);
-		return rb_assoc_new(var.key, var.val);
-	    }
-	}
+        var.key = Qundef;
+        if (RHASH_ITER_LEV(hash) == 0) {
+            if (st_shift(RHASH(hash)->ntbl, &var.key, &var.val)) {
+                return rb_assoc_new(var.key, var.val);
+            }
+        }
+        else {
+            rb_hash_foreach(hash, shift_i_safe, (VALUE)&var);
+            if (var.key != Qundef) {
+                rb_hash_delete_entry(hash, var.key);
+                return rb_assoc_new(var.key, var.val);
+            }
+        }
     }
     return rb_hash_default_value(hash, Qnil);
 }
@@ -1241,7 +1241,7 @@ static int
 delete_if_i(VALUE key, VALUE value, VALUE hash)
 {
     if (RTEST(rb_yield_values(2, key, value))) {
-	return ST_DELETE;
+        return ST_DELETE;
     }
     return ST_CONTINUE;
 }
@@ -1273,7 +1273,7 @@ rb_hash_delete_if(VALUE hash)
     RETURN_SIZED_ENUMERATOR(hash, 0, 0, hash_enum_size);
     rb_hash_modify_check(hash);
     if (RHASH(hash)->ntbl)
-	rb_hash_foreach(hash, delete_if_i, hash);
+        rb_hash_foreach(hash, delete_if_i, hash);
     return hash;
 }
 
@@ -1304,7 +1304,7 @@ static int
 reject_i(VALUE key, VALUE value, VALUE result)
 {
     if (!RTEST(rb_yield_values(2, key, value))) {
-	rb_hash_aset(result, key, value);
+        rb_hash_aset(result, key, value);
     }
     return ST_CONTINUE;
 }
@@ -1330,14 +1330,14 @@ rb_hash_reject(VALUE hash)
 
     RETURN_SIZED_ENUMERATOR(hash, 0, 0, hash_enum_size);
     if (RTEST(ruby_verbose)) {
-	VALUE klass;
-	if (HAS_EXTRA_STATES(hash, klass)) {
-	    rb_warn("extra states are no longer copied: %+"PRIsVALUE, hash);
-	}
+        VALUE klass;
+        if (HAS_EXTRA_STATES(hash, klass)) {
+            rb_warn("extra states are no longer copied: %+"PRIsVALUE, hash);
+        }
     }
     result = rb_hash_new();
     if (!RHASH_EMPTY_P(hash)) {
-	rb_hash_foreach(hash, reject_i, result);
+        rb_hash_foreach(hash, reject_i, result);
     }
     return result;
 }
@@ -1360,15 +1360,15 @@ rb_hash_slice(int argc, VALUE *argv, VALUE hash)
     VALUE key, value, result;
 
     if (argc == 0 || RHASH_EMPTY_P(hash)) {
-	return rb_hash_new();
+        return rb_hash_new();
     }
     result = rb_hash_new_with_size(argc);
 
     for (i = 0; i < argc; i++) {
-	key = argv[i];
-	value = rb_hash_lookup2(hash, key, Qundef);
-	if (value != Qundef)
-	    rb_hash_aset(result, key, value);
+        key = argv[i];
+        value = rb_hash_lookup2(hash, key, Qundef);
+        if (value != Qundef)
+            rb_hash_aset(result, key, value);
     }
 
     return result;
@@ -1392,7 +1392,7 @@ rb_hash_values_at(int argc, VALUE *argv, VALUE hash)
     long i;
 
     for (i=0; i<argc; i++) {
-	rb_ary_push(result, rb_hash_aref(hash, argv[i]));
+        rb_ary_push(result, rb_hash_aref(hash, argv[i]));
     }
     return result;
 }
@@ -1420,7 +1420,7 @@ rb_hash_fetch_values(int argc, VALUE *argv, VALUE hash)
     long i;
 
     for (i=0; i<argc; i++) {
-	rb_ary_push(result, rb_hash_fetch(hash, argv[i]));
+        rb_ary_push(result, rb_hash_fetch(hash, argv[i]));
     }
     return result;
 }
@@ -1429,7 +1429,7 @@ static int
 select_i(VALUE key, VALUE value, VALUE result)
 {
     if (RTEST(rb_yield_values(2, key, value))) {
-	rb_hash_aset(result, key, value);
+        rb_hash_aset(result, key, value);
     }
     return ST_CONTINUE;
 }
@@ -1456,7 +1456,7 @@ rb_hash_select(VALUE hash)
     RETURN_SIZED_ENUMERATOR(hash, 0, 0, hash_enum_size);
     result = rb_hash_new();
     if (!RHASH_EMPTY_P(hash)) {
-	rb_hash_foreach(hash, select_i, result);
+        rb_hash_foreach(hash, select_i, result);
     }
     return result;
 }
@@ -1465,7 +1465,7 @@ static int
 keep_if_i(VALUE key, VALUE value, VALUE hash)
 {
     if (!RTEST(rb_yield_values(2, key, value))) {
-	return ST_DELETE;
+        return ST_DELETE;
     }
     return ST_CONTINUE;
 }
@@ -1512,7 +1512,7 @@ rb_hash_keep_if(VALUE hash)
     RETURN_SIZED_ENUMERATOR(hash, 0, 0, hash_enum_size);
     rb_hash_modify_check(hash);
     if (RHASH(hash)->ntbl)
-	rb_hash_foreach(hash, keep_if_i, hash);
+        rb_hash_foreach(hash, keep_if_i, hash);
     return hash;
 }
 
@@ -1540,10 +1540,10 @@ rb_hash_clear(VALUE hash)
     if (!RHASH(hash)->ntbl)
         return hash;
     if (RHASH(hash)->ntbl->num_entries > 0) {
-	if (RHASH_ITER_LEV(hash) > 0)
-	    rb_hash_foreach(hash, clear_i, 0);
-	else
-	    st_clear(RHASH(hash)->ntbl);
+        if (RHASH_ITER_LEV(hash) > 0)
+            rb_hash_foreach(hash, clear_i, 0);
+        else
+            st_clear(RHASH(hash)->ntbl);
     }
 
     return hash;
@@ -1553,12 +1553,12 @@ static int
 hash_aset(st_data_t *key, st_data_t *val, struct update_arg *arg, int existing)
 {
     if (existing) {
-	arg->new_value = arg->arg;
-	arg->old_value = *val;
+        arg->new_value = arg->arg;
+        arg->old_value = *val;
     }
     else {
-	arg->new_key = *key;
-	arg->new_value = arg->arg;
+        arg->new_key = *key;
+        arg->new_value = arg->arg;
     }
     *val = arg->arg;
     return ST_CONTINUE;
@@ -1571,15 +1571,15 @@ fstring_existing_str(VALUE str)
     st_table *tbl = rb_vm_fstring_table();
 
     if (st_lookup(tbl, str, &fstr)) {
-	if (rb_objspace_garbage_object_p(fstr)) {
-	    return rb_fstring(str);
-	}
-	else {
-	    return (VALUE)fstr;
-	}
+        if (rb_objspace_garbage_object_p(fstr)) {
+            return rb_fstring(str);
+        }
+        else {
+            return (VALUE)fstr;
+        }
     }
     else {
-	return Qnil;
+        return Qnil;
     }
 }
 
@@ -1589,11 +1589,11 @@ rb_hash_key_str(VALUE key)
     VALUE k;
 
     if (!RB_OBJ_TAINTED(key) &&
-	(k = fstring_existing_str(key)) != Qnil) {
-	return k;
+        (k = fstring_existing_str(key)) != Qnil) {
+        return k;
     }
     else {
-	return rb_str_new_frozen(key);
+        return rb_str_new_frozen(key);
     }
 }
 
@@ -1601,7 +1601,7 @@ static int
 hash_aset_str(st_data_t *key, st_data_t *val, struct update_arg *arg, int existing)
 {
     if (!existing && !RB_OBJ_FROZEN(*key)) {
-	*key = rb_hash_key_str(*key);
+        *key = rb_hash_key_str(*key);
     }
     return hash_aset(key, val, arg, existing);
 }
@@ -1644,14 +1644,14 @@ rb_hash_aset(VALUE hash, VALUE key, VALUE val)
 
     rb_hash_modify(hash);
     if (!tbl) {
-	if (iter_lev > 0) no_new_key();
-	tbl = hash_tbl(hash);
+        if (iter_lev > 0) no_new_key();
+        tbl = hash_tbl(hash);
     }
     if (tbl->type == &identhash || rb_obj_class(key) != rb_cString) {
-	RHASH_UPDATE_ITER(hash, iter_lev, key, hash_aset, val);
+        RHASH_UPDATE_ITER(hash, iter_lev, key, hash_aset, val);
     }
     else {
-	RHASH_UPDATE_ITER(hash, iter_lev, key, hash_aset_str, val);
+        RHASH_UPDATE_ITER(hash, iter_lev, key, hash_aset_str, val);
     }
     return val;
 }
@@ -1679,13 +1679,13 @@ rb_hash_initialize_copy(VALUE hash, VALUE hash2)
 
     ntbl = RHASH(hash)->ntbl;
     if (RHASH(hash2)->ntbl) {
-	if (ntbl) st_free_table(ntbl);
+        if (ntbl) st_free_table(ntbl);
         RHASH(hash)->ntbl = st_copy(RHASH(hash2)->ntbl);
-	if (RHASH(hash)->ntbl->num_entries)
-	    rb_hash_rehash(hash);
+        if (RHASH(hash)->ntbl->num_entries)
+            rb_hash_rehash(hash);
     }
     else if (ntbl) {
-	st_clear(ntbl);
+        st_clear(ntbl);
     }
 
     COPY_DEFAULT(hash, hash2);
@@ -1872,9 +1872,9 @@ rb_hash_each_pair(VALUE hash)
 {
     RETURN_SIZED_ENUMERATOR(hash, 0, 0, hash_enum_size);
     if (rb_block_arity() > 1)
-	rb_hash_foreach(hash, each_pair_i_fast, 0);
+        rb_hash_foreach(hash, each_pair_i_fast, 0);
     else
-	rb_hash_foreach(hash, each_pair_i, 0);
+        rb_hash_foreach(hash, each_pair_i, 0);
     return hash;
 }
 
@@ -2057,10 +2057,10 @@ inspect_i(VALUE key, VALUE value, VALUE str)
 
     str2 = rb_inspect(key);
     if (RSTRING_LEN(str) > 1) {
-	rb_str_buf_cat_ascii(str, ", ");
+        rb_str_buf_cat_ascii(str, ", ");
     }
     else {
-	rb_enc_copy(str, str2);
+        rb_enc_copy(str, str2);
     }
     rb_str_buf_append(str, str2);
     OBJ_INFECT(str, str2);
@@ -2101,7 +2101,7 @@ static VALUE
 rb_hash_inspect(VALUE hash)
 {
     if (RHASH_EMPTY_P(hash))
-	return rb_usascii_str_new2("{}");
+        return rb_usascii_str_new2("{}");
     return rb_exec_recursive(inspect_hash, hash, 0);
 }
 
@@ -2130,8 +2130,8 @@ static VALUE
 rb_hash_to_h(VALUE hash)
 {
     if (rb_obj_class(hash) != rb_cHash) {
-	const VALUE flags = RBASIC(hash)->flags;
-	hash = hash_dup(hash, rb_cHash, flags & HASH_PROC_DEFAULT);
+        const VALUE flags = RBASIC(hash)->flags;
+        hash = hash_dup(hash, rb_cHash, flags & HASH_PROC_DEFAULT);
     }
     return hash;
 }
@@ -2165,16 +2165,16 @@ rb_hash_keys(VALUE hash)
     if (size == 0) return keys;
 
     if (ST_DATA_COMPATIBLE_P(VALUE)) {
-	st_table *table = RHASH(hash)->ntbl;
+        st_table *table = RHASH(hash)->ntbl;
 
-	rb_gc_writebarrier_remember(keys);
-	RARRAY_PTR_USE(keys, ptr, {
-	    size = st_keys(table, ptr, size);
-	});
-	rb_ary_set_len(keys, size);
+        rb_gc_writebarrier_remember(keys);
+        RARRAY_PTR_USE(keys, ptr, {
+            size = st_keys(table, ptr, size);
+        });
+        rb_ary_set_len(keys, size);
     }
     else {
-	rb_hash_foreach(hash, keys_i, keys);
+        rb_hash_foreach(hash, keys_i, keys);
     }
 
     return keys;
@@ -2209,16 +2209,16 @@ rb_hash_values(VALUE hash)
     if (size == 0) return values;
 
     if (ST_DATA_COMPATIBLE_P(VALUE)) {
-	st_table *table = RHASH(hash)->ntbl;
+        st_table *table = RHASH(hash)->ntbl;
 
-	rb_gc_writebarrier_remember(values);
-	RARRAY_PTR_USE(values, ptr, {
-	    size = st_values(table, ptr, size);
-	});
-	rb_ary_set_len(values, size);
+        rb_gc_writebarrier_remember(values);
+        RARRAY_PTR_USE(values, ptr, {
+            size = st_values(table, ptr, size);
+        });
+        rb_ary_set_len(values, size);
     }
     else {
-	rb_hash_foreach(hash, values_i, values);
+        rb_hash_foreach(hash, values_i, values);
     }
 
     return values;
@@ -2249,7 +2249,7 @@ rb_hash_has_key(VALUE hash, VALUE key)
     if (!RHASH(hash)->ntbl)
         return Qfalse;
     if (st_lookup(RHASH(hash)->ntbl, key, 0)) {
-	return Qtrue;
+        return Qtrue;
     }
     return Qfalse;
 }
@@ -2260,8 +2260,8 @@ rb_hash_search_value(VALUE key, VALUE value, VALUE arg)
     VALUE *data = (VALUE *)arg;
 
     if (rb_equal(value, data[1])) {
-	data[0] = Qtrue;
-	return ST_STOP;
+        data[0] = Qtrue;
+        return ST_STOP;
     }
     return ST_CONTINUE;
 }
@@ -2303,12 +2303,12 @@ eql_i(VALUE key, VALUE val1, VALUE arg)
     st_data_t val2;
 
     if (!st_lookup(data->tbl, key, &val2)) {
-	data->result = Qfalse;
-	return ST_STOP;
+        data->result = Qfalse;
+        return ST_STOP;
     }
     if (!(data->eql ? rb_eql(val1, (VALUE)val2) : (int)rb_equal(val1, (VALUE)val2))) {
-	data->result = Qfalse;
-	return ST_STOP;
+        data->result = Qfalse;
+        return ST_STOP;
     }
     return ST_CONTINUE;
 }
@@ -2318,7 +2318,7 @@ recursive_eql(VALUE hash, VALUE dt, int recur)
 {
     struct equal_data *data;
 
-    if (recur) return Qtrue;	/* Subtle! */
+    if (recur) return Qtrue;        /* Subtle! */
     data = (struct equal_data*)dt;
     data->result = Qtrue;
     rb_hash_foreach(hash, eql_i, dt);
@@ -2333,31 +2333,31 @@ hash_equal(VALUE hash1, VALUE hash2, int eql)
 
     if (hash1 == hash2) return Qtrue;
     if (!RB_TYPE_P(hash2, T_HASH)) {
-	if (!rb_respond_to(hash2, idTo_hash)) {
-	    return Qfalse;
-	}
-	if (eql) {
-	    if (rb_eql(hash2, hash1)) {
-		return Qtrue;
-	    }
-	    else {
-		return Qfalse;
-	    }
-	}
-	else {
-	    return rb_equal(hash2, hash1);
-	}
+        if (!rb_respond_to(hash2, idTo_hash)) {
+            return Qfalse;
+        }
+        if (eql) {
+            if (rb_eql(hash2, hash1)) {
+                return Qtrue;
+            }
+            else {
+                return Qfalse;
+            }
+        }
+        else {
+            return rb_equal(hash2, hash1);
+        }
     }
     if (RHASH_SIZE(hash1) != RHASH_SIZE(hash2))
-	return Qfalse;
+        return Qfalse;
     if (!RHASH(hash1)->ntbl || !RHASH(hash2)->ntbl)
         return Qtrue;
     if (RHASH(hash1)->ntbl->type != RHASH(hash2)->ntbl->type)
-	return Qfalse;
+        return Qfalse;
 #if 0
     if (!(rb_equal(RHASH_IFNONE(hash1), RHASH_IFNONE(hash2)) &&
-	  FL_TEST(hash1, HASH_PROC_DEFAULT) == FL_TEST(hash2, HASH_PROC_DEFAULT)))
-	return Qfalse;
+          FL_TEST(hash1, HASH_PROC_DEFAULT) == FL_TEST(hash2, HASH_PROC_DEFAULT)))
+        return Qfalse;
 #endif
 
     data.tbl = RHASH(hash2)->ntbl;
@@ -2440,7 +2440,7 @@ rb_hash_hash(VALUE hash)
     st_index_t hval = rb_hash_start(size);
     hval = rb_hash_uint(hval, (st_index_t)rb_hash_hash);
     if (size) {
-	rb_hash_foreach(hash, hash_i, (VALUE)&hval);
+        rb_hash_foreach(hash, hash_i, (VALUE)&hval);
     }
     hval = rb_hash_end(hval);
     return ST2FIX(hval);
@@ -2496,12 +2496,12 @@ static int
 rb_hash_update_callback(st_data_t *key, st_data_t *value, struct update_arg *arg, int existing)
 {
     if (existing) {
-	arg->old_value = *value;
-	arg->new_value = arg->arg;
+        arg->old_value = *value;
+        arg->new_value = arg->arg;
     }
     else {
-	arg->new_key = *key;
-	arg->new_value = arg->arg;
+        arg->new_key = *key;
+        arg->new_value = arg->arg;
     }
     *value = arg->arg;
     return ST_CONTINUE;
@@ -2522,11 +2522,11 @@ rb_hash_update_block_callback(st_data_t *key, st_data_t *value, struct update_ar
     VALUE newvalue = (VALUE)arg->arg;
 
     if (existing) {
-	newvalue = rb_yield_values(3, (VALUE)*key, (VALUE)*value, newvalue);
-	arg->old_value = *value;
+        newvalue = rb_yield_values(3, (VALUE)*key, (VALUE)*value, newvalue);
+        arg->old_value = *value;
     }
     else {
-	arg->new_key = *key;
+        arg->new_key = *key;
     }
     arg->new_value = newvalue;
     *value = newvalue;
@@ -2573,10 +2573,10 @@ rb_hash_update(VALUE hash1, VALUE hash2)
     rb_hash_modify(hash1);
     hash2 = to_hash(hash2);
     if (rb_block_given_p()) {
-	rb_hash_foreach(hash2, rb_hash_update_block_i, hash1);
+        rb_hash_foreach(hash2, rb_hash_update_block_i, hash1);
     }
     else {
-	rb_hash_foreach(hash2, rb_hash_update_i, hash1);
+        rb_hash_foreach(hash2, rb_hash_update_i, hash1);
     }
     return hash1;
 }
@@ -2594,11 +2594,11 @@ rb_hash_update_func_callback(st_data_t *key, st_data_t *value, struct update_arg
     VALUE newvalue = uf_arg->value;
 
     if (existing) {
-	newvalue = (*uf_arg->func)((VALUE)*key, (VALUE)*value, newvalue);
-	arg->old_value = *value;
+        newvalue = (*uf_arg->func)((VALUE)*key, (VALUE)*value, newvalue);
+        arg->old_value = *value;
     }
     else {
-	arg->new_key = *key;
+        arg->new_key = *key;
     }
     arg->new_value = newvalue;
     *value = newvalue;
@@ -2624,13 +2624,13 @@ rb_hash_update_by(VALUE hash1, VALUE hash2, rb_hash_update_func *func)
     rb_hash_modify(hash1);
     hash2 = to_hash(hash2);
     if (func) {
-	struct update_func_arg arg;
-	arg.hash = hash1;
-	arg.func = func;
-	rb_hash_foreach(hash2, rb_hash_update_func_i, (VALUE)&arg);
+        struct update_func_arg arg;
+        arg.hash = hash1;
+        arg.func = func;
+        rb_hash_foreach(hash2, rb_hash_update_func_i, (VALUE)&arg);
     }
     else {
-	rb_hash_foreach(hash2, rb_hash_update_i, hash1);
+        rb_hash_foreach(hash2, rb_hash_update_i, hash1);
     }
     return hash1;
 }
@@ -2693,8 +2693,8 @@ assoc_i(VALUE key, VALUE val, VALUE arg)
     VALUE *args = (VALUE *)arg;
 
     if (RTEST(rb_equal(args[0], key))) {
-	args[1] = rb_assoc_new(key, val);
-	return ST_STOP;
+        args[1] = rb_assoc_new(key, val);
+        return ST_STOP;
     }
     return ST_CONTINUE;
 }
@@ -2725,19 +2725,19 @@ rb_hash_assoc(VALUE hash, VALUE key)
     orighash = table->type;
 
     if (orighash != &identhash) {
-	VALUE value;
-	struct reset_hash_type_arg ensure_arg;
-	struct st_hash_type assochash;
+        VALUE value;
+        struct reset_hash_type_arg ensure_arg;
+        struct st_hash_type assochash;
 
-	assochash.compare = assoc_cmp;
-	assochash.hash = orighash->hash;
-	table->type = &assochash;
-	args[0] = hash;
-	args[1] = key;
-	ensure_arg.hash = hash;
-	ensure_arg.orighash = orighash;
-	value = rb_ensure(lookup2_call, (VALUE)&args, reset_hash_type, (VALUE)&ensure_arg);
-	if (value != Qundef) return rb_assoc_new(key, value);
+        assochash.compare = assoc_cmp;
+        assochash.hash = orighash->hash;
+        table->type = &assochash;
+        args[0] = hash;
+        args[1] = key;
+        ensure_arg.hash = hash;
+        ensure_arg.orighash = orighash;
+        value = rb_ensure(lookup2_call, (VALUE)&args, reset_hash_type, (VALUE)&ensure_arg);
+        if (value != Qundef) return rb_assoc_new(key, value);
     }
 
     args[0] = key;
@@ -2752,8 +2752,8 @@ rassoc_i(VALUE key, VALUE val, VALUE arg)
     VALUE *args = (VALUE *)arg;
 
     if (RTEST(rb_equal(args[0], val))) {
-	args[1] = rb_assoc_new(key, val);
-	return ST_STOP;
+        args[1] = rb_assoc_new(key, val);
+        return ST_STOP;
     }
     return ST_CONTINUE;
 }
@@ -2818,26 +2818,26 @@ rb_hash_flatten(int argc, VALUE *argv, VALUE hash)
     rb_check_arity(argc, 0, 1);
 
     if (argc) {
-	int level = NUM2INT(argv[0]);
+        int level = NUM2INT(argv[0]);
 
-	if (level == 0) return rb_hash_to_a(hash);
+        if (level == 0) return rb_hash_to_a(hash);
 
-	ary = rb_ary_new_capa(RHASH_SIZE(hash) * 2);
-	rb_hash_foreach(hash, flatten_i, ary);
-	level--;
+        ary = rb_ary_new_capa(RHASH_SIZE(hash) * 2);
+        rb_hash_foreach(hash, flatten_i, ary);
+        level--;
 
-	if (level > 0) {
-	    VALUE ary_flatten_level = INT2FIX(level);
-	    rb_funcallv(ary, id_flatten_bang, 1, &ary_flatten_level);
-	}
-	else if (level < 0) {
-	    /* flatten recursively */
-	    rb_funcallv(ary, id_flatten_bang, 0, 0);
-	}
+        if (level > 0) {
+            VALUE ary_flatten_level = INT2FIX(level);
+            rb_funcallv(ary, id_flatten_bang, 1, &ary_flatten_level);
+        }
+        else if (level < 0) {
+            /* flatten recursively */
+            rb_funcallv(ary, id_flatten_bang, 0, 0);
+        }
     }
     else {
-	ary = rb_ary_new_capa(RHASH_SIZE(hash) * 2);
-	rb_hash_foreach(hash, flatten_i, ary);
+        ary = rb_ary_new_capa(RHASH_SIZE(hash) * 2);
+        rb_hash_foreach(hash, flatten_i, ary);
     }
 
     return ary;
@@ -2847,7 +2847,7 @@ static int
 delete_if_nil(VALUE key, VALUE value, VALUE hash)
 {
     if (NIL_P(value)) {
-	return ST_DELETE;
+        return ST_DELETE;
     }
     return ST_CONTINUE;
 }
@@ -2856,7 +2856,7 @@ static int
 set_if_not_nil(VALUE key, VALUE value, VALUE hash)
 {
     if (!NIL_P(value)) {
-	rb_hash_aset(hash, key, value);
+        rb_hash_aset(hash, key, value);
     }
     return ST_CONTINUE;
 }
@@ -2878,7 +2878,7 @@ rb_hash_compact(VALUE hash)
 {
     VALUE result = rb_hash_new();
     if (!RHASH_EMPTY_P(hash)) {
-	rb_hash_foreach(hash, set_if_not_nil, result);
+        rb_hash_foreach(hash, set_if_not_nil, result);
     }
     return result;
 }
@@ -2900,10 +2900,10 @@ rb_hash_compact_bang(VALUE hash)
 {
     rb_hash_modify_check(hash);
     if (RHASH(hash)->ntbl) {
-	st_index_t n = RHASH(hash)->ntbl->num_entries;
-	rb_hash_foreach(hash, delete_if_nil, hash);
-	if (n != RHASH(hash)->ntbl->num_entries)
-	    return hash;
+        st_index_t n = RHASH(hash)->ntbl->num_entries;
+        rb_hash_foreach(hash, delete_if_nil, hash);
+        if (n != RHASH(hash)->ntbl->num_entries)
+            return hash;
     }
     return Qnil;
 }
@@ -2934,7 +2934,7 @@ rb_hash_compare_by_id(VALUE hash)
     identtable = rb_init_identtable_with_size(RHASH_SIZE(hash));
     rb_hash_foreach(hash, rb_hash_rehash_i, (VALUE)identtable);
     if (RHASH(hash)->ntbl)
-	st_free_table(RHASH(hash)->ntbl);
+        st_free_table(RHASH(hash)->ntbl);
     RHASH(hash)->ntbl = identtable;
 
     return hash;
@@ -2955,7 +2955,7 @@ rb_hash_compare_by_id_p(VALUE hash)
     if (!RHASH(hash)->ntbl)
         return Qfalse;
     if (RHASH(hash)->ntbl->type == &identhash) {
-	return Qtrue;
+        return Qtrue;
     }
     return Qfalse;
 }
@@ -2985,8 +2985,8 @@ any_p_i(VALUE key, VALUE value, VALUE arg)
 {
     VALUE ret = rb_yield(rb_assoc_new(key, value));
     if (RTEST(ret)) {
-	*(VALUE *)arg = Qtrue;
-	return ST_STOP;
+        *(VALUE *)arg = Qtrue;
+        return ST_STOP;
     }
     return ST_CONTINUE;
 }
@@ -2996,8 +2996,8 @@ any_p_i_fast(VALUE key, VALUE value, VALUE arg)
 {
     VALUE ret = rb_yield_values(2, key, value);
     if (RTEST(ret)) {
-	*(VALUE *)arg = Qtrue;
-	return ST_STOP;
+        *(VALUE *)arg = Qtrue;
+        return ST_STOP;
     }
     return ST_CONTINUE;
 }
@@ -3007,8 +3007,8 @@ any_p_i_pattern(VALUE key, VALUE value, VALUE arg)
 {
     VALUE ret = rb_funcall(((VALUE *)arg)[1], idEqq, 1, rb_assoc_new(key, value));
     if (RTEST(ret)) {
-	*(VALUE *)arg = Qtrue;
-	return ST_STOP;
+        *(VALUE *)arg = Qtrue;
+        return ST_STOP;
     }
     return ST_CONTINUE;
 }
@@ -3030,19 +3030,19 @@ rb_hash_any_p(int argc, VALUE *argv, VALUE hash)
     rb_check_arity(argc, 0, 1);
     if (RHASH_EMPTY_P(hash)) return Qfalse;
     if (argc) {
-	args[1] = argv[0];
+        args[1] = argv[0];
 
-	rb_hash_foreach(hash, any_p_i_pattern, (VALUE)args);
+        rb_hash_foreach(hash, any_p_i_pattern, (VALUE)args);
     }
     else {
-	if (!rb_block_given_p()) {
-	    /* yields pairs, never false */
-	    return Qtrue;
-	}
-	if (rb_block_arity() > 1)
-	    rb_hash_foreach(hash, any_p_i_fast, (VALUE)args);
-	else
-	    rb_hash_foreach(hash, any_p_i, (VALUE)args);
+        if (!rb_block_given_p()) {
+            /* yields pairs, never false */
+            return Qtrue;
+        }
+        if (rb_block_arity() > 1)
+            rb_hash_foreach(hash, any_p_i_fast, (VALUE)args);
+        else
+            rb_hash_foreach(hash, any_p_i, (VALUE)args);
     }
     return args[0];
 }
@@ -3246,10 +3246,10 @@ w32_getenv_unknown(const char *name)
 {
     char *(*func)(const char*);
     if (rb_locale_encindex() == rb_ascii8bit_encindex()) {
-	func = rb_w32_getenv;
+        func = rb_w32_getenv;
     }
     else {
-	func = rb_w32_ugetenv;
+        func = rb_w32_ugetenv;
     }
     /* atomic assignment in flat memory model */
     return (w32_getenv = func)(name);
@@ -3283,7 +3283,7 @@ env_enc_str_new(const char *ptr, long len, rb_encoding *enc)
     rb_encoding *utf8 = rb_utf8_encoding();
     VALUE str = rb_enc_str_new(NULL, 0, (internal ? internal : enc));
     if (NIL_P(rb_str_cat_conv_enc_opts(str, 0, ptr, len, utf8, ecflags, Qnil))) {
-	rb_str_initialize(str, ptr, len, utf8);
+        rb_str_initialize(str, ptr, len, utf8);
     }
 #else
     VALUE str = rb_external_str_new_with_enc(ptr, len, enc);
@@ -3319,10 +3319,10 @@ static rb_encoding *
 env_encoding_for(const char *name, const char *ptr)
 {
     if (ENVMATCH(name, PATH_ENV) && !env_path_tainted(ptr)) {
-	return rb_filesystem_encoding();
+        return rb_filesystem_encoding();
     }
     else {
-	return rb_locale_encoding();
+        return rb_locale_encoding();
     }
 }
 
@@ -3347,17 +3347,17 @@ get_env_cstr(
     char *var;
     rb_encoding *enc = rb_enc_get(str);
     if (!rb_enc_asciicompat(enc)) {
-	rb_raise(rb_eArgError, "bad environment variable %s: ASCII incompatible encoding: %s",
-		 name, rb_enc_name(enc));
+        rb_raise(rb_eArgError, "bad environment variable %s: ASCII incompatible encoding: %s",
+                 name, rb_enc_name(enc));
     }
 #ifdef _WIN32
     if (!rb_enc_str_asciionly_p(str)) {
-	*pstr = str = rb_str_conv_enc(str, NULL, rb_utf8_encoding());
+        *pstr = str = rb_str_conv_enc(str, NULL, rb_utf8_encoding());
     }
 #endif
     var = RSTRING_PTR(str);
     if (memchr(var, '\0', RSTRING_LEN(str))) {
-	rb_raise(rb_eArgError, "bad environment variable %s: contains null byte", name);
+        rb_raise(rb_eArgError, "bad environment variable %s: contains null byte", name);
     }
     return rb_str_fill_terminator(str, 1); /* ASCII compatible */
 }
@@ -3389,14 +3389,14 @@ env_delete(VALUE obj, VALUE name)
     nam = env_name(name);
     val = getenv(nam);
     if (val) {
-	VALUE value = env_str_new2(val);
+        VALUE value = env_str_new2(val);
 
-	ruby_setenv(nam, 0);
-	if (ENVMATCH(nam, PATH_ENV)) {
-	    RB_GC_GUARD(name);
-	    path_tainted = 0;
-	}
-	return value;
+        ruby_setenv(nam, 0);
+        if (ENVMATCH(nam, PATH_ENV)) {
+            RB_GC_GUARD(name);
+            path_tainted = 0;
+        }
+        return value;
     }
     return Qnil;
 }
@@ -3435,7 +3435,7 @@ rb_f_getenv(VALUE obj, VALUE name)
     nam = env_name(name);
     env = getenv(nam);
     if (env) {
-	return env_name_new(nam, env);
+        return env_name_new(nam, env);
     }
     return Qnil;
 }
@@ -3465,16 +3465,16 @@ env_fetch(int argc, VALUE *argv)
     key = argv[0];
     block_given = rb_block_given_p();
     if (block_given && argc == 2) {
-	rb_warn("block supersedes default value argument");
+        rb_warn("block supersedes default value argument");
     }
     nam = env_name(key);
     env = getenv(nam);
     if (!env) {
-	if (block_given) return rb_yield(key);
-	if (argc == 1) {
-	    rb_key_err_raise(rb_sprintf("key not found: \"%"PRIsVALUE"\"", key), envtbl, key);
-	}
-	return argv[1];
+        if (block_given) return rb_yield(key);
+        if (argc == 1) {
+            rb_key_err_raise(rb_sprintf("key not found: \"%"PRIsVALUE"\"", key), envtbl, key);
+        }
+        return argv[1];
     }
     return env_name_new(nam, env);
 }
@@ -3489,7 +3489,7 @@ static int
 env_path_tainted(const char *path)
 {
     if (path_tainted < 0) {
-	path_tainted_p(path);
+        path_tainted_p(path);
     }
     return path_tainted;
 }
@@ -3498,7 +3498,7 @@ int
 rb_env_path_tainted(void)
 {
     if (path_tainted < 0) {
-	path_tainted_p(getenv(PATH_ENV));
+        path_tainted_p(getenv(PATH_ENV));
     }
     return path_tainted;
 }
@@ -3510,7 +3510,7 @@ in_origenv(const char *str)
 {
     char **env;
     for (env = origenviron; *env; ++env) {
-	if (*env == str) return 1;
+        if (*env == str) return 1;
     }
     return 0;
 }
@@ -3523,9 +3523,9 @@ envix(const char *nam)
 
     env = GET_ENVIRON(environ);
     for (i = 0; env[i]; i++) {
-	if (ENVNMATCH(env[i],nam,len) && env[i][len] == '=')
-	    break;			/* memcmp must come first to avoid */
-    }					/* potential SEGV's */
+        if (ENVNMATCH(env[i],nam,len) && env[i][len] == '=')
+            break;                        /* memcmp must come first to avoid */
+    }                                        /* potential SEGV's */
     FREE_ENVIRON(environ);
     return i;
 }
@@ -3561,7 +3561,7 @@ static const char *
 check_envname(const char *name)
 {
     if (strchr(name, '=')) {
-	invalid_envname(name);
+        invalid_envname(name);
     }
     return name;
 }
@@ -3582,31 +3582,31 @@ ruby_setenv(const char *name, const char *value)
     check_envname(name);
     len = MultiByteToWideChar(CP_UTF8, 0, name, -1, NULL, 0);
     if (value) {
-	WCHAR* p = GetEnvironmentStringsW();
-	size_t n;
-	int len2;
-	if (!p) goto fail; /* never happen */
-	n = lstrlen(name) + 2 + strlen(value) + getenvsize(p);
-	FreeEnvironmentStringsW(p);
-	if (n >= getenvblocksize()) {
-	    goto fail;  /* 2 for '=' & '\0' */
-	}
-	len2 = MultiByteToWideChar(CP_UTF8, 0, value, -1, NULL, 0);
-	wname = ALLOCV_N(WCHAR, buf, len + len2);
-	wvalue = wname + len;
-	MultiByteToWideChar(CP_UTF8, 0, name, -1, wname, len);
-	MultiByteToWideChar(CP_UTF8, 0, value, -1, wvalue, len2);
+        WCHAR* p = GetEnvironmentStringsW();
+        size_t n;
+        int len2;
+        if (!p) goto fail; /* never happen */
+        n = lstrlen(name) + 2 + strlen(value) + getenvsize(p);
+        FreeEnvironmentStringsW(p);
+        if (n >= getenvblocksize()) {
+            goto fail;  /* 2 for '=' & '\0' */
+        }
+        len2 = MultiByteToWideChar(CP_UTF8, 0, value, -1, NULL, 0);
+        wname = ALLOCV_N(WCHAR, buf, len + len2);
+        wvalue = wname + len;
+        MultiByteToWideChar(CP_UTF8, 0, name, -1, wname, len);
+        MultiByteToWideChar(CP_UTF8, 0, value, -1, wvalue, len2);
 #ifndef HAVE__WPUTENV_S
-	wname[len-1] = L'=';
+        wname[len-1] = L'=';
 #endif
     }
     else {
-	wname = ALLOCV_N(WCHAR, buf, len + 1);
-	MultiByteToWideChar(CP_UTF8, 0, name, -1, wname, len);
-	wvalue = wname + len;
-	*wvalue = L'\0';
+        wname = ALLOCV_N(WCHAR, buf, len + 1);
+        MultiByteToWideChar(CP_UTF8, 0, name, -1, wname, len);
+        wvalue = wname + len;
+        *wvalue = L'\0';
 #ifndef HAVE__WPUTENV_S
-	wname[len-1] = L'=';
+        wname[len-1] = L'=';
 #endif
     }
 #ifndef HAVE__WPUTENV_S
@@ -3618,25 +3618,25 @@ ruby_setenv(const char *name, const char *value)
     /* even if putenv() failed, clean up and try to delete the
      * variable from the system area. */
     if (!value || !*value) {
-	/* putenv() doesn't handle empty value */
-	if (!SetEnvironmentVariable(name, value) &&
-	    GetLastError() != ERROR_ENVVAR_NOT_FOUND) goto fail;
+        /* putenv() doesn't handle empty value */
+        if (!SetEnvironmentVariable(name, value) &&
+            GetLastError() != ERROR_ENVVAR_NOT_FOUND) goto fail;
     }
     if (failed) {
       fail:
-	invalid_envname(name);
+        invalid_envname(name);
     }
 #elif defined(HAVE_SETENV) && defined(HAVE_UNSETENV)
     if (value) {
-	if (setenv(name, value, 1))
-	    rb_sys_fail_str(rb_sprintf("setenv(%s)", name));
+        if (setenv(name, value, 1))
+            rb_sys_fail_str(rb_sprintf("setenv(%s)", name));
     }
     else {
 #ifdef VOID_UNSETENV
-	unsetenv(name);
+        unsetenv(name);
 #else
-	if (unsetenv(name))
-	    rb_sys_fail_str(rb_sprintf("unsetenv(%s)", name));
+        if (unsetenv(name))
+            rb_sys_fail_str(rb_sprintf("unsetenv(%s)", name));
 #endif
     }
 #elif defined __sun
@@ -3650,60 +3650,60 @@ ruby_setenv(const char *name, const char *value)
     check_envname(name);
     len = strlen(name);
     if (value) {
-	mem_size = len + strlen(value) + 2;
-	mem_ptr = malloc(mem_size);
-	if (mem_ptr == NULL)
-	    rb_sys_fail_str(rb_sprintf("malloc("PRIuSIZE")", mem_size));
-	snprintf(mem_ptr, mem_size, "%s=%s", name, value);
+        mem_size = len + strlen(value) + 2;
+        mem_ptr = malloc(mem_size);
+        if (mem_ptr == NULL)
+            rb_sys_fail_str(rb_sprintf("malloc("PRIuSIZE")", mem_size));
+        snprintf(mem_ptr, mem_size, "%s=%s", name, value);
     }
     for (env_ptr = GET_ENVIRON(environ); (str = *env_ptr) != 0; ++env_ptr) {
-	if (!strncmp(str, name, len) && str[len] == '=') {
-	    if (!in_origenv(str)) free(str);
-	    while ((env_ptr[0] = env_ptr[1]) != 0) env_ptr++;
-	    break;
-	}
+        if (!strncmp(str, name, len) && str[len] == '=') {
+            if (!in_origenv(str)) free(str);
+            while ((env_ptr[0] = env_ptr[1]) != 0) env_ptr++;
+            break;
+        }
     }
     if (value) {
-	if (putenv(mem_ptr)) {
-	    free(mem_ptr);
-	    rb_sys_fail_str(rb_sprintf("putenv(%s)", name));
-	}
+        if (putenv(mem_ptr)) {
+            free(mem_ptr);
+            rb_sys_fail_str(rb_sprintf("putenv(%s)", name));
+        }
     }
 #else  /* WIN32 */
     size_t len;
     int i;
 
-    i=envix(name);		        /* where does it go? */
+    i=envix(name);                        /* where does it go? */
 
-    if (environ == origenviron) {	/* need we copy environment? */
-	int j;
-	int max;
-	char **tmpenv;
+    if (environ == origenviron) {        /* need we copy environment? */
+        int j;
+        int max;
+        char **tmpenv;
 
-	for (max = i; environ[max]; max++) ;
-	tmpenv = ALLOC_N(char*, max+2);
-	for (j=0; j<max; j++)		/* copy environment */
-	    tmpenv[j] = ruby_strdup(environ[j]);
-	tmpenv[max] = 0;
-	environ = tmpenv;		/* tell exec where it is now */
+        for (max = i; environ[max]; max++) ;
+        tmpenv = ALLOC_N(char*, max+2);
+        for (j=0; j<max; j++)                /* copy environment */
+            tmpenv[j] = ruby_strdup(environ[j]);
+        tmpenv[max] = 0;
+        environ = tmpenv;                /* tell exec where it is now */
     }
     if (environ[i]) {
-	char **envp = origenviron;
-	while (*envp && *envp != environ[i]) envp++;
-	if (!*envp)
-	    xfree(environ[i]);
-	if (!value) {
-	    while (environ[i]) {
-		environ[i] = environ[i+1];
-		i++;
-	    }
-	    return;
-	}
+        char **envp = origenviron;
+        while (*envp && *envp != environ[i]) envp++;
+        if (!*envp)
+            xfree(environ[i]);
+        if (!value) {
+            while (environ[i]) {
+                environ[i] = environ[i+1];
+                i++;
+            }
+            return;
+        }
     }
-    else {			/* does not exist yet */
-	if (!value) return;
-	REALLOC_N(environ, char*, i+2);	/* just expand it a bit */
-	environ[i+1] = 0;	/* make sure it's null terminated */
+    else {                        /* does not exist yet */
+        if (!value) return;
+        REALLOC_N(environ, char*, i+2);        /* just expand it a bit */
+        environ[i+1] = 0;        /* make sure it's null terminated */
     }
     len = strlen(name) + strlen(value) + 2;
     environ[i] = ALLOC_N(char, len);
@@ -3733,8 +3733,8 @@ env_aset(VALUE obj, VALUE nm, VALUE val)
     char *name, *value;
 
     if (NIL_P(val)) {
-	env_delete(obj, nm);
-	return Qnil;
+        env_delete(obj, nm);
+        return Qnil;
     }
     SafeStringValue(nm);
     SafeStringValue(val);
@@ -3745,15 +3745,15 @@ env_aset(VALUE obj, VALUE nm, VALUE val)
 
     ruby_setenv(name, value);
     if (ENVMATCH(name, PATH_ENV)) {
-	RB_GC_GUARD(nm);
-	if (OBJ_TAINTED(val)) {
-	    /* already tainted, no check */
-	    path_tainted = 1;
-	    return val;
-	}
-	else {
-	    path_tainted_p(value);
-	}
+        RB_GC_GUARD(nm);
+        if (OBJ_TAINTED(val)) {
+            /* already tainted, no check */
+            path_tainted = 1;
+            return val;
+        }
+        else {
+            path_tainted_p(value);
+        }
     }
     return val;
 }
@@ -3773,11 +3773,11 @@ env_keys(void)
     ary = rb_ary_new();
     env = GET_ENVIRON(environ);
     while (*env) {
-	char *s = strchr(*env, '=');
-	if (s) {
-	    rb_ary_push(ary, env_str_new(*env, s-*env));
-	}
-	env++;
+        char *s = strchr(*env, '=');
+        if (s) {
+            rb_ary_push(ary, env_str_new(*env, s-*env));
+        }
+        env++;
     }
     FREE_ENVIRON(environ);
     return ary;
@@ -3791,9 +3791,9 @@ rb_env_size(VALUE ehash, VALUE args, VALUE eobj)
 
     env = GET_ENVIRON(environ);
     for (; *env ; ++env) {
-	if (strchr(*env, '=')) {
-	    cnt++;
-	}
+        if (strchr(*env, '=')) {
+            cnt++;
+        }
     }
     FREE_ENVIRON(environ);
     return LONG2FIX(cnt);
@@ -3817,7 +3817,7 @@ env_each_key(VALUE ehash)
     RETURN_SIZED_ENUMERATOR(ehash, 0, 0, rb_env_size);
     keys = env_keys();
     for (i=0; i<RARRAY_LEN(keys); i++) {
-	rb_yield(RARRAY_AREF(keys, i));
+        rb_yield(RARRAY_AREF(keys, i));
     }
     return ehash;
 }
@@ -3837,11 +3837,11 @@ env_values(void)
     ary = rb_ary_new();
     env = GET_ENVIRON(environ);
     while (*env) {
-	char *s = strchr(*env, '=');
-	if (s) {
-	    rb_ary_push(ary, env_str_new2(s+1));
-	}
-	env++;
+        char *s = strchr(*env, '=');
+        if (s) {
+            rb_ary_push(ary, env_str_new2(s+1));
+        }
+        env++;
     }
     FREE_ENVIRON(environ);
     return ary;
@@ -3865,7 +3865,7 @@ env_each_value(VALUE ehash)
     RETURN_SIZED_ENUMERATOR(ehash, 0, 0, rb_env_size);
     values = env_values();
     for (i=0; i<RARRAY_LEN(values); i++) {
-	rb_yield(RARRAY_AREF(values, i));
+        rb_yield(RARRAY_AREF(values, i));
     }
     return ehash;
 }
@@ -3893,24 +3893,24 @@ env_each_pair(VALUE ehash)
     ary = rb_ary_new();
     env = GET_ENVIRON(environ);
     while (*env) {
-	char *s = strchr(*env, '=');
-	if (s) {
-	    rb_ary_push(ary, env_str_new(*env, s-*env));
-	    rb_ary_push(ary, env_str_new2(s+1));
-	}
-	env++;
+        char *s = strchr(*env, '=');
+        if (s) {
+            rb_ary_push(ary, env_str_new(*env, s-*env));
+            rb_ary_push(ary, env_str_new2(s+1));
+        }
+        env++;
     }
     FREE_ENVIRON(environ);
 
     if (rb_block_arity() > 1) {
-	for (i=0; i<RARRAY_LEN(ary); i+=2) {
-	    rb_yield_values(2, RARRAY_AREF(ary, i), RARRAY_AREF(ary, i+1));
-	}
+        for (i=0; i<RARRAY_LEN(ary); i+=2) {
+            rb_yield_values(2, RARRAY_AREF(ary, i), RARRAY_AREF(ary, i+1));
+        }
     }
     else {
-	for (i=0; i<RARRAY_LEN(ary); i+=2) {
-	    rb_yield(rb_assoc_new(RARRAY_AREF(ary, i), RARRAY_AREF(ary, i+1)));
-	}
+        for (i=0; i<RARRAY_LEN(ary); i+=2) {
+            rb_yield(rb_assoc_new(RARRAY_AREF(ary, i), RARRAY_AREF(ary, i+1)));
+        }
     }
     return ehash;
 }
@@ -3935,14 +3935,14 @@ env_reject_bang(VALUE ehash)
     keys = env_keys();
     RBASIC_CLEAR_CLASS(keys);
     for (i=0; i<RARRAY_LEN(keys); i++) {
-	VALUE val = rb_f_getenv(Qnil, RARRAY_AREF(keys, i));
-	if (!NIL_P(val)) {
-	    if (RTEST(rb_yield_values(2, RARRAY_AREF(keys, i), val))) {
-		FL_UNSET(RARRAY_AREF(keys, i), FL_TAINT);
-		env_delete(Qnil, RARRAY_AREF(keys, i));
-		del++;
-	    }
-	}
+        VALUE val = rb_f_getenv(Qnil, RARRAY_AREF(keys, i));
+        if (!NIL_P(val)) {
+            if (RTEST(rb_yield_values(2, RARRAY_AREF(keys, i), val))) {
+                FL_UNSET(RARRAY_AREF(keys, i), FL_TAINT);
+                env_delete(Qnil, RARRAY_AREF(keys, i));
+                del++;
+            }
+        }
     }
     RB_GC_GUARD(keys);
     if (del == 0) return Qnil;
@@ -3981,7 +3981,7 @@ env_values_at(int argc, VALUE *argv)
 
     result = rb_ary_new();
     for (i=0; i<argc; i++) {
-	rb_ary_push(result, rb_f_getenv(Qnil, argv[i]));
+        rb_ary_push(result, rb_f_getenv(Qnil, argv[i]));
     }
     return result;
 }
@@ -4006,13 +4006,13 @@ env_select(VALUE ehash)
     result = rb_hash_new();
     keys = env_keys();
     for (i = 0; i < RARRAY_LEN(keys); ++i) {
-	VALUE key = RARRAY_AREF(keys, i);
-	VALUE val = rb_f_getenv(Qnil, key);
-	if (!NIL_P(val)) {
-	    if (RTEST(rb_yield_values(2, key, val))) {
-		rb_hash_aset(result, key, val);
-	    }
-	}
+        VALUE key = RARRAY_AREF(keys, i);
+        VALUE val = rb_f_getenv(Qnil, key);
+        if (!NIL_P(val)) {
+            if (RTEST(rb_yield_values(2, key, val))) {
+                rb_hash_aset(result, key, val);
+            }
+        }
     }
     RB_GC_GUARD(keys);
 
@@ -4037,14 +4037,14 @@ env_select_bang(VALUE ehash)
     keys = env_keys();
     RBASIC_CLEAR_CLASS(keys);
     for (i=0; i<RARRAY_LEN(keys); i++) {
-	VALUE val = rb_f_getenv(Qnil, RARRAY_AREF(keys, i));
-	if (!NIL_P(val)) {
-	    if (!RTEST(rb_yield_values(2, RARRAY_AREF(keys, i), val))) {
-		FL_UNSET(RARRAY_AREF(keys, i), FL_TAINT);
-		env_delete(Qnil, RARRAY_AREF(keys, i));
-		del++;
-	    }
-	}
+        VALUE val = rb_f_getenv(Qnil, RARRAY_AREF(keys, i));
+        if (!NIL_P(val)) {
+            if (!RTEST(rb_yield_values(2, RARRAY_AREF(keys, i), val))) {
+                FL_UNSET(RARRAY_AREF(keys, i), FL_TAINT);
+                env_delete(Qnil, RARRAY_AREF(keys, i));
+                del++;
+            }
+        }
     }
     RB_GC_GUARD(keys);
     if (del == 0) return Qnil;
@@ -4111,10 +4111,10 @@ rb_env_clear(void)
 
     keys = env_keys();
     for (i=0; i<RARRAY_LEN(keys); i++) {
-	VALUE val = rb_f_getenv(Qnil, RARRAY_AREF(keys, i));
-	if (!NIL_P(val)) {
-	    env_delete(Qnil, RARRAY_AREF(keys, i));
-	}
+        VALUE val = rb_f_getenv(Qnil, RARRAY_AREF(keys, i));
+        if (!NIL_P(val)) {
+            env_delete(Qnil, RARRAY_AREF(keys, i));
+        }
     }
     RB_GC_GUARD(keys);
     return envtbl;
@@ -4147,19 +4147,19 @@ env_inspect(void)
     str = rb_str_buf_new2("{");
     env = GET_ENVIRON(environ);
     while (*env) {
-	char *s = strchr(*env, '=');
+        char *s = strchr(*env, '=');
 
-	if (env != environ) {
-	    rb_str_buf_cat2(str, ", ");
-	}
-	if (s) {
-	    rb_str_buf_cat2(str, "\"");
-	    rb_str_buf_cat(str, *env, s-*env);
-	    rb_str_buf_cat2(str, "\"=>");
-	    i = rb_inspect(rb_str_new2(s+1));
-	    rb_str_buf_append(str, i);
-	}
-	env++;
+        if (env != environ) {
+            rb_str_buf_cat2(str, ", ");
+        }
+        if (s) {
+            rb_str_buf_cat2(str, "\"");
+            rb_str_buf_cat(str, *env, s-*env);
+            rb_str_buf_cat2(str, "\"=>");
+            i = rb_inspect(rb_str_new2(s+1));
+            rb_str_buf_append(str, i);
+        }
+        env++;
     }
     FREE_ENVIRON(environ);
     rb_str_buf_cat2(str, "}");
@@ -4186,12 +4186,12 @@ env_to_a(void)
     ary = rb_ary_new();
     env = GET_ENVIRON(environ);
     while (*env) {
-	char *s = strchr(*env, '=');
-	if (s) {
-	    rb_ary_push(ary, rb_assoc_new(env_str_new(*env, s-*env),
-					  env_str_new2(s+1)));
-	}
-	env++;
+        char *s = strchr(*env, '=');
+        if (s) {
+            rb_ary_push(ary, rb_assoc_new(env_str_new(*env, s-*env),
+                                          env_str_new2(s+1)));
+        }
+        env++;
     }
     FREE_ENVIRON(environ);
     return ary;
@@ -4225,7 +4225,7 @@ env_size(void)
 
     env = GET_ENVIRON(environ);
     for (i=0; env[i]; i++)
-	;
+        ;
     FREE_ENVIRON(environ);
     return INT2FIX(i);
 }
@@ -4243,8 +4243,8 @@ env_empty_p(void)
 
     env = GET_ENVIRON(environ);
     if (env[0] == 0) {
-	FREE_ENVIRON(environ);
-	return Qtrue;
+        FREE_ENVIRON(environ);
+        return Qtrue;
     }
     FREE_ENVIRON(environ);
     return Qfalse;
@@ -4304,15 +4304,15 @@ env_has_value(VALUE dmy, VALUE obj)
     rb_check_safe_obj(obj);
     env = GET_ENVIRON(environ);
     while (*env) {
-	char *s = strchr(*env, '=');
-	if (s++) {
-	    long len = strlen(s);
-	    if (RSTRING_LEN(obj) == len && strncmp(s, RSTRING_PTR(obj), len) == 0) {
-		FREE_ENVIRON(environ);
-		return Qtrue;
-	    }
-	}
-	env++;
+        char *s = strchr(*env, '=');
+        if (s++) {
+            long len = strlen(s);
+            if (RSTRING_LEN(obj) == len && strncmp(s, RSTRING_PTR(obj), len) == 0) {
+                FREE_ENVIRON(environ);
+                return Qtrue;
+            }
+        }
+        env++;
     }
     FREE_ENVIRON(environ);
     return Qfalse;
@@ -4335,16 +4335,16 @@ env_rassoc(VALUE dmy, VALUE obj)
     rb_check_safe_obj(obj);
     env = GET_ENVIRON(environ);
     while (*env) {
-	char *s = strchr(*env, '=');
-	if (s++) {
-	    long len = strlen(s);
-	    if (RSTRING_LEN(obj) == len && strncmp(s, RSTRING_PTR(obj), len) == 0) {
-		VALUE result = rb_assoc_new(rb_tainted_str_new(*env, s-*env-1), obj);
-		FREE_ENVIRON(environ);
-		return result;
-	    }
-	}
-	env++;
+        char *s = strchr(*env, '=');
+        if (s++) {
+            long len = strlen(s);
+            if (RSTRING_LEN(obj) == len && strncmp(s, RSTRING_PTR(obj), len) == 0) {
+                VALUE result = rb_assoc_new(rb_tainted_str_new(*env, s-*env-1), obj);
+                FREE_ENVIRON(environ);
+                return result;
+            }
+        }
+        env++;
     }
     FREE_ENVIRON(environ);
     return Qnil;
@@ -4366,16 +4366,16 @@ env_key(VALUE dmy, VALUE value)
     SafeStringValue(value);
     env = GET_ENVIRON(environ);
     while (*env) {
-	char *s = strchr(*env, '=');
-	if (s++) {
-	    long len = strlen(s);
-	    if (RSTRING_LEN(value) == len && strncmp(s, RSTRING_PTR(value), len) == 0) {
-		str = env_str_new(*env, s-*env-1);
-		FREE_ENVIRON(environ);
-		return str;
-	    }
-	}
-	env++;
+        char *s = strchr(*env, '=');
+        if (s++) {
+            long len = strlen(s);
+            if (RSTRING_LEN(value) == len && strncmp(s, RSTRING_PTR(value), len) == 0) {
+                str = env_str_new(*env, s-*env-1);
+                FREE_ENVIRON(environ);
+                return str;
+            }
+        }
+        env++;
     }
     FREE_ENVIRON(environ);
     return Qnil;
@@ -4411,12 +4411,12 @@ env_to_hash(void)
     hash = rb_hash_new();
     env = GET_ENVIRON(environ);
     while (*env) {
-	char *s = strchr(*env, '=');
-	if (s) {
-	    rb_hash_aset(hash, env_str_new(*env, s-*env),
-			       env_str_new2(s+1));
-	}
-	env++;
+        char *s = strchr(*env, '=');
+        if (s) {
+            rb_hash_aset(hash, env_str_new(*env, s-*env),
+                               env_str_new2(s+1));
+        }
+        env++;
     }
     FREE_ENVIRON(environ);
     return hash;
@@ -4451,13 +4451,13 @@ env_shift(void)
 
     env = GET_ENVIRON(environ);
     if (*env) {
-	char *s = strchr(*env, '=');
-	if (s) {
-	    VALUE key = env_str_new(*env, s-*env);
-	    VALUE val = env_str_new2(getenv(RSTRING_PTR(key)));
-	    env_delete(Qnil, key);
-	    result = rb_assoc_new(key, val);
-	}
+        char *s = strchr(*env, '=');
+        if (s) {
+            VALUE key = env_str_new(*env, s-*env);
+            VALUE val = env_str_new2(getenv(RSTRING_PTR(key)));
+            env_delete(Qnil, key);
+            result = rb_assoc_new(key, val);
+        }
     }
     FREE_ENVIRON(environ);
     return result;
@@ -4481,7 +4481,7 @@ env_replace_i(VALUE key, VALUE val, VALUE keys)
 {
     env_aset(Qnil, key, val);
     if (rb_ary_includes(keys, key)) {
-	rb_ary_delete(keys, key);
+        rb_ary_delete(keys, key);
     }
     return ST_CONTINUE;
 }
@@ -4505,7 +4505,7 @@ env_replace(VALUE env, VALUE hash)
     rb_hash_foreach(hash, env_replace_i, keys);
 
     for (i=0; i<RARRAY_LEN(keys); i++) {
-	env_delete(env, RARRAY_AREF(keys, i));
+        env_delete(env, RARRAY_AREF(keys, i));
     }
     RB_GC_GUARD(keys);
     return env;
@@ -4515,7 +4515,7 @@ static int
 env_update_i(VALUE key, VALUE val)
 {
     if (rb_block_given_p()) {
-	val = rb_yield_values(3, key, rb_f_getenv(Qnil, key), val);
+        val = rb_yield_values(3, key, rb_f_getenv(Qnil, key), val);
     }
     env_aset(Qnil, key, val);
     return ST_CONTINUE;

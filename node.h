@@ -161,7 +161,7 @@ enum node_type {
     NODE_OPT_ARG,
 #define NODE_OPT_ARG     NODE_OPT_ARG
     NODE_KW_ARG,
-#define NODE_KW_ARG	 NODE_KW_ARG
+#define NODE_KW_ARG         NODE_KW_ARG
     NODE_POSTARG,
 #define NODE_POSTARG     NODE_POSTARG
     NODE_ARGSCAT,
@@ -245,24 +245,24 @@ static inline rb_code_location_t code_loc_gen(rb_code_location_t *loc1, rb_code_
 typedef struct RNode {
     VALUE flags;
     union {
-	struct RNode *node;
-	ID id;
-	VALUE value;
-	ID *tbl;
+        struct RNode *node;
+        ID id;
+        VALUE value;
+        ID *tbl;
     } u1;
     union {
-	struct RNode *node;
-	ID id;
-	long argc;
-	VALUE value;
+        struct RNode *node;
+        ID id;
+        long argc;
+        VALUE value;
     } u2;
     union {
-	struct RNode *node;
-	ID id;
-	long state;
-	struct rb_global_entry *entry;
-	struct rb_args_info *args;
-	VALUE value;
+        struct RNode *node;
+        ID id;
+        long state;
+        struct rb_global_entry *entry;
+        struct rb_args_info *args;
+        VALUE value;
     } u3;
     rb_code_location_t nd_loc;
 } NODE;

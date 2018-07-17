@@ -30,7 +30,7 @@ read_status(VALUE self)
     taskinfo.virtual_size = 0;
     taskinfo.resident_size = 0;
     error = task_info(mach_task_self(), flavor,
-		      (task_info_t)&taskinfo, &out_count);
+                      (task_info_t)&taskinfo, &out_count);
     if (error != KERN_SUCCESS) return Qnil;
 #ifndef ULL2NUM
 /* "long long" does not exist here, use size_t instead.  */
@@ -44,7 +44,7 @@ read_status(VALUE self)
     PROCESS_MEMORY_COUNTERS c;
     c.cb = sizeof(c);
     if (!GetProcessMemoryInfo(GetCurrentProcess(), &c, c.cb))
-	return Qnil;
+        return Qnil;
     size = SIZET2NUM(c.PagefileUsage);
     peak = SIZET2NUM(c.PeakWorkingSetSize);
     rb_struct_aset(self, INT2FIX(1), peak);
@@ -58,12 +58,12 @@ Init_memory_status(void)
 {
     VALUE mMemory = rb_define_module("Memory");
     cMemoryStatus =
-	rb_struct_define_under(mMemory, "Status", "size",
+        rb_struct_define_under(mMemory, "Status", "size",
 #if defined __APPLE__
-			       "rss",
+                               "rss",
 #elif defined _WIN32
-			       "peak",
+                               "peak",
 #endif
-			       (char *)NULL);
+                               (char *)NULL);
     rb_define_method(cMemoryStatus, "_update", read_status, 0);
 }

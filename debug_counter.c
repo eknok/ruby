@@ -29,12 +29,12 @@ rb_debug_counter_show_results(void)
 {
     const char *env = getenv("RUBY_DEBUG_COUNTER_DISABLE");
     if (env == NULL || strcmp("1", env) != 0) {
-	int i;
-	for (i=0; i<RB_DEBUG_COUNTER_MAX; i++) {
-	    fprintf(stderr, "[RUBY_DEBUG_COUNTER]\t%s\t%"PRIuSIZE"\n",
-		    debug_counter_names[i],
-		    rb_debug_counter[i]);
-	}
+        int i;
+        for (i=0; i<RB_DEBUG_COUNTER_MAX; i++) {
+            fprintf(stderr, "[RUBY_DEBUG_COUNTER]\t%s\t%"PRIuSIZE"\n",
+                    debug_counter_names[i],
+                    rb_debug_counter[i]);
+        }
     }
 }
 

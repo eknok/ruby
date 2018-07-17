@@ -50,11 +50,11 @@ get_timeout(int argc, VALUE *argv, struct timeval *timerec)
     VALUE timeout = Qnil;
     rb_check_arity(argc, 0, 1);
     if (!argc || NIL_P(timeout = argv[0])) {
-	return NULL;
+        return NULL;
     }
     else {
-	*timerec = rb_time_interval(timeout);
-	return timerec;
+        *timerec = rb_time_interval(timeout);
+        return timerec;
     }
 }
 
@@ -63,7 +63,7 @@ wait_for_single_fd(rb_io_t *fptr, int events, struct timeval *tv)
 {
     int i = rb_wait_for_single_fd(fptr->fd, events, tv);
     if (i < 0)
-	rb_sys_fail(0);
+        rb_sys_fail(0);
     rb_io_check_closed(fptr);
     return (i & events);
 }
@@ -111,7 +111,7 @@ io_ready_p(VALUE io)
     rb_io_check_readable(fptr);
     if (rb_io_read_pending(fptr)) return Qtrue;
     if (wait_for_single_fd(fptr, RB_WAITFD_IN, &tv))
-	return Qtrue;
+        return Qtrue;
     return Qfalse;
 }
 
@@ -137,7 +137,7 @@ io_wait_readable(int argc, VALUE *argv, VALUE io)
     tv = get_timeout(argc, argv, &timerec);
     if (rb_io_read_pending(fptr)) return Qtrue;
     if (wait_for_single_fd(fptr, RB_WAITFD_IN, tv)) {
-	return io;
+        return io;
     }
     return Qnil;
 }
@@ -161,7 +161,7 @@ io_wait_writable(int argc, VALUE *argv, VALUE io)
     rb_io_check_writable(fptr);
     tv = get_timeout(argc, argv, &timerec);
     if (wait_for_single_fd(fptr, RB_WAITFD_OUT, tv)) {
-	return io;
+        return io;
     }
     return Qnil;
 }
@@ -170,31 +170,31 @@ static int
 wait_mode_sym(VALUE mode)
 {
     if (mode == ID2SYM(rb_intern("r"))) {
-	return RB_WAITFD_IN;
+        return RB_WAITFD_IN;
     }
     if (mode == ID2SYM(rb_intern("read"))) {
-	return RB_WAITFD_IN;
+        return RB_WAITFD_IN;
     }
     if (mode == ID2SYM(rb_intern("readable"))) {
-	return RB_WAITFD_IN;
+        return RB_WAITFD_IN;
     }
     if (mode == ID2SYM(rb_intern("w"))) {
-	return RB_WAITFD_OUT;
+        return RB_WAITFD_OUT;
     }
     if (mode == ID2SYM(rb_intern("write"))) {
-	return RB_WAITFD_OUT;
+        return RB_WAITFD_OUT;
     }
     if (mode == ID2SYM(rb_intern("writable"))) {
-	return RB_WAITFD_OUT;
+        return RB_WAITFD_OUT;
     }
     if (mode == ID2SYM(rb_intern("rw"))) {
-	return RB_WAITFD_IN|RB_WAITFD_OUT;
+        return RB_WAITFD_IN|RB_WAITFD_OUT;
     }
     if (mode == ID2SYM(rb_intern("read_write"))) {
-	return RB_WAITFD_IN|RB_WAITFD_OUT;
+        return RB_WAITFD_IN|RB_WAITFD_OUT;
     }
     if (mode == ID2SYM(rb_intern("readable_writable"))) {
-	return RB_WAITFD_IN|RB_WAITFD_OUT;
+        return RB_WAITFD_IN|RB_WAITFD_OUT;
     }
     rb_raise(rb_eArgError, "unsupported mode: %"PRIsVALUE, mode);
     return 0;
@@ -222,20 +222,20 @@ io_wait_readwrite(int argc, VALUE *argv, VALUE io)
 
     GetOpenFile(io, fptr);
     for (i = 0; i < argc; ++i) {
-	if (SYMBOL_P(argv[i])) {
-	    event |= wait_mode_sym(argv[i]);
-	}
-	else {
-	    *(tv = &timerec) = rb_time_interval(argv[i]);
-	}
+        if (SYMBOL_P(argv[i])) {
+            event |= wait_mode_sym(argv[i]);
+        }
+        else {
+            *(tv = &timerec) = rb_time_interval(argv[i]);
+        }
     }
     /* rb_time_interval() and might_mode() might convert the argument */
     rb_io_check_closed(fptr);
     if (!event) event = RB_WAITFD_IN;
     if ((event & RB_WAITFD_IN) && rb_io_read_pending(fptr))
-	return Qtrue;
+        return Qtrue;
     if (wait_for_single_fd(fptr, event, tv))
-	return io;
+        return io;
     return Qnil;
 }
 

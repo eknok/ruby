@@ -53,7 +53,7 @@ static const int EncLen_UTF16[] = {
 
 static int
 utf16le_mbc_enc_len(const UChar* p, const OnigUChar* e,
-		    OnigEncoding enc ARG_UNUSED)
+                    OnigEncoding enc ARG_UNUSED)
 {
   int len = (int)(e - p);
   UChar byte;
@@ -74,14 +74,14 @@ utf16le_mbc_enc_len(const UChar* p, const OnigUChar* e,
 
 static int
 utf16le_is_mbc_newline(const UChar* p, const UChar* end,
-		       OnigEncoding enc ARG_UNUSED)
+                       OnigEncoding enc ARG_UNUSED)
 {
   if (p + 1 < end) {
     if (*p == 0x0a && *(p+1) == 0x00)
       return 1;
 #ifdef USE_UNICODE_ALL_LINE_TERMINATORS
     if ((*p == 0x0b || *p == 0x0c || *p == 0x0d || *p == 0x85)
-	&& *(p+1) == 0x00)
+        && *(p+1) == 0x00)
       return 1;
     if (*(p+1) == 0x20 && (*p == 0x29 || *p == 0x28))
       return 1;
@@ -92,7 +92,7 @@ utf16le_is_mbc_newline(const UChar* p, const UChar* end,
 
 static OnigCodePoint
 utf16le_mbc_to_code(const UChar* p, const UChar* end ARG_UNUSED,
-		    OnigEncoding enc ARG_UNUSED)
+                    OnigEncoding enc ARG_UNUSED)
 {
   OnigCodePoint code;
   UChar c0 = *p;
@@ -110,14 +110,14 @@ utf16le_mbc_to_code(const UChar* p, const UChar* end ARG_UNUSED,
 
 static int
 utf16le_code_to_mbclen(OnigCodePoint code,
-		       OnigEncoding enc ARG_UNUSED)
+                       OnigEncoding enc ARG_UNUSED)
 {
   return (code > 0xffff ? 4 : 2);
 }
 
 static int
 utf16le_code_to_mbc(OnigCodePoint code, UChar *buf,
-		    OnigEncoding enc ARG_UNUSED)
+                    OnigEncoding enc ARG_UNUSED)
 {
   UChar* p = buf;
 
@@ -139,8 +139,8 @@ utf16le_code_to_mbc(OnigCodePoint code, UChar *buf,
 
 static int
 utf16le_mbc_case_fold(OnigCaseFoldType flag,
-		      const UChar** pp, const UChar* end, UChar* fold,
-		      OnigEncoding enc)
+                      const UChar** pp, const UChar* end, UChar* fold,
+                      OnigEncoding enc)
 {
   const UChar* p = *pp;
 
@@ -148,10 +148,10 @@ utf16le_mbc_case_fold(OnigCaseFoldType flag,
 #ifdef USE_UNICODE_CASE_FOLD_TURKISH_AZERI
     if ((flag & ONIGENC_CASE_FOLD_TURKISH_AZERI) != 0) {
       if (*p == 0x49) {
-	*fold++ = 0x31;
-	*fold   = 0x01;
-	(*pp) += 2;
-	return 2;
+        *fold++ = 0x31;
+        *fold   = 0x01;
+        (*pp) += 2;
+        return 2;
       }
     }
 #endif
@@ -163,13 +163,13 @@ utf16le_mbc_case_fold(OnigCaseFoldType flag,
   }
   else
     return onigenc_unicode_mbc_case_fold(enc, flag, pp,
-					 end, fold);
+                                         end, fold);
 }
 
 #if 0
 static int
 utf16le_is_mbc_ambiguous(OnigCaseFoldType flag, const UChar** pp,
-			 const UChar* end)
+                         const UChar* end)
 {
   const UChar* p = *pp;
 
@@ -188,9 +188,9 @@ utf16le_is_mbc_ambiguous(OnigCaseFoldType flag, const UChar** pp,
     if ((v | BIT_CTYPE_LOWER) != 0) {
       /* 0xaa, 0xb5, 0xba are lower case letter, but can't convert. */
       if (c >= 0xaa && c <= 0xba)
-	return FALSE;
+        return FALSE;
       else
-	return TRUE;
+        return TRUE;
     }
     return (v != 0 ? TRUE : FALSE);
   }
@@ -201,7 +201,7 @@ utf16le_is_mbc_ambiguous(OnigCaseFoldType flag, const UChar** pp,
 
 static UChar*
 utf16le_left_adjust_char_head(const UChar* start, const UChar* s, const UChar* end,
-			      OnigEncoding enc ARG_UNUSED)
+                              OnigEncoding enc ARG_UNUSED)
 {
   if (s <= start) return (UChar* )s;
 
@@ -217,12 +217,12 @@ utf16le_left_adjust_char_head(const UChar* start, const UChar* s, const UChar* e
 
 static int
 utf16le_get_case_fold_codes_by_str(OnigCaseFoldType flag,
-				   const OnigUChar* p, const OnigUChar* end,
-				   OnigCaseFoldCodeItem items[],
-				   OnigEncoding enc)
+                                   const OnigUChar* p, const OnigUChar* end,
+                                   OnigCaseFoldCodeItem items[],
+                                   OnigEncoding enc)
 {
   return onigenc_unicode_get_case_fold_codes_by_str(enc,
-						    flag, p, end, items);
+                                                    flag, p, end, items);
 }
 
 OnigEncodingDefine(utf_16le, UTF_16LE) = {

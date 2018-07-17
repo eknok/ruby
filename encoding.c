@@ -105,11 +105,11 @@ rb_enc_from_encoding_index(int idx)
     VALUE list, enc;
 
     if (!(list = rb_encoding_list)) {
-	rb_bug("rb_enc_from_encoding_index(%d): no rb_encoding_list", idx);
+        rb_bug("rb_enc_from_encoding_index(%d): no rb_encoding_list", idx);
     }
     enc = rb_ary_entry(list, idx);
     if (NIL_P(enc)) {
-	rb_bug("rb_enc_from_encoding_index(%d): not created yet", idx);
+        rb_bug("rb_enc_from_encoding_index(%d): not created yet", idx);
     }
     return enc;
 }
@@ -142,9 +142,9 @@ check_encoding(rb_encoding *enc)
 {
     int index = rb_enc_to_index(enc);
     if (rb_enc_from_index(index) != enc)
-	return -1;
+        return -1;
     if (enc_autoload_p(enc)) {
-	index = enc_autoload(enc);
+        index = enc_autoload(enc);
     }
     return index;
 }
@@ -153,7 +153,7 @@ static int
 enc_check_encoding(VALUE obj)
 {
     if (!is_obj_encoding(obj)) {
-	return -1;
+        return -1;
     }
     return check_encoding(RDATA(obj)->data);
 }
@@ -163,7 +163,7 @@ static void
 not_encoding(VALUE enc)
 {
     rb_raise(rb_eTypeError, "wrong argument type %"PRIsVALUE" (expected Encoding)",
-	     rb_obj_class(enc));
+             rb_obj_class(enc));
 }
 
 static rb_encoding *
@@ -171,7 +171,7 @@ must_encoding(VALUE enc)
 {
     int index = enc_check_encoding(enc);
     if (index < 0) {
-	not_encoding(enc);
+        not_encoding(enc);
     }
     return DATA_PTR(enc);
 }
@@ -181,16 +181,16 @@ must_encindex(int index)
 {
     rb_encoding *enc = rb_enc_from_index(index);
     if (!enc) {
-	rb_raise(rb_eEncodingError, "encoding index out of bound: %d",
-		 index);
+        rb_raise(rb_eEncodingError, "encoding index out of bound: %d",
+                 index);
     }
     if (ENC_TO_ENCINDEX(enc) != (int)(index & ENC_INDEX_MASK)) {
-	rb_raise(rb_eEncodingError, "wrong encoding index %d for %s (expected %d)",
-		 index, rb_enc_name(enc), ENC_TO_ENCINDEX(enc));
+        rb_raise(rb_eEncodingError, "wrong encoding index %d for %s (expected %d)",
+                 index, rb_enc_name(enc), ENC_TO_ENCINDEX(enc));
     }
     if (enc_autoload_p(enc) && enc_autoload(enc) == -1) {
-	rb_loaderror("failed to load encoding (%s)",
-		     rb_enc_name(enc));
+        rb_loaderror("failed to load encoding (%s)",
+                     rb_enc_name(enc));
     }
     return enc;
 }
@@ -202,13 +202,13 @@ rb_to_encoding_index(VALUE enc)
 
     idx = enc_check_encoding(enc);
     if (idx >= 0) {
-	return idx;
+        return idx;
     }
     else if (NIL_P(enc = rb_check_string_type(enc))) {
-	return -1;
+        return -1;
     }
     if (!rb_enc_asciicompat(rb_enc_get(enc))) {
-	return -1;
+        return -1;
     }
     return rb_enc_find_index(StringValueCStr(enc));
 }
@@ -221,7 +221,7 @@ str_find_encindex(VALUE enc)
 
     StringValue(enc);
     if (!rb_enc_asciicompat(rb_enc_get(enc))) {
-	rb_raise(rb_eArgError, "invalid name encoding (non ASCII)");
+        rb_raise(rb_eArgError, "invalid name encoding (non ASCII)");
     }
     idx = rb_enc_find_index(StringValueCStr(enc));
     return idx;
@@ -232,7 +232,7 @@ str_to_encindex(VALUE enc)
 {
     int idx = str_find_encindex(enc);
     if (idx < 0) {
-	rb_raise(rb_eArgError, "unknown encoding name - %"PRIsVALUE, enc);
+        rb_raise(rb_eArgError, "unknown encoding name - %"PRIsVALUE, enc);
     }
     return idx;
 }
@@ -285,20 +285,20 @@ enc_register_at(int index, const char *name, rb_encoding *base_encoding)
 
     if (!valid_encoding_name_p(name)) return -1;
     if (!ent->name) {
-	ent->name = name = strdup(name);
+        ent->name = name = strdup(name);
     }
     else if (STRCASECMP(name, ent->name)) {
-	return -1;
+        return -1;
     }
     encoding = (rb_raw_encoding *)ent->enc;
     if (!encoding) {
-	encoding = xmalloc(sizeof(rb_encoding));
+        encoding = xmalloc(sizeof(rb_encoding));
     }
     if (base_encoding) {
-	*encoding = *base_encoding;
+        *encoding = *base_encoding;
     }
     else {
-	memset(encoding, 0, sizeof(*ent->enc));
+        memset(encoding, 0, sizeof(*ent->enc));
     }
     encoding->name = name;
     encoding->ruby_encoding_index = index;
@@ -306,8 +306,8 @@ enc_register_at(int index, const char *name, rb_encoding *base_encoding)
     st_insert(enc_table.names, (st_data_t)name, (st_data_t)index);
     list = rb_encoding_list;
     if (list && NIL_P(rb_ary_entry(list, index))) {
-	/* initialize encoding data */
-	rb_ary_store(list, index, enc_new(encoding));
+        /* initialize encoding data */
+        rb_ary_store(list, index, enc_new(encoding));
     }
     return index;
 }
@@ -331,20 +331,20 @@ rb_enc_register(const char *name, rb_encoding *encoding)
     int index = rb_enc_registered(name);
 
     if (index >= 0) {
-	rb_encoding *oldenc = rb_enc_from_index(index);
-	if (STRCASECMP(name, rb_enc_name(oldenc))) {
-	    index = enc_register(name, encoding);
-	}
-	else if (enc_autoload_p(oldenc) || !ENC_DUMMY_P(oldenc)) {
-	    enc_register_at(index, name, encoding);
-	}
-	else {
-	    rb_raise(rb_eArgError, "encoding %s is already registered", name);
-	}
+        rb_encoding *oldenc = rb_enc_from_index(index);
+        if (STRCASECMP(name, rb_enc_name(oldenc))) {
+            index = enc_register(name, encoding);
+        }
+        else if (enc_autoload_p(oldenc) || !ENC_DUMMY_P(oldenc)) {
+            enc_register_at(index, name, encoding);
+        }
+        else {
+            rb_raise(rb_eArgError, "encoding %s is already registered", name);
+        }
     }
     else {
-	index = enc_register(name, encoding);
-	set_encoding_const(name, rb_enc_from_index(index));
+        index = enc_register(name, encoding);
+        set_encoding_const(name, rb_enc_from_index(index));
     }
     return index;
 }
@@ -354,7 +354,7 @@ rb_encdb_declare(const char *name)
 {
     int idx = rb_enc_registered(name);
     if (idx < 0) {
-	idx = enc_register(name, 0);
+        idx = enc_register(name, 0);
     }
     set_encoding_const(name, rb_enc_from_index(idx));
 }
@@ -363,7 +363,7 @@ static void
 enc_check_duplication(const char *name)
 {
     if (rb_enc_registered(name) >= 0) {
-	rb_raise(rb_eArgError, "encoding %s is already registered", name);
+        rb_raise(rb_eArgError, "encoding %s is already registered", name);
     }
 }
 
@@ -426,22 +426,22 @@ static VALUE
 enc_replicate(VALUE encoding, VALUE name)
 {
     return rb_enc_from_encoding_index(
-	rb_enc_replicate(StringValueCStr(name),
-			 rb_to_encoding(encoding)));
+        rb_enc_replicate(StringValueCStr(name),
+                         rb_to_encoding(encoding)));
 }
 
 static int
 enc_replicate_with_index(const char *name, rb_encoding *origenc, int idx)
 {
     if (idx < 0) {
-	idx = enc_register(name, origenc);
+        idx = enc_register(name, origenc);
     }
     else {
-	idx = enc_register_at(idx, name, origenc);
+        idx = enc_register_at(idx, name, origenc);
     }
     if (idx >= 0) {
-	set_base_encoding(idx, origenc);
-	set_encoding_const(name, rb_enc_from_index(idx));
+        set_base_encoding(idx, origenc);
+        set_encoding_const(name, rb_enc_from_index(idx));
     }
     return idx;
 }
@@ -453,7 +453,7 @@ rb_encdb_replicate(const char *name, const char *orig)
     int idx = rb_enc_registered(name);
 
     if (origidx < 0) {
-	origidx = enc_register(orig, 0);
+        origidx = enc_register(orig, 0);
     }
     return enc_replicate_with_index(name, rb_enc_from_index(origidx), idx);
 }
@@ -472,7 +472,7 @@ int
 rb_encdb_dummy(const char *name)
 {
     int index = enc_replicate_with_index(name, rb_ascii8bit_encoding(),
-					 rb_enc_registered(name));
+                                         rb_enc_registered(name));
     rb_encoding *enc = enc_table.list[index].enc;
 
     ENC_SET_DUMMY((rb_raw_encoding *)enc);
@@ -537,7 +537,7 @@ static int
 enc_alias_internal(const char *alias, int idx)
 {
     return st_insert2(enc_table.names, (st_data_t)alias, (st_data_t)idx,
-		      enc_dup_name);
+                      enc_dup_name);
 }
 
 static int
@@ -545,7 +545,7 @@ enc_alias(const char *alias, int idx)
 {
     if (!valid_encoding_name_p(alias)) return -1;
     if (!enc_alias_internal(alias, idx))
-	set_encoding_const(alias, rb_enc_from_index(idx));
+        set_encoding_const(alias, rb_enc_from_index(idx));
     return idx;
 }
 
@@ -556,10 +556,10 @@ rb_enc_alias(const char *alias, const char *orig)
 
     enc_check_duplication(alias);
     if (!enc_table.list) {
-	rb_enc_init();
+        rb_enc_init();
     }
     if ((idx = rb_enc_find_index(orig)) < 0) {
-	return -1;
+        return -1;
     }
     return enc_alias(alias, idx);
 }
@@ -570,7 +570,7 @@ rb_encdb_alias(const char *alias, const char *orig)
     int idx = rb_enc_registered(orig);
 
     if (idx < 0) {
-	idx = enc_register(orig, 0);
+        idx = enc_register(orig, 0);
     }
     return enc_alias(alias, idx);
 }
@@ -586,7 +586,7 @@ rb_enc_init(void)
 {
     enc_table_expand(ENCODING_COUNT + 1);
     if (!enc_table.names) {
-	enc_table.names = st_init_strcasetable();
+        enc_table.names = st_init_strcasetable();
     }
 #define ENC_REGISTER(enc) enc_register_at(ENCINDEX_##enc, rb_enc_name(&OnigEncoding##enc), &OnigEncoding##enc)
     ENC_REGISTER(ASCII);
@@ -612,10 +612,10 @@ rb_encoding *
 rb_enc_from_index(int index)
 {
     if (!enc_table.list) {
-	rb_enc_init();
+        rb_enc_init();
     }
     if (index < 0 || enc_table.count <= (index &= ENC_INDEX_MASK)) {
-	return 0;
+        return 0;
     }
     return enc_table.list[index].enc;
 }
@@ -634,7 +634,7 @@ rb_enc_registered(const char *name)
     if (!name) return -1;
     if (!enc_table.list) return -1;
     if (st_lookup(enc_table.names, (st_data_t)name, &idx)) {
-	return (int)idx;
+        return (int)idx;
     }
     return -1;
 }
@@ -651,9 +651,9 @@ load_encoding(const char *name)
     int idx;
 
     while (s < e) {
-	if (!ISALNUM(*s)) *s = '_';
-	else if (ISUPPER(*s)) *s = (char)TOLOWER(*s);
-	++s;
+        if (!ISALNUM(*s)) *s = '_';
+        else if (ISUPPER(*s)) *s = (char)TOLOWER(*s);
+        ++s;
     }
     FL_UNSET(enclib, FL_TAINT);
     enclib = rb_fstring(enclib);
@@ -677,20 +677,20 @@ enc_autoload(rb_encoding *enc)
     rb_encoding *base = enc_table.list[ENC_TO_ENCINDEX(enc)].base;
 
     if (base) {
-	i = 0;
-	do {
-	    if (i >= enc_table.count) return -1;
-	} while (enc_table.list[i].enc != base && (++i, 1));
-	if (enc_autoload_p(base)) {
-	    if (enc_autoload(base) < 0) return -1;
-	}
-	i = enc->ruby_encoding_index;
-	enc_register_at(i & ENC_INDEX_MASK, rb_enc_name(enc), base);
-	((rb_raw_encoding *)enc)->ruby_encoding_index = i;
-	i &= ENC_INDEX_MASK;
+        i = 0;
+        do {
+            if (i >= enc_table.count) return -1;
+        } while (enc_table.list[i].enc != base && (++i, 1));
+        if (enc_autoload_p(base)) {
+            if (enc_autoload(base) < 0) return -1;
+        }
+        i = enc->ruby_encoding_index;
+        enc_register_at(i & ENC_INDEX_MASK, rb_enc_name(enc), base);
+        ((rb_raw_encoding *)enc)->ruby_encoding_index = i;
+        i &= ENC_INDEX_MASK;
     }
     else {
-	i = load_encoding(rb_enc_name(enc));
+        i = load_encoding(rb_enc_name(enc));
     }
     return i;
 }
@@ -703,19 +703,19 @@ rb_enc_find_index(const char *name)
     rb_encoding *enc;
 
     if (i < 0) {
-	i = load_encoding(name);
+        i = load_encoding(name);
     }
     else if (!(enc = rb_enc_from_index(i))) {
-	if (i != UNSPECIFIED_ENCODING) {
-	    rb_raise(rb_eArgError, "encoding %s is not registered", name);
-	}
+        if (i != UNSPECIFIED_ENCODING) {
+            rb_raise(rb_eArgError, "encoding %s is not registered", name);
+        }
     }
     else if (enc_autoload_p(enc)) {
-	if (enc_autoload(enc) < 0) {
-	    rb_warn("failed to load encoding (%s); use ASCII-8BIT instead",
-		    name);
-	    return 0;
-	}
+        if (enc_autoload(enc) < 0) {
+            rb_warn("failed to load encoding (%s); use ASCII-8BIT instead",
+                    name);
+            return 0;
+        }
     }
     return i;
 }
@@ -748,11 +748,11 @@ enc_capable(VALUE obj)
       case T_REGEXP:
       case T_FILE:
       case T_SYMBOL:
-	return TRUE;
+        return TRUE;
       case T_DATA:
-	if (is_data_encoding(obj)) return TRUE;
+        if (is_data_encoding(obj)) return TRUE;
       default:
-	return FALSE;
+        return FALSE;
     }
 }
 
@@ -774,10 +774,10 @@ enc_get_index_str(VALUE str)
 {
     int i = ENCODING_GET_INLINED(str);
     if (i == ENCODING_INLINE_MAX) {
-	VALUE iv;
+        VALUE iv;
 
-	iv = rb_ivar_get(str, rb_id_encoding());
-	i = NUM2INT(iv);
+        iv = rb_ivar_get(str, rb_id_encoding());
+        i = NUM2INT(iv);
     }
     return i;
 }
@@ -789,29 +789,29 @@ rb_enc_get_index(VALUE obj)
     VALUE tmp;
 
     if (SPECIAL_CONST_P(obj)) {
-	if (!SYMBOL_P(obj)) return -1;
-	obj = rb_sym2str(obj);
+        if (!SYMBOL_P(obj)) return -1;
+        obj = rb_sym2str(obj);
     }
     switch (BUILTIN_TYPE(obj)) {
       as_default:
       default:
       case T_STRING:
       case T_REGEXP:
-	i = enc_get_index_str(obj);
-	break;
+        i = enc_get_index_str(obj);
+        break;
       case T_FILE:
-	tmp = rb_funcallv(obj, rb_intern("internal_encoding"), 0, 0);
-	if (NIL_P(tmp)) obj = rb_funcallv(obj, rb_intern("external_encoding"), 0, 0);
-	else obj = tmp;
-	if (NIL_P(obj)) break;
+        tmp = rb_funcallv(obj, rb_intern("internal_encoding"), 0, 0);
+        if (NIL_P(tmp)) obj = rb_funcallv(obj, rb_intern("external_encoding"), 0, 0);
+        else obj = tmp;
+        if (NIL_P(obj)) break;
       case T_DATA:
-	if (is_data_encoding(obj)) {
-	    i = enc_check_encoding(obj);
-	}
-	else {
-	    goto as_default;
-	}
-	break;
+        if (is_data_encoding(obj)) {
+            i = enc_check_encoding(obj);
+        }
+        else {
+            goto as_default;
+        }
+        break;
     }
     return i;
 }
@@ -822,8 +822,8 @@ enc_set_index(VALUE obj, int idx)
     if (!enc_capable(obj)) rb_bug("enc_set_index: not capable object");
 
     if (idx < ENCODING_INLINE_MAX) {
-	ENCODING_SET_INLINED(obj, idx);
-	return;
+        ENCODING_SET_INLINED(obj, idx);
+        return;
     }
     ENCODING_SET_INLINED(obj, ENCODING_INLINE_MAX);
     rb_ivar_set(obj, rb_id_encoding(), INT2NUM(idx));
@@ -847,19 +847,19 @@ rb_enc_associate_index(VALUE obj, int idx)
     rb_check_frozen(obj);
     oldidx = rb_enc_get_index(obj);
     if (oldidx == idx)
-	return obj;
+        return obj;
     if (SPECIAL_CONST_P(obj)) {
-	rb_raise(rb_eArgError, "cannot set encoding");
+        rb_raise(rb_eArgError, "cannot set encoding");
     }
     enc = must_encindex(idx);
     if (!ENC_CODERANGE_ASCIIONLY(obj) ||
-	!rb_enc_asciicompat(enc)) {
-	ENC_CODERANGE_CLEAR(obj);
+        !rb_enc_asciicompat(enc)) {
+        ENC_CODERANGE_CLEAR(obj);
     }
     termlen = rb_enc_mbminlen(enc);
     oldtermlen = rb_enc_mbminlen(rb_enc_from_index(oldidx));
     if (oldtermlen != termlen && RB_TYPE_P(obj, T_STRING)) {
-	rb_str_change_terminator_length(obj, oldtermlen, termlen);
+        rb_str_change_terminator_length(obj, oldtermlen, termlen);
     }
     enc_set_index(obj, idx);
     return obj;
@@ -884,9 +884,9 @@ rb_enc_check_str(VALUE str1, VALUE str2)
 {
     rb_encoding *enc = enc_compatible_str(MUST_STRING(str1), MUST_STRING(str2));
     if (!enc)
-	rb_raise(rb_eEncCompatError, "incompatible character encodings: %s and %s",
-		 rb_enc_name(rb_enc_get(str1)),
-		 rb_enc_name(rb_enc_get(str2)));
+        rb_raise(rb_eEncCompatError, "incompatible character encodings: %s and %s",
+                 rb_enc_name(rb_enc_get(str1)),
+                 rb_enc_name(rb_enc_get(str2)));
     return enc;
 }
 
@@ -895,9 +895,9 @@ rb_enc_check(VALUE str1, VALUE str2)
 {
     rb_encoding *enc = rb_enc_compatible(str1, str2);
     if (!enc)
-	rb_raise(rb_eEncCompatError, "incompatible character encodings: %s and %s",
-		 rb_enc_name(rb_enc_get(str1)),
-		 rb_enc_name(rb_enc_get(str2)));
+        rb_raise(rb_eEncCompatError, "incompatible character encodings: %s and %s",
+                 rb_enc_name(rb_enc_get(str1)),
+                 rb_enc_name(rb_enc_get(str2)));
     return enc;
 }
 
@@ -910,48 +910,48 @@ enc_compatible_latter(VALUE str1, VALUE str2, int idx1, int idx2)
 
     isstr2 = RB_TYPE_P(str2, T_STRING);
     if (isstr2 && RSTRING_LEN(str2) == 0)
-	return enc1;
+        return enc1;
     isstr1 = RB_TYPE_P(str1, T_STRING);
     if (isstr1 && RSTRING_LEN(str1) == 0)
-	return (rb_enc_asciicompat(enc1) && rb_enc_str_asciionly_p(str2)) ? enc1 : enc2;
+        return (rb_enc_asciicompat(enc1) && rb_enc_str_asciionly_p(str2)) ? enc1 : enc2;
     if (!rb_enc_asciicompat(enc1) || !rb_enc_asciicompat(enc2)) {
-	return 0;
+        return 0;
     }
 
     /* objects whose encoding is the same of contents */
     if (!isstr2 && idx2 == ENCINDEX_US_ASCII)
-	return enc1;
+        return enc1;
     if (!isstr1 && idx1 == ENCINDEX_US_ASCII)
-	return enc2;
+        return enc2;
 
     if (!isstr1) {
-	VALUE tmp = str1;
-	int idx0 = idx1;
-	str1 = str2;
-	str2 = tmp;
-	idx1 = idx2;
-	idx2 = idx0;
-	idx0 = isstr1;
-	isstr1 = isstr2;
-	isstr2 = idx0;
+        VALUE tmp = str1;
+        int idx0 = idx1;
+        str1 = str2;
+        str2 = tmp;
+        idx1 = idx2;
+        idx2 = idx0;
+        idx0 = isstr1;
+        isstr1 = isstr2;
+        isstr2 = idx0;
     }
     if (isstr1) {
-	int cr1, cr2;
+        int cr1, cr2;
 
-	cr1 = rb_enc_str_coderange(str1);
-	if (isstr2) {
-	    cr2 = rb_enc_str_coderange(str2);
-	    if (cr1 != cr2) {
-		/* may need to handle ENC_CODERANGE_BROKEN */
-		if (cr1 == ENC_CODERANGE_7BIT) return enc2;
-		if (cr2 == ENC_CODERANGE_7BIT) return enc1;
-	    }
-	    if (cr2 == ENC_CODERANGE_7BIT) {
-		return enc1;
-	    }
-	}
-	if (cr1 == ENC_CODERANGE_7BIT)
-	    return enc2;
+        cr1 = rb_enc_str_coderange(str1);
+        if (isstr2) {
+            cr2 = rb_enc_str_coderange(str2);
+            if (cr1 != cr2) {
+                /* may need to handle ENC_CODERANGE_BROKEN */
+                if (cr1 == ENC_CODERANGE_7BIT) return enc2;
+                if (cr2 == ENC_CODERANGE_7BIT) return enc1;
+            }
+            if (cr2 == ENC_CODERANGE_7BIT) {
+                return enc1;
+            }
+        }
+        if (cr1 == ENC_CODERANGE_7BIT)
+            return enc2;
     }
     return 0;
 }
@@ -966,10 +966,10 @@ enc_compatible_str(VALUE str1, VALUE str2)
         return 0;
 
     if (idx1 == idx2) {
-	return rb_enc_from_index(idx1);
+        return rb_enc_from_index(idx1);
     }
     else {
-	return enc_compatible_latter(str1, str2, idx1, idx2);
+        return enc_compatible_latter(str1, str2, idx1, idx2);
     }
 }
 
@@ -983,7 +983,7 @@ rb_enc_compatible(VALUE str1, VALUE str2)
         return 0;
 
     if (idx1 == idx2) {
-	return rb_enc_from_index(idx1);
+        return rb_enc_from_index(idx1);
     }
 
     return enc_compatible_latter(str1, str2, idx1, idx2);
@@ -1008,7 +1008,7 @@ rb_obj_encoding(VALUE obj)
 {
     int idx = rb_enc_get_index(obj);
     if (idx < 0) {
-	rb_raise(rb_eTypeError, "unknown encoding");
+        rb_raise(rb_eTypeError, "unknown encoding");
     }
     return rb_enc_from_encoding_index(idx & ENC_INDEX_MASK);
 }
@@ -1075,7 +1075,7 @@ rb_enc_codepoint_len(const char *p, const char *e, int *len_p, rb_encoding *enc)
         rb_raise(rb_eArgError, "empty string");
     r = rb_enc_precise_mbclen(p, e, enc);
     if (!MBCLEN_CHARFOUND_P(r)) {
-	rb_raise(rb_eArgError, "invalid byte sequence in %s", rb_enc_name(enc));
+        rb_raise(rb_eArgError, "invalid byte sequence in %s", rb_enc_name(enc));
     }
     if (len_p) *len_p = MBCLEN_CHARFOUND_LEN(r);
     return rb_enc_mbc_to_codepoint(p, e, enc);
@@ -1093,7 +1093,7 @@ rb_enc_codelen(int c, rb_encoding *enc)
 {
     int n = ONIGENC_CODE_TO_MBCLEN(enc,c);
     if (n == 0) {
-	rb_raise(rb_eArgError, "invalid codepoint 0x%x in %s", c, rb_enc_name(enc));
+        rb_raise(rb_eArgError, "invalid codepoint 0x%x in %s", c, rb_enc_name(enc));
     }
     return n;
 }
@@ -1132,16 +1132,16 @@ enc_inspect(VALUE self)
     rb_encoding *enc;
 
     if (!is_data_encoding(self)) {
-	not_encoding(self);
+        not_encoding(self);
     }
     if (!(enc = DATA_PTR(self)) || rb_enc_from_index(rb_enc_to_index(enc)) != enc) {
-	rb_raise(rb_eTypeError, "broken Encoding");
+        rb_raise(rb_eTypeError, "broken Encoding");
     }
     return rb_enc_sprintf(rb_usascii_encoding(),
-			  "#<%"PRIsVALUE":%s%s%s>", rb_obj_class(self),
-			  rb_enc_name(enc),
-			  (ENC_DUMMY_P(enc) ? " (dummy)" : ""),
-			  enc_autoload_p(enc) ? " (autoload)" : "");
+                          "#<%"PRIsVALUE":%s%s%s>", rb_obj_class(self),
+                          rb_enc_name(enc),
+                          (ENC_DUMMY_P(enc) ? " (dummy)" : ""),
+                          enc_autoload_p(enc) ? " (autoload)" : "");
 }
 
 /*
@@ -1165,8 +1165,8 @@ enc_names_i(st_data_t name, st_data_t idx, st_data_t args)
     VALUE *arg = (VALUE *)args;
 
     if ((int)idx == (int)arg[0]) {
-	VALUE str = rb_fstring_cstr((char *)name);
-	rb_ary_push(arg[1], str);
+        VALUE str = rb_fstring_cstr((char *)name);
+        rb_ary_push(arg[1], str);
     }
     return ST_CONTINUE;
 }
@@ -1243,7 +1243,7 @@ enc_find(VALUE klass, VALUE enc)
 {
     int idx;
     if (is_obj_encoding(enc))
-	return enc;
+        return enc;
     idx = str_to_encindex(enc);
     if (idx == UNSPECIFIED_ENCODING) return Qnil;
     return rb_enc_from_encoding_index(idx);
@@ -1319,7 +1319,7 @@ rb_encoding *
 rb_ascii8bit_encoding(void)
 {
     if (!enc_table.list) {
-	rb_enc_init();
+        rb_enc_init();
     }
     return enc_table.list[ENCINDEX_ASCII].enc;
 }
@@ -1334,7 +1334,7 @@ rb_encoding *
 rb_utf8_encoding(void)
 {
     if (!enc_table.list) {
-	rb_enc_init();
+        rb_enc_init();
     }
     return enc_table.list[ENCINDEX_UTF_8].enc;
 }
@@ -1349,7 +1349,7 @@ rb_encoding *
 rb_usascii_encoding(void)
 {
     if (!enc_table.list) {
-	rb_enc_init();
+        rb_enc_init();
     }
     return enc_table.list[ENCINDEX_US_ASCII].enc;
 }
@@ -1371,10 +1371,10 @@ rb_locale_encindex(void)
 
     if (rb_enc_registered("locale") < 0) {
 # if defined _WIN32
-	void Init_w32_codepage(void);
-	Init_w32_codepage();
+        void Init_w32_codepage(void);
+        Init_w32_codepage();
 # endif
-	enc_alias_internal("locale", idx);
+        enc_alias_internal("locale", idx);
     }
 
     return idx;
@@ -1391,7 +1391,7 @@ rb_filesystem_encindex(void)
 {
     int idx = rb_enc_registered("filesystem");
     if (idx < 0)
-	idx = ENCINDEX_ASCII;
+        idx = ENCINDEX_ASCII;
     return idx;
 }
 
@@ -1402,7 +1402,7 @@ rb_filesystem_encoding(void)
 }
 
 struct default_encoding {
-    int index;			/* -2 => not yet set, -1 => nil */
+    int index;                        /* -2 => not yet set, -1 => nil */
     rb_encoding *enc;
 };
 
@@ -1414,23 +1414,23 @@ enc_set_default_encoding(struct default_encoding *def, VALUE encoding, const cha
     int overridden = FALSE;
 
     if (def->index != -2)
-	/* Already set */
-	overridden = TRUE;
+        /* Already set */
+        overridden = TRUE;
 
     if (NIL_P(encoding)) {
-	def->index = -1;
-	def->enc = 0;
-	st_insert(enc_table.names, (st_data_t)strdup(name),
-		  (st_data_t)UNSPECIFIED_ENCODING);
+        def->index = -1;
+        def->enc = 0;
+        st_insert(enc_table.names, (st_data_t)strdup(name),
+                  (st_data_t)UNSPECIFIED_ENCODING);
     }
     else {
-	def->index = rb_enc_to_index(rb_to_encoding(encoding));
-	def->enc = 0;
-	enc_alias_internal(name, def->index);
+        def->index = rb_enc_to_index(rb_to_encoding(encoding));
+        def->enc = 0;
+        enc_alias_internal(name, def->index);
     }
 
     if (def == &default_external)
-	enc_alias_internal("filesystem", Init_enc_set_filesystem_encoding());
+        enc_alias_internal("filesystem", Init_enc_set_filesystem_encoding());
 
     return overridden;
 }
@@ -1608,45 +1608,45 @@ set_encoding_const(const char *name, rb_encoding *enc)
 
     if (ISDIGIT(*s)) return;
     if (ISUPPER(*s)) {
-	hasupper = 1;
-	while (*++s && (ISALNUM(*s) || *s == '_')) {
-	    if (ISLOWER(*s)) haslower = 1;
-	}
+        hasupper = 1;
+        while (*++s && (ISALNUM(*s) || *s == '_')) {
+            if (ISLOWER(*s)) haslower = 1;
+        }
     }
     if (!*s) {
-	if (s - name > ENCODING_NAMELEN_MAX) return;
-	valid = 1;
-	rb_define_const(rb_cEncoding, name, encoding);
+        if (s - name > ENCODING_NAMELEN_MAX) return;
+        valid = 1;
+        rb_define_const(rb_cEncoding, name, encoding);
     }
     if (!valid || haslower) {
-	size_t len = s - name;
-	if (len > ENCODING_NAMELEN_MAX) return;
-	if (!haslower || !hasupper) {
-	    do {
-		if (ISLOWER(*s)) haslower = 1;
-		if (ISUPPER(*s)) hasupper = 1;
-	    } while (*++s && (!haslower || !hasupper));
-	    len = s - name;
-	}
-	len += strlen(s);
-	if (len++ > ENCODING_NAMELEN_MAX) return;
-	MEMCPY(s = ALLOCA_N(char, len), name, char, len);
-	name = s;
-	if (!valid) {
-	    if (ISLOWER(*s)) *s = ONIGENC_ASCII_CODE_TO_UPPER_CASE((int)*s);
-	    for (; *s; ++s) {
-		if (!ISALNUM(*s)) *s = '_';
-	    }
-	    if (hasupper) {
-		rb_define_const(rb_cEncoding, name, encoding);
-	    }
-	}
-	if (haslower) {
-	    for (s = (char *)name; *s; ++s) {
-		if (ISLOWER(*s)) *s = ONIGENC_ASCII_CODE_TO_UPPER_CASE((int)*s);
-	    }
-	    rb_define_const(rb_cEncoding, name, encoding);
-	}
+        size_t len = s - name;
+        if (len > ENCODING_NAMELEN_MAX) return;
+        if (!haslower || !hasupper) {
+            do {
+                if (ISLOWER(*s)) haslower = 1;
+                if (ISUPPER(*s)) hasupper = 1;
+            } while (*++s && (!haslower || !hasupper));
+            len = s - name;
+        }
+        len += strlen(s);
+        if (len++ > ENCODING_NAMELEN_MAX) return;
+        MEMCPY(s = ALLOCA_N(char, len), name, char, len);
+        name = s;
+        if (!valid) {
+            if (ISLOWER(*s)) *s = ONIGENC_ASCII_CODE_TO_UPPER_CASE((int)*s);
+            for (; *s; ++s) {
+                if (!ISALNUM(*s)) *s = '_';
+            }
+            if (hasupper) {
+                rb_define_const(rb_cEncoding, name, encoding);
+            }
+        }
+        if (haslower) {
+            for (s = (char *)name; *s; ++s) {
+                if (ISLOWER(*s)) *s = ONIGENC_ASCII_CODE_TO_UPPER_CASE((int)*s);
+            }
+            rb_define_const(rb_cEncoding, name, encoding);
+        }
     }
 }
 
@@ -1690,14 +1690,14 @@ rb_enc_aliases_enc_i(st_data_t name, st_data_t orig, st_data_t arg)
     VALUE key, str = rb_ary_entry(ary, idx);
 
     if (NIL_P(str)) {
-	rb_encoding *enc = rb_enc_from_index(idx);
+        rb_encoding *enc = rb_enc_from_index(idx);
 
-	if (!enc) return ST_CONTINUE;
-	if (STRCASECMP((char*)name, rb_enc_name(enc)) == 0) {
-	    return ST_CONTINUE;
-	}
-	str = rb_fstring_cstr(rb_enc_name(enc));
-	rb_ary_store(ary, idx, str);
+        if (!enc) return ST_CONTINUE;
+        if (STRCASECMP((char*)name, rb_enc_name(enc)) == 0) {
+            return ST_CONTINUE;
+        }
+        str = rb_fstring_cstr(rb_enc_name(enc));
+        rb_ary_store(ary, idx, str);
     }
     key = rb_fstring_cstr((char *)name);
     rb_hash_aset(aliases, key, str);
@@ -1965,7 +1965,7 @@ Init_Encoding(void)
     rb_gc_register_mark_object(list);
 
     for (i = 0; i < enc_table.count; ++i) {
-	rb_ary_push(list, enc_new(enc_table.list[i].enc));
+        rb_ary_push(list, enc_new(enc_table.list[i].enc));
     }
 
     rb_marshal_define_compat(rb_cEncoding, Qnil, NULL, enc_m_loader);

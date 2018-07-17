@@ -132,8 +132,8 @@ void  setbinmode(FILE *fp)
 #endif
 
 #if !defined(DEFAULT_CODE_JIS) && !defined(DEFAULT_CODE_SJIS) && \
-	!defined(DEFAULT_CODE_WINDOWS_31J) && !defined(DEFAULT_CODE_EUC) && \
-	!defined(DEFAULT_CODE_UTF8) && !defined(DEFAULT_CODE_LOCALE)
+        !defined(DEFAULT_CODE_WINDOWS_31J) && !defined(DEFAULT_CODE_EUC) && \
+        !defined(DEFAULT_CODE_UTF8) && !defined(DEFAULT_CODE_LOCALE)
 #define DEFAULT_CODE_LOCALE
 #endif
 

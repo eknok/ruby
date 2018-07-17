@@ -6,11 +6,11 @@
  * @expr: any C expression
  *
  * Example:
- *	#define PRINT_COND_IF_FALSE(cond) \
- *		((cond) || printf("%s is false!", stringify(cond)))
+ *        #define PRINT_COND_IF_FALSE(cond) \
+ *                ((cond) || printf("%s is false!", stringify(cond)))
  */
-#define stringify(expr)		stringify_1(expr)
+#define stringify(expr)                stringify_1(expr)
 /* Double-indirection required to stringify expansions */
-#define stringify_1(expr)	#expr
+#define stringify_1(expr)        #expr
 
 #endif /* CCAN_STR_H */

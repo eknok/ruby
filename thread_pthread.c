@@ -73,25 +73,25 @@ gvl_acquire_common(rb_vm_t *vm)
 {
     if (vm->gvl.acquired) {
 
-	if (!vm->gvl.waiting++) {
-	    /*
-	     * Wake up timer thread iff timer thread is slept.
-	     * When timer thread is polling mode, we don't want to
-	     * make confusing timer thread interval time.
-	     */
-	    rb_thread_wakeup_timer_thread_low();
-	}
+        if (!vm->gvl.waiting++) {
+            /*
+             * Wake up timer thread iff timer thread is slept.
+             * When timer thread is polling mode, we don't want to
+             * make confusing timer thread interval time.
+             */
+            rb_thread_wakeup_timer_thread_low();
+        }
 
-	while (vm->gvl.acquired) {
+        while (vm->gvl.acquired) {
             rb_native_cond_wait(&vm->gvl.cond, &vm->gvl.lock);
-	}
+        }
 
-	--vm->gvl.waiting;
+        --vm->gvl.waiting;
 
-	if (vm->gvl.need_yield) {
-	    vm->gvl.need_yield = 0;
+        if (vm->gvl.need_yield) {
+            vm->gvl.need_yield = 0;
             rb_native_cond_signal(&vm->gvl.switch_cond);
-	}
+        }
     }
 
     vm->gvl.acquired = 1;
@@ -130,22 +130,22 @@ gvl_yield(rb_vm_t *vm, rb_thread_t *th)
 
     /* An another thread is processing GVL yield. */
     if (UNLIKELY(vm->gvl.wait_yield)) {
-	while (vm->gvl.wait_yield)
+        while (vm->gvl.wait_yield)
             rb_native_cond_wait(&vm->gvl.switch_wait_cond, &vm->gvl.lock);
-	goto acquire;
+        goto acquire;
     }
 
     if (vm->gvl.waiting > 0) {
-	/* Wait until another thread task take GVL. */
-	vm->gvl.need_yield = 1;
-	vm->gvl.wait_yield = 1;
-	while (vm->gvl.need_yield)
+        /* Wait until another thread task take GVL. */
+        vm->gvl.need_yield = 1;
+        vm->gvl.wait_yield = 1;
+        while (vm->gvl.need_yield)
             rb_native_cond_wait(&vm->gvl.switch_cond, &vm->gvl.lock);
-	vm->gvl.wait_yield = 0;
+        vm->gvl.wait_yield = 0;
     }
     else {
-	rb_native_mutex_unlock(&vm->gvl.lock);
-	sched_yield();
+        rb_native_mutex_unlock(&vm->gvl.lock);
+        sched_yield();
         rb_native_mutex_lock(&vm->gvl.lock);
     }
 
@@ -194,12 +194,12 @@ static void
 mutex_debug(const char *msg, void *lock)
 {
     if (NATIVE_MUTEX_LOCK_DEBUG) {
-	int r;
-	static pthread_mutex_t dbglock = PTHREAD_MUTEX_INITIALIZER;
+        int r;
+        static pthread_mutex_t dbglock = PTHREAD_MUTEX_INITIALIZER;
 
-	if ((r = pthread_mutex_lock(&dbglock)) != 0) {exit(EXIT_FAILURE);}
-	fprintf(stdout, "%s: %p\n", msg, lock);
-	if ((r = pthread_mutex_unlock(&dbglock)) != 0) {exit(EXIT_FAILURE);}
+        if ((r = pthread_mutex_lock(&dbglock)) != 0) {exit(EXIT_FAILURE);}
+        fprintf(stdout, "%s: %p\n", msg, lock);
+        if ((r = pthread_mutex_unlock(&dbglock)) != 0) {exit(EXIT_FAILURE);}
     }
 }
 
@@ -209,7 +209,7 @@ rb_native_mutex_lock(pthread_mutex_t *lock)
     int r;
     mutex_debug("lock", lock);
     if ((r = pthread_mutex_lock(lock)) != 0) {
-	rb_bug_errno("pthread_mutex_lock", r);
+        rb_bug_errno("pthread_mutex_lock", r);
     }
 }
 
@@ -219,7 +219,7 @@ rb_native_mutex_unlock(pthread_mutex_t *lock)
     int r;
     mutex_debug("unlock", lock);
     if ((r = pthread_mutex_unlock(lock)) != 0) {
-	rb_bug_errno("pthread_mutex_unlock", r);
+        rb_bug_errno("pthread_mutex_unlock", r);
     }
 }
 
@@ -229,12 +229,12 @@ native_mutex_trylock(pthread_mutex_t *lock)
     int r;
     mutex_debug("trylock", lock);
     if ((r = pthread_mutex_trylock(lock)) != 0) {
-	if (r == EBUSY) {
-	    return EBUSY;
-	}
-	else {
-	    rb_bug_errno("pthread_mutex_trylock", r);
-	}
+        if (r == EBUSY) {
+            return EBUSY;
+        }
+        else {
+            rb_bug_errno("pthread_mutex_trylock", r);
+        }
     }
     return 0;
 }
@@ -245,7 +245,7 @@ rb_native_mutex_initialize(pthread_mutex_t *lock)
     int r = pthread_mutex_init(lock, 0);
     mutex_debug("init", lock);
     if (r != 0) {
-	rb_bug_errno("pthread_mutex_init", r);
+        rb_bug_errno("pthread_mutex_init", r);
     }
 }
 
@@ -255,7 +255,7 @@ rb_native_mutex_destroy(pthread_mutex_t *lock)
     int r = pthread_mutex_destroy(lock);
     mutex_debug("destroy", lock);
     if (r != 0) {
-	rb_bug_errno("pthread_mutex_destroy", r);
+        rb_bug_errno("pthread_mutex_destroy", r);
     }
 }
 
@@ -264,7 +264,7 @@ rb_native_cond_initialize(rb_nativethread_cond_t *cond)
 {
     int r = pthread_cond_init(cond, condattr_monotonic);
     if (r != 0) {
-	rb_bug_errno("pthread_cond_init", r);
+        rb_bug_errno("pthread_cond_init", r);
     }
 }
 
@@ -273,7 +273,7 @@ rb_native_cond_destroy(rb_nativethread_cond_t *cond)
 {
     int r = pthread_cond_destroy(cond);
     if (r != 0) {
-	rb_bug_errno("pthread_cond_destroy", r);
+        rb_bug_errno("pthread_cond_destroy", r);
     }
 }
 
@@ -292,10 +292,10 @@ rb_native_cond_signal(rb_nativethread_cond_t *cond)
 {
     int r;
     do {
-	r = pthread_cond_signal(cond);
+        r = pthread_cond_signal(cond);
     } while (r == EAGAIN);
     if (r != 0) {
-	rb_bug_errno("pthread_cond_signal", r);
+        rb_bug_errno("pthread_cond_signal", r);
     }
 }
 
@@ -304,7 +304,7 @@ rb_native_cond_broadcast(rb_nativethread_cond_t *cond)
 {
     int r;
     do {
-	r = pthread_cond_broadcast(cond);
+        r = pthread_cond_broadcast(cond);
     } while (r == EAGAIN);
     if (r != 0) {
         rb_bug_errno("rb_native_cond_broadcast", r);
@@ -316,7 +316,7 @@ rb_native_cond_wait(rb_nativethread_cond_t *cond, pthread_mutex_t *mutex)
 {
     int r = pthread_cond_wait(cond, mutex);
     if (r != 0) {
-	rb_bug_errno("pthread_cond_wait", r);
+        rb_bug_errno("pthread_cond_wait", r);
     }
 }
 
@@ -332,11 +332,11 @@ native_cond_timedwait(rb_nativethread_cond_t *cond, pthread_mutex_t *mutex, cons
      * Let's hide it from arch generic code.
      */
     do {
-	r = pthread_cond_timedwait(cond, mutex, ts);
+        r = pthread_cond_timedwait(cond, mutex, ts);
     } while (r == EINTR);
 
     if (r != 0 && r != ETIMEDOUT) {
-	rb_bug_errno("pthread_cond_timedwait", r);
+        rb_bug_errno("pthread_cond_timedwait", r);
     }
 
     return r;
@@ -497,10 +497,10 @@ hpux_attr_getstackaddr(const pthread_attr_t *attr, void **addr)
     size_t size;
 
     if (!pagesize) {
-	if (gettune("vps_pagesize", &pagesize)) {
-	    pagesize = 16;
-	}
-	pagesize *= 1024;
+        if (gettune("vps_pagesize", &pagesize)) {
+            pagesize = 16;
+        }
+        pagesize *= 1024;
     }
     pthread_attr_getstacksize(attr, &size);
     *addr = (void *)((size_t)((char *)_Asm_get_sp() - size) & ~(pagesize - 1));
@@ -527,7 +527,7 @@ hpux_attr_getstackaddr(const pthread_attr_t *attr, void **addr)
 static int
 get_stack(void **addr, size_t *size)
 {
-#define CHECK_ERR(expr)				\
+#define CHECK_ERR(expr)                                \
     {int err = (expr); if (err) return err;}
 #ifdef HAVE_PTHREAD_GETATTR_NP /* Linux */
     pthread_attr_t attr;
@@ -579,8 +579,8 @@ get_stack(void **addr, size_t *size)
     char reg[256];
     int regsiz=sizeof(reg);
     CHECK_ERR(pthread_getthrds_np(&th, PTHRDSINFO_QUERY_ALL,
-				   &thinfo, sizeof(thinfo),
-				   &reg, &regsiz));
+                                   &thinfo, sizeof(thinfo),
+                                   &reg, &regsiz));
     *addr = thinfo.__pi_stackaddr;
     /* Must not use thinfo.__pi_stacksize for size.
        It is around 3KB smaller than the correct size
@@ -625,10 +625,10 @@ space_size(size_t stack_size)
 {
     size_t space_size = stack_size / RUBY_STACK_SPACE_RATIO;
     if (space_size > RUBY_STACK_SPACE_LIMIT) {
-	return RUBY_STACK_SPACE_LIMIT;
+        return RUBY_STACK_SPACE_LIMIT;
     }
     else {
-	return space_size;
+        return space_size;
     }
 }
 
@@ -646,42 +646,42 @@ reserve_stack(volatile char *limit, size_t size)
     STACK_GROW_DIR_DETECTION;
 
     if (!getrlimit(RLIMIT_STACK, &rl) && rl.rlim_cur == RLIM_INFINITY)
-	return;
+        return;
 
     if (size < stack_check_margin) return;
     size -= stack_check_margin;
 
     size -= sizeof(buf); /* margin */
     if (IS_STACK_DIR_UPPER()) {
-	const volatile char *end = buf + sizeof(buf);
-	limit += size;
-	if (limit > end) {
-	    /* |<-bottom (=limit(a))                                     top->|
-	     * | .. |<-buf 256B |<-end                          | stack check |
-	     * |  256B  |              =size=                   | margin (4KB)|
-	     * |              =size=         limit(b)->|  256B  |             |
-	     * |                |       alloca(sz)     |        |             |
-	     * | .. |<-buf      |<-limit(c)    [sz-1]->0>       |             |
-	     */
-	    size_t sz = limit - end;
-	    limit = alloca(sz);
-	    limit[sz-1] = 0;
-	}
+        const volatile char *end = buf + sizeof(buf);
+        limit += size;
+        if (limit > end) {
+            /* |<-bottom (=limit(a))                                     top->|
+             * | .. |<-buf 256B |<-end                          | stack check |
+             * |  256B  |              =size=                   | margin (4KB)|
+             * |              =size=         limit(b)->|  256B  |             |
+             * |                |       alloca(sz)     |        |             |
+             * | .. |<-buf      |<-limit(c)    [sz-1]->0>       |             |
+             */
+            size_t sz = limit - end;
+            limit = alloca(sz);
+            limit[sz-1] = 0;
+        }
     }
     else {
-	limit -= size;
-	if (buf > limit) {
-	    /* |<-top (=limit(a))                                     bottom->|
-	     * | .. | 256B buf->|                               | stack check |
-	     * |  256B  |              =size=                   | margin (4KB)|
-	     * |              =size=         limit(b)->|  256B  |             |
-	     * |                |       alloca(sz)     |        |             |
-	     * | .. |      buf->|           limit(c)-><0>       |             |
-	     */
-	    size_t sz = buf - limit;
-	    limit = alloca(sz);
-	    limit[0] = 0;
-	}
+        limit -= size;
+        if (buf > limit) {
+            /* |<-top (=limit(a))                                     bottom->|
+             * | .. | 256B buf->|                               | stack check |
+             * |  256B  |              =size=                   | margin (4KB)|
+             * |              =size=         limit(b)->|  256B  |             |
+             * |                |       alloca(sz)     |        |             |
+             * | .. |      buf->|           limit(c)-><0>       |             |
+             */
+            size_t sz = buf - limit;
+            limit = alloca(sz);
+            limit[0] = 0;
+        }
     }
 }
 #else
@@ -710,14 +710,14 @@ ruby_init_stack(volatile VALUE *addr
 #if MAINSTACKADDR_AVAILABLE
     if (native_main_thread.stack_maxsize) return;
     {
-	void* stackaddr;
-	size_t size;
-	if (get_main_stack(&stackaddr, &size) == 0) {
-	    native_main_thread.stack_maxsize = size;
-	    native_main_thread.stack_start = stackaddr;
-	    reserve_stack(stackaddr, size);
-	    goto bound_check;
-	}
+        void* stackaddr;
+        size_t size;
+        if (get_main_stack(&stackaddr, &size) == 0) {
+            native_main_thread.stack_maxsize = size;
+            native_main_thread.stack_start = stackaddr;
+            reserve_stack(stackaddr, size);
+            goto bound_check;
+        }
     }
 #endif
 #ifdef STACK_END_ADDRESS
@@ -736,25 +736,25 @@ ruby_init_stack(volatile VALUE *addr
 # if PTHREAD_STACK_DEFAULT < RUBY_STACK_SPACE*5
 #  error "PTHREAD_STACK_DEFAULT is too small"
 # endif
-	size_t size = PTHREAD_STACK_DEFAULT;
+        size_t size = PTHREAD_STACK_DEFAULT;
 #else
-	size_t size = RUBY_VM_THREAD_VM_STACK_SIZE;
+        size_t size = RUBY_VM_THREAD_VM_STACK_SIZE;
 #endif
-	size_t space;
-	int pagesize = getpagesize();
-	struct rlimit rlim;
+        size_t space;
+        int pagesize = getpagesize();
+        struct rlimit rlim;
         STACK_GROW_DIR_DETECTION;
-	if (getrlimit(RLIMIT_STACK, &rlim) == 0) {
-	    size = (size_t)rlim.rlim_cur;
-	}
-	addr = native_main_thread.stack_start;
-	if (IS_STACK_DIR_UPPER()) {
-	    space = ((size_t)((char *)addr + size) / pagesize) * pagesize - (size_t)addr;
-	}
-	else {
-	    space = (size_t)addr - ((size_t)((char *)addr - size) / pagesize + 1) * pagesize;
-	}
-	native_main_thread.stack_maxsize = space;
+        if (getrlimit(RLIMIT_STACK, &rlim) == 0) {
+            size = (size_t)rlim.rlim_cur;
+        }
+        addr = native_main_thread.stack_start;
+        if (IS_STACK_DIR_UPPER()) {
+            space = ((size_t)((char *)addr + size) / pagesize) * pagesize - (size_t)addr;
+        }
+        else {
+            space = (size_t)addr - ((size_t)((char *)addr - size) / pagesize + 1) * pagesize;
+        }
+        native_main_thread.stack_maxsize = space;
 #endif
     }
 
@@ -764,23 +764,23 @@ ruby_init_stack(volatile VALUE *addr
     /* If addr is out of range of main-thread stack range estimation,  */
     /* it should be on co-routine (alternative stack). [Feature #2294] */
     {
-	void *start, *end;
-	STACK_GROW_DIR_DETECTION;
+        void *start, *end;
+        STACK_GROW_DIR_DETECTION;
 
-	if (IS_STACK_DIR_UPPER()) {
-	    start = native_main_thread.stack_start;
-	    end = (char *)native_main_thread.stack_start + native_main_thread.stack_maxsize;
-	}
-	else {
-	    start = (char *)native_main_thread.stack_start - native_main_thread.stack_maxsize;
-	    end = native_main_thread.stack_start;
-	}
+        if (IS_STACK_DIR_UPPER()) {
+            start = native_main_thread.stack_start;
+            end = (char *)native_main_thread.stack_start + native_main_thread.stack_maxsize;
+        }
+        else {
+            start = (char *)native_main_thread.stack_start - native_main_thread.stack_maxsize;
+            end = native_main_thread.stack_start;
+        }
 
-	if ((void *)addr < start || (void *)addr > end) {
-	    /* out of range */
-	    native_main_thread.stack_start = (VALUE *)addr;
-	    native_main_thread.stack_maxsize = 0; /* unknown */
-	}
+        if ((void *)addr < start || (void *)addr > end) {
+            /* out of range */
+            native_main_thread.stack_start = (VALUE *)addr;
+            native_main_thread.stack_maxsize = 0; /* unknown */
+        }
     }
 }
 
@@ -793,21 +793,21 @@ native_thread_init_stack(rb_thread_t *th)
     rb_nativethread_id_t curr = pthread_self();
 
     if (pthread_equal(curr, native_main_thread.id)) {
-	th->ec->machine.stack_start = native_main_thread.stack_start;
-	th->ec->machine.stack_maxsize = native_main_thread.stack_maxsize;
+        th->ec->machine.stack_start = native_main_thread.stack_start;
+        th->ec->machine.stack_maxsize = native_main_thread.stack_maxsize;
     }
     else {
 #ifdef STACKADDR_AVAILABLE
-	void *start;
-	size_t size;
+        void *start;
+        size_t size;
 
-	if (get_stack(&start, &size) == 0) {
-	    uintptr_t diff = (uintptr_t)start - (uintptr_t)&curr;
-	    th->ec->machine.stack_start = (VALUE *)&curr;
-	    th->ec->machine.stack_maxsize = size - diff;
-	}
+        if (get_stack(&start, &size) == 0) {
+            uintptr_t diff = (uintptr_t)start - (uintptr_t)&curr;
+            th->ec->machine.stack_start = (VALUE *)&curr;
+            th->ec->machine.stack_maxsize = size - diff;
+        }
 #else
-	rb_raise(rb_eNotImpError, "ruby engine can initialize only in the main thread");
+        rb_raise(rb_eNotImpError, "ruby engine can initialize only in the main thread");
 #endif
     }
 #ifdef __ia64
@@ -832,27 +832,27 @@ thread_start_func_1(void *th_ptr)
 #endif
     {
 #if !defined USE_NATIVE_THREAD_INIT
-	VALUE stack_start;
+        VALUE stack_start;
 #endif
 
-	fill_thread_id_str(th);
+        fill_thread_id_str(th);
 #if defined USE_NATIVE_THREAD_INIT
-	native_thread_init_stack(th);
+        native_thread_init_stack(th);
 #endif
-	native_thread_init(th);
-	/* run */
+        native_thread_init(th);
+        /* run */
 #if defined USE_NATIVE_THREAD_INIT
-	thread_start_func_2(th, th->ec->machine.stack_start, rb_ia64_bsp());
+        thread_start_func_2(th, th->ec->machine.stack_start, rb_ia64_bsp());
 #else
-	thread_start_func_2(th, &stack_start, rb_ia64_bsp());
+        thread_start_func_2(th, &stack_start, rb_ia64_bsp());
 #endif
     }
 #if USE_THREAD_CACHE
     if (1) {
-	/* cache thread */
-	if ((th = register_cached_thread_and_wait()) != 0) {
-	    goto thread_start;
-	}
+        /* cache thread */
+        if ((th = register_cached_thread_and_wait()) != 0) {
+            goto thread_start;
+        }
     }
 #endif
     RB_ALTSTACK_FREE(altstack);
@@ -948,12 +948,12 @@ native_thread_create(rb_thread_t *th)
     int err = 0;
 
     if (use_cached_thread(th)) {
-	thread_debug("create (use cached thread): %p\n", (void *)th);
+        thread_debug("create (use cached thread): %p\n", (void *)th);
     }
     else {
-	pthread_attr_t attr;
-	const size_t stack_size = th->vm->default_params.thread_machine_stack_size;
-	const size_t space = space_size(stack_size);
+        pthread_attr_t attr;
+        const size_t stack_size = th->vm->default_params.thread_machine_stack_size;
+        const size_t space = space_size(stack_size);
 
         th->ec->machine.stack_maxsize = stack_size - space;
 #ifdef __ia64
@@ -961,23 +961,23 @@ native_thread_create(rb_thread_t *th)
         th->ec->machine.register_stack_maxsize = th->ec->machine.stack_maxsize;
 #endif
 
-	CHECK_ERR(pthread_attr_init(&attr));
+        CHECK_ERR(pthread_attr_init(&attr));
 
 # ifdef PTHREAD_STACK_MIN
-	thread_debug("create - stack size: %lu\n", (unsigned long)stack_size);
-	CHECK_ERR(pthread_attr_setstacksize(&attr, stack_size));
+        thread_debug("create - stack size: %lu\n", (unsigned long)stack_size);
+        CHECK_ERR(pthread_attr_setstacksize(&attr, stack_size));
 # endif
 
 # ifdef HAVE_PTHREAD_ATTR_SETINHERITSCHED
-	CHECK_ERR(pthread_attr_setinheritsched(&attr, PTHREAD_INHERIT_SCHED));
+        CHECK_ERR(pthread_attr_setinheritsched(&attr, PTHREAD_INHERIT_SCHED));
 # endif
-	CHECK_ERR(pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED));
+        CHECK_ERR(pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED));
 
-	err = pthread_create(&th->thread_id, &attr, thread_start_func_1, th);
-	thread_debug("create: %p (%d)\n", (void *)th, err);
-	/* should be done in the created thread */
-	fill_thread_id_str(th);
-	CHECK_ERR(pthread_attr_destroy(&attr));
+        err = pthread_create(&th->thread_id, &attr, thread_start_func_1, th);
+        thread_debug("create: %p (%d)\n", (void *)th, err);
+        /* should be done in the created thread */
+        fill_thread_id_str(th);
+        CHECK_ERR(pthread_attr_destroy(&attr));
     }
     return err;
 }
@@ -987,7 +987,7 @@ native_thread_join(pthread_t th)
 {
     int err = pthread_join(th, 0);
     if (err) {
-	rb_raise(rb_eThreadError, "native_thread_join() failed (%d)", err);
+        rb_raise(rb_eThreadError, "native_thread_join() failed (%d)", err);
     }
 }
 
@@ -1006,10 +1006,10 @@ native_thread_apply_priority(rb_thread_t *th)
     min = sched_get_priority_min(policy);
 
     if (min > priority) {
-	priority = min;
+        priority = min;
     }
     else if (max < priority) {
-	priority = max;
+        priority = max;
     }
 
     sp.sched_priority = priority;
@@ -1043,41 +1043,41 @@ native_sleep(rb_thread_t *th, struct timespec *timeout_rel)
     rb_nativethread_cond_t *cond = &th->native_thread_data.sleep_cond;
 
     if (timeout_rel) {
-	/* Solaris cond_timedwait() return EINVAL if an argument is greater than
-	 * current_time + 100,000,000.  So cut up to 100,000,000.  This is
-	 * considered as a kind of spurious wakeup.  The caller to native_sleep
-	 * should care about spurious wakeup.
-	 *
-	 * See also [Bug #1341] [ruby-core:29702]
-	 * http://download.oracle.com/docs/cd/E19683-01/816-0216/6m6ngupgv/index.html
-	 */
-	if (timeout_rel->tv_sec > 100000000) {
-	    timeout_rel->tv_sec = 100000000;
-	    timeout_rel->tv_nsec = 0;
-	}
+        /* Solaris cond_timedwait() return EINVAL if an argument is greater than
+         * current_time + 100,000,000.  So cut up to 100,000,000.  This is
+         * considered as a kind of spurious wakeup.  The caller to native_sleep
+         * should care about spurious wakeup.
+         *
+         * See also [Bug #1341] [ruby-core:29702]
+         * http://download.oracle.com/docs/cd/E19683-01/816-0216/6m6ngupgv/index.html
+         */
+        if (timeout_rel->tv_sec > 100000000) {
+            timeout_rel->tv_sec = 100000000;
+            timeout_rel->tv_nsec = 0;
+        }
 
-	timeout = native_cond_timeout(cond, *timeout_rel);
+        timeout = native_cond_timeout(cond, *timeout_rel);
     }
 
     GVL_UNLOCK_BEGIN(th);
     {
         rb_native_mutex_lock(lock);
-	th->unblock.func = ubf_pthread_cond_signal;
-	th->unblock.arg = th;
+        th->unblock.func = ubf_pthread_cond_signal;
+        th->unblock.arg = th;
 
-	if (RUBY_VM_INTERRUPTED(th->ec)) {
-	    /* interrupted.  return immediate */
-	    thread_debug("native_sleep: interrupted before sleep\n");
-	}
-	else {
-	    if (!timeout_rel)
-		rb_native_cond_wait(cond, lock);
-	    else
-		native_cond_timedwait(cond, lock, &timeout);
-	}
-	th->unblock.func = 0;
+        if (RUBY_VM_INTERRUPTED(th->ec)) {
+            /* interrupted.  return immediate */
+            thread_debug("native_sleep: interrupted before sleep\n");
+        }
+        else {
+            if (!timeout_rel)
+                rb_native_cond_wait(cond, lock);
+            else
+                native_cond_timedwait(cond, lock, &timeout);
+        }
+        th->unblock.func = 0;
 
-	rb_native_mutex_unlock(lock);
+        rb_native_mutex_unlock(lock);
     }
     GVL_UNLOCK_END(th);
 
@@ -1095,7 +1095,7 @@ register_ubf_list(rb_thread_t *th)
 
     if (list_empty((struct list_head*)node)) {
         rb_native_mutex_lock(&ubf_list_lock);
-	list_add(&ubf_list_head, node);
+        list_add(&ubf_list_head, node);
         rb_native_mutex_unlock(&ubf_list_lock);
     }
 }
@@ -1108,7 +1108,7 @@ unregister_ubf_list(rb_thread_t *th)
 
     if (!list_empty((struct list_head*)node)) {
         rb_native_mutex_lock(&ubf_list_lock);
-	list_del_init(node);
+        list_del_init(node);
         rb_native_mutex_unlock(&ubf_list_lock);
     }
 }
@@ -1122,7 +1122,7 @@ ubf_wakeup_thread(rb_thread_t *th)
 {
     thread_debug("thread_wait_queue_wakeup (%"PRI_THREAD_ID")\n", thread_id_str(th));
     if (th)
-	pthread_kill(th->thread_id, SIGVTALRM);
+        pthread_kill(th->thread_id, SIGVTALRM);
 }
 
 static void
@@ -1139,7 +1139,7 @@ ubf_select(void *ptr)
      * if running on timer thread because it may make endless wakeups.
      */
     if (!pthread_equal(pthread_self(), timer_thread.id))
-	rb_thread_wakeup_timer_thread();
+        rb_thread_wakeup_timer_thread();
     ubf_wakeup_thread(th);
 }
 
@@ -1157,10 +1157,10 @@ ubf_wakeup_all_threads(void)
 
     if (!ubf_threads_empty()) {
         rb_native_mutex_lock(&ubf_list_lock);
-	list_for_each(&ubf_list_head, dat, ubf_list) {
-	    th = container_of(dat, rb_thread_t, native_thread_data);
-	    ubf_wakeup_thread(th);
-	}
+        list_for_each(&ubf_list_head, dat, ubf_list) {
+            th = container_of(dat, rb_thread_t, native_thread_data);
+            ubf_wakeup_thread(th);
+        }
         rb_native_mutex_unlock(&ubf_list_lock);
     }
 }
@@ -1205,7 +1205,7 @@ async_bug_fd(const char *mesg, int errno_arg, int fd)
     char buff[64];
     size_t n = strlcpy(buff, mesg, sizeof(buff));
     if (n < sizeof(buff)-3) {
-	ruby_snprintf(buff+n, sizeof(buff)-n, "(%d)", fd);
+        ruby_snprintf(buff+n, sizeof(buff)-n, "(%d)", fd);
     }
     rb_async_bug_errno(buff, errno_arg);
 }
@@ -1219,25 +1219,25 @@ rb_thread_wakeup_timer_thread_fd(volatile int *fdp)
 
     /* already opened */
     if (fd >= 0 && timer_thread_pipe.owner_process == getpid()) {
-	static const char buff[1] = {'!'};
+        static const char buff[1] = {'!'};
       retry:
-	if ((result = write(fd, buff, 1)) <= 0) {
-	    int e = errno;
-	    switch (e) {
-	      case EINTR: goto retry;
-	      case EAGAIN:
+        if ((result = write(fd, buff, 1)) <= 0) {
+            int e = errno;
+            switch (e) {
+              case EINTR: goto retry;
+              case EAGAIN:
 #if defined(EWOULDBLOCK) && EWOULDBLOCK != EAGAIN
-	      case EWOULDBLOCK:
+              case EWOULDBLOCK:
 #endif
-		break;
-	      default:
-		async_bug_fd("rb_thread_wakeup_timer_thread: write", e, fd);
-	    }
-	}
-	if (TT_DEBUG) WRITE_CONST(2, "rb_thread_wakeup_timer_thread: write\n");
+                break;
+              default:
+                async_bug_fd("rb_thread_wakeup_timer_thread: write", e, fd);
+            }
+        }
+        if (TT_DEBUG) WRITE_CONST(2, "rb_thread_wakeup_timer_thread: write\n");
     }
     else {
-	/* ignore wakeup */
+        /* ignore wakeup */
     }
 }
 
@@ -1246,9 +1246,9 @@ rb_thread_wakeup_timer_thread(void)
 {
     /* must be safe inside sighandler, so no mutex */
     if (timer_thread_pipe.owner_process == getpid()) {
-	ATOMIC_INC(timer_thread_pipe.writing);
-	rb_thread_wakeup_timer_thread_fd(&timer_thread_pipe.normal[1]);
-	ATOMIC_DEC(timer_thread_pipe.writing);
+        ATOMIC_INC(timer_thread_pipe.writing);
+        rb_thread_wakeup_timer_thread_fd(&timer_thread_pipe.normal[1]);
+        ATOMIC_DEC(timer_thread_pipe.writing);
     }
 }
 
@@ -1256,9 +1256,9 @@ static void
 rb_thread_wakeup_timer_thread_low(void)
 {
     if (timer_thread_pipe.owner_process == getpid()) {
-	ATOMIC_INC(timer_thread_pipe.writing);
-	rb_thread_wakeup_timer_thread_fd(&timer_thread_pipe.low[1]);
-	ATOMIC_DEC(timer_thread_pipe.writing);
+        ATOMIC_INC(timer_thread_pipe.writing);
+        rb_thread_wakeup_timer_thread_fd(&timer_thread_pipe.low[1]);
+        ATOMIC_DEC(timer_thread_pipe.writing);
     }
 }
 
@@ -1272,24 +1272,24 @@ consume_communication_pipe(int fd)
     ssize_t result;
 
     while (1) {
-	result = read(fd, buff, sizeof(buff));
-	if (result == 0) {
-	    return;
-	}
-	else if (result < 0) {
-	    int e = errno;
-	    switch (e) {
-	      case EINTR:
-		continue; /* retry */
-	      case EAGAIN:
+        result = read(fd, buff, sizeof(buff));
+        if (result == 0) {
+            return;
+        }
+        else if (result < 0) {
+            int e = errno;
+            switch (e) {
+              case EINTR:
+                continue; /* retry */
+              case EAGAIN:
 #if defined(EWOULDBLOCK) && EWOULDBLOCK != EAGAIN
-	      case EWOULDBLOCK:
+              case EWOULDBLOCK:
 #endif
-		return;
-	      default:
-		async_bug_fd("consume_communication_pipe: read", e, fd);
-	    }
-	}
+                return;
+              default:
+                async_bug_fd("consume_communication_pipe: read", e, fd);
+            }
+        }
     }
 }
 
@@ -1302,7 +1302,7 @@ close_invalidate(volatile int *fdp, const char *msg)
 
     *fdp = -1;
     if (close(fd) < 0) {
-	async_bug_fd(msg, errno, fd);
+        async_bug_fd(msg, errno, fd);
     }
 }
 
@@ -1314,11 +1314,11 @@ set_nonblock(int fd)
 
     oflags = fcntl(fd, F_GETFL);
     if (oflags == -1)
-	rb_sys_fail(0);
+        rb_sys_fail(0);
     oflags |= O_NONBLOCK;
     err = fcntl(fd, F_SETFL, oflags);
     if (err == -1)
-	rb_sys_fail(0);
+        rb_sys_fail(0);
 }
 
 static int
@@ -1328,9 +1328,9 @@ setup_communication_pipe_internal(int pipes[2])
 
     err = rb_cloexec_pipe(pipes);
     if (err != 0) {
-	rb_warn("Failed to create communication pipe for timer thread: %s",
-	        strerror(errno));
-	return -1;
+        rb_warn("Failed to create communication pipe for timer thread: %s",
+                strerror(errno));
+        return -1;
     }
     rb_update_max_fd(pipes[0]);
     rb_update_max_fd(pipes[1]);
@@ -1350,13 +1350,13 @@ setup_communication_pipe(void)
     VM_ASSERT(timer_thread_pipe.low[1] == -1);
 
     if (setup_communication_pipe_internal(timer_thread_pipe.normal) < 0) {
-	return errno;
+        return errno;
     }
     if (setup_communication_pipe_internal(timer_thread_pipe.low) < 0) {
-	int e = errno;
-	CLOSE_INVALIDATE(normal[0]);
-	CLOSE_INVALIDATE(normal[1]);
-	return e;
+        int e = errno;
+        CLOSE_INVALIDATE(normal[0]);
+        CLOSE_INVALIDATE(normal[1]);
+        return e;
     }
 
     return 0;
@@ -1391,32 +1391,32 @@ timer_thread_sleep(rb_vm_t *vm)
     }
 
     if (vm->gvl.waiting > 0 || need_polling) {
-	/* polling (TIME_QUANTUM_USEC usec) */
-	result = poll(pollfds, 1, TIME_QUANTUM_USEC/1000);
+        /* polling (TIME_QUANTUM_USEC usec) */
+        result = poll(pollfds, 1, TIME_QUANTUM_USEC/1000);
     }
     else {
-	/* wait (infinite) */
-	result = poll(pollfds, numberof(pollfds), -1);
+        /* wait (infinite) */
+        result = poll(pollfds, numberof(pollfds), -1);
     }
 
     if (result == 0) {
-	/* maybe timeout */
+        /* maybe timeout */
     }
     else if (result > 0) {
-	consume_communication_pipe(timer_thread_pipe.normal[0]);
-	consume_communication_pipe(timer_thread_pipe.low[0]);
+        consume_communication_pipe(timer_thread_pipe.normal[0]);
+        consume_communication_pipe(timer_thread_pipe.low[0]);
     }
     else { /* result < 0 */
-	int e = errno;
-	switch (e) {
-	  case EBADF:
-	  case EINVAL:
-	  case ENOMEM: /* from Linux man */
-	  case EFAULT: /* from FreeBSD man */
-	    rb_async_bug_errno("thread_timer: select", e);
-	  default:
-	    /* ignore */;
-	}
+        int e = errno;
+        switch (e) {
+          case EBADF:
+          case EINVAL:
+          case ENOMEM: /* from Linux man */
+          case EFAULT: /* from FreeBSD man */
+            rb_async_bug_errno("thread_timer: select", e);
+          default:
+            /* ignore */;
+        }
     }
 }
 
@@ -1449,32 +1449,32 @@ native_set_thread_name(rb_thread_t *th)
 {
 #ifdef SET_CURRENT_THREAD_NAME
     if (!th->first_func && th->first_proc) {
-	VALUE loc;
-	if (!NIL_P(loc = th->name)) {
-	    SET_CURRENT_THREAD_NAME(RSTRING_PTR(loc));
-	}
-	else if (!NIL_P(loc = rb_proc_location(th->first_proc))) {
-	    const VALUE *ptr = RARRAY_CONST_PTR(loc); /* [ String, Integer ] */
-	    char *name, *p;
-	    char buf[16];
-	    size_t len;
-	    int n;
+        VALUE loc;
+        if (!NIL_P(loc = th->name)) {
+            SET_CURRENT_THREAD_NAME(RSTRING_PTR(loc));
+        }
+        else if (!NIL_P(loc = rb_proc_location(th->first_proc))) {
+            const VALUE *ptr = RARRAY_CONST_PTR(loc); /* [ String, Integer ] */
+            char *name, *p;
+            char buf[16];
+            size_t len;
+            int n;
 
-	    name = RSTRING_PTR(ptr[0]);
-	    p = strrchr(name, '/'); /* show only the basename of the path. */
-	    if (p && p[1])
-		name = p + 1;
+            name = RSTRING_PTR(ptr[0]);
+            p = strrchr(name, '/'); /* show only the basename of the path. */
+            if (p && p[1])
+                name = p + 1;
 
-	    n = snprintf(buf, sizeof(buf), "%s:%d", name, NUM2INT(ptr[1]));
-	    rb_gc_force_recycle(loc); /* acts as a GC guard, too */
+            n = snprintf(buf, sizeof(buf), "%s:%d", name, NUM2INT(ptr[1]));
+            rb_gc_force_recycle(loc); /* acts as a GC guard, too */
 
-	    len = (size_t)n;
-	    if (len >= sizeof(buf)) {
-		buf[sizeof(buf)-2] = '*';
-		buf[sizeof(buf)-1] = '\0';
-	    }
-	    SET_CURRENT_THREAD_NAME(buf);
-	}
+            len = (size_t)n;
+            if (len >= sizeof(buf)) {
+                buf[sizeof(buf)-2] = '*';
+                buf[sizeof(buf)-1] = '\0';
+            }
+            SET_CURRENT_THREAD_NAME(buf);
+        }
     }
 #endif
 }
@@ -1515,14 +1515,14 @@ thread_timer(void *p)
 #endif
     while (system_working > 0) {
 
-	/* timer function */
-	ubf_wakeup_all_threads();
-	timer_thread_function(0);
+        /* timer function */
+        ubf_wakeup_all_threads();
+        timer_thread_function(0);
 
-	if (TT_DEBUG) WRITE_CONST(2, "tick\n");
+        if (TT_DEBUG) WRITE_CONST(2, "tick\n");
 
         /* wait */
-	timer_thread_sleep(vm);
+        timer_thread_sleep(vm);
     }
 #if USE_SLEEPY_TIMER_THREAD
     CLOSE_INVALIDATE(normal[0]);
@@ -1541,95 +1541,95 @@ static void
 rb_thread_create_timer_thread(void)
 {
     if (!timer_thread.created) {
-	size_t stack_size = 0;
-	int err;
-	pthread_attr_t attr;
-	rb_vm_t *vm = GET_VM();
+        size_t stack_size = 0;
+        int err;
+        pthread_attr_t attr;
+        rb_vm_t *vm = GET_VM();
 
-	err = pthread_attr_init(&attr);
-	if (err != 0) {
-	    rb_warn("pthread_attr_init failed for timer: %s, scheduling broken",
-		    strerror(err));
-	    return;
+        err = pthread_attr_init(&attr);
+        if (err != 0) {
+            rb_warn("pthread_attr_init failed for timer: %s, scheduling broken",
+                    strerror(err));
+            return;
         }
 # ifdef PTHREAD_STACK_MIN
-	{
-	    size_t stack_min = PTHREAD_STACK_MIN; /* may be dynamic, get only once */
-	    const size_t min_size = (4096 * 4);
-	    /* Allocate the machine stack for the timer thread
-	     * at least 16KB (4 pages).  FreeBSD 8.2 AMD64 causes
-	     * machine stack overflow only with PTHREAD_STACK_MIN.
-	     */
-	    enum {
-		needs_more_stack =
+        {
+            size_t stack_min = PTHREAD_STACK_MIN; /* may be dynamic, get only once */
+            const size_t min_size = (4096 * 4);
+            /* Allocate the machine stack for the timer thread
+             * at least 16KB (4 pages).  FreeBSD 8.2 AMD64 causes
+             * machine stack overflow only with PTHREAD_STACK_MIN.
+             */
+            enum {
+                needs_more_stack =
 #if defined HAVE_VALGRIND_MEMCHECK_H && defined __APPLE__
-		1
+                1
 #else
-		THREAD_DEBUG != 0
+                THREAD_DEBUG != 0
 #endif
-	    };
-	    stack_size = stack_min;
-	    if (stack_size < min_size) stack_size = min_size;
-	    if (needs_more_stack) {
-		stack_size += +((BUFSIZ - 1) / stack_min + 1) * stack_min;
-	    }
-	    err = pthread_attr_setstacksize(&attr, stack_size);
-	    if (err != 0) {
-		rb_bug("pthread_attr_setstacksize(.., %"PRIuSIZE") failed: %s",
-			stack_size, strerror(err));
-	    }
-	}
+            };
+            stack_size = stack_min;
+            if (stack_size < min_size) stack_size = min_size;
+            if (needs_more_stack) {
+                stack_size += +((BUFSIZ - 1) / stack_min + 1) * stack_min;
+            }
+            err = pthread_attr_setstacksize(&attr, stack_size);
+            if (err != 0) {
+                rb_bug("pthread_attr_setstacksize(.., %"PRIuSIZE") failed: %s",
+                        stack_size, strerror(err));
+            }
+        }
 # endif
 
 #if USE_SLEEPY_TIMER_THREAD
-	err = setup_communication_pipe();
-	if (err != 0) {
-	    rb_warn("pipe creation failed for timer: %s, scheduling broken",
-		    strerror(err));
-	    return;
-	}
+        err = setup_communication_pipe();
+        if (err != 0) {
+            rb_warn("pipe creation failed for timer: %s, scheduling broken",
+                    strerror(err));
+            return;
+        }
 #endif /* USE_SLEEPY_TIMER_THREAD */
 
-	/* create timer thread */
-	if (timer_thread.created) {
-	    rb_bug("rb_thread_create_timer_thread: Timer thread was already created\n");
-	}
-	err = pthread_create(&timer_thread.id, &attr, thread_timer, vm);
-	pthread_attr_destroy(&attr);
+        /* create timer thread */
+        if (timer_thread.created) {
+            rb_bug("rb_thread_create_timer_thread: Timer thread was already created\n");
+        }
+        err = pthread_create(&timer_thread.id, &attr, thread_timer, vm);
+        pthread_attr_destroy(&attr);
 
-	if (err == EINVAL) {
-	    /*
-	     * Even if we are careful with our own stack use in thread_timer(),
-	     * any third-party libraries (eg libkqueue) which rely on __thread
-	     * storage can cause small stack sizes to fail.  So lets hope the
-	     * default stack size is enough for them:
-	     */
-	    stack_size = 0;
-	    err = pthread_create(&timer_thread.id, NULL, thread_timer, vm);
-	}
-	if (err != 0) {
-	    rb_warn("pthread_create failed for timer: %s, scheduling broken",
-		    strerror(err));
-	    if (stack_size) {
-		rb_warn("timer thread stack size: %"PRIuSIZE, stack_size);
-	    }
-	    else {
-		rb_warn("timer thread stack size: system default");
-	    }
-	    VM_ASSERT(err == 0);
+        if (err == EINVAL) {
+            /*
+             * Even if we are careful with our own stack use in thread_timer(),
+             * any third-party libraries (eg libkqueue) which rely on __thread
+             * storage can cause small stack sizes to fail.  So lets hope the
+             * default stack size is enough for them:
+             */
+            stack_size = 0;
+            err = pthread_create(&timer_thread.id, NULL, thread_timer, vm);
+        }
+        if (err != 0) {
+            rb_warn("pthread_create failed for timer: %s, scheduling broken",
+                    strerror(err));
+            if (stack_size) {
+                rb_warn("timer thread stack size: %"PRIuSIZE, stack_size);
+            }
+            else {
+                rb_warn("timer thread stack size: system default");
+            }
+            VM_ASSERT(err == 0);
 #if USE_SLEEPY_TIMER_THREAD
-	    CLOSE_INVALIDATE(normal[0]);
-	    CLOSE_INVALIDATE(normal[1]);
-	    CLOSE_INVALIDATE(low[0]);
-	    CLOSE_INVALIDATE(low[1]);
+            CLOSE_INVALIDATE(normal[0]);
+            CLOSE_INVALIDATE(normal[1]);
+            CLOSE_INVALIDATE(low[0]);
+            CLOSE_INVALIDATE(low[1]);
 #endif
-	    return;
-	}
+            return;
+        }
 #if USE_SLEEPY_TIMER_THREAD
-	/* validate pipe on this process */
-	timer_thread_pipe.owner_process = getpid();
+        /* validate pipe on this process */
+        timer_thread_pipe.owner_process = getpid();
 #endif
-	timer_thread.created = 1;
+        timer_thread.created = 1;
     }
 }
 
@@ -1642,34 +1642,34 @@ native_stop_timer_thread(void)
     if (TT_DEBUG) fprintf(stderr, "stop timer thread\n");
     if (stopped) {
 #if USE_SLEEPY_TIMER_THREAD
-	/* prevent wakeups from signal handler ASAP */
-	timer_thread_pipe.owner_process = 0;
+        /* prevent wakeups from signal handler ASAP */
+        timer_thread_pipe.owner_process = 0;
 
-	/*
-	 * however, the above was not enough: the FD may already be
-	 * captured and in the middle of a write while we are running,
-	 * so wait for that to finish:
-	 */
-	while (ATOMIC_CAS(timer_thread_pipe.writing, (rb_atomic_t)0, 0)) {
-	    native_thread_yield();
-	}
+        /*
+         * however, the above was not enough: the FD may already be
+         * captured and in the middle of a write while we are running,
+         * so wait for that to finish:
+         */
+        while (ATOMIC_CAS(timer_thread_pipe.writing, (rb_atomic_t)0, 0)) {
+            native_thread_yield();
+        }
 
-	/* stop writing ends of pipes so timer thread notices EOF */
-	CLOSE_INVALIDATE(normal[1]);
-	CLOSE_INVALIDATE(low[1]);
+        /* stop writing ends of pipes so timer thread notices EOF */
+        CLOSE_INVALIDATE(normal[1]);
+        CLOSE_INVALIDATE(low[1]);
 #endif
 
-	/* timer thread will stop looping when system_working <= 0: */
-	native_thread_join(timer_thread.id);
+        /* timer thread will stop looping when system_working <= 0: */
+        native_thread_join(timer_thread.id);
 
 #if USE_SLEEPY_TIMER_THREAD
-	/* timer thread will close the read end on exit: */
-	VM_ASSERT(timer_thread_pipe.normal[0] == -1);
-	VM_ASSERT(timer_thread_pipe.low[0] == -1);
+        /* timer thread will close the read end on exit: */
+        VM_ASSERT(timer_thread_pipe.normal[0] == -1);
+        VM_ASSERT(timer_thread_pipe.low[0] == -1);
 #endif
 
-	if (TT_DEBUG) fprintf(stderr, "joined timer thread\n");
-	timer_thread.created = 0;
+        if (TT_DEBUG) fprintf(stderr, "joined timer thread\n");
+        timer_thread.created = 0;
     }
     return stopped;
 }
@@ -1692,33 +1692,33 @@ ruby_stack_overflowed_p(const rb_thread_t *th, const void *addr)
 #ifdef STACKADDR_AVAILABLE
     if (get_stack(&base, &size) == 0) {
 # ifdef __APPLE__
-	if (pthread_equal(th->thread_id, native_main_thread.id)) {
-	    struct rlimit rlim;
-	    if (getrlimit(RLIMIT_STACK, &rlim) == 0 && rlim.rlim_cur > size) {
-		size = (size_t)rlim.rlim_cur;
-	    }
-	}
+        if (pthread_equal(th->thread_id, native_main_thread.id)) {
+            struct rlimit rlim;
+            if (getrlimit(RLIMIT_STACK, &rlim) == 0 && rlim.rlim_cur > size) {
+                size = (size_t)rlim.rlim_cur;
+            }
+        }
 # endif
-	base = (char *)base + STACK_DIR_UPPER(+size, -size);
+        base = (char *)base + STACK_DIR_UPPER(+size, -size);
     }
     else
 #endif
     if (th) {
-	size = th->ec->machine.stack_maxsize;
-	base = (char *)th->ec->machine.stack_start - STACK_DIR_UPPER(0, size);
+        size = th->ec->machine.stack_maxsize;
+        base = (char *)th->ec->machine.stack_start - STACK_DIR_UPPER(0, size);
     }
     else {
-	return 0;
+        return 0;
     }
     size /= RUBY_STACK_SPACE_RATIO;
     if (size > water_mark) size = water_mark;
     if (IS_STACK_DIR_UPPER()) {
-	if (size > ~(size_t)base+1) size = ~(size_t)base+1;
-	if (addr > base && addr <= (void *)((char *)base + size)) return 1;
+        if (size > ~(size_t)base+1) size = ~(size_t)base+1;
+        if (addr > base && addr <= (void *)((char *)base + size)) return 1;
     }
     else {
-	if (size > (size_t)base) size = (size_t)base;
-	if (addr > (void *)((char *)base - size) && addr <= base) return 1;
+        if (size > (size_t)base) size = (size_t)base;
+        if (addr > (void *)((char *)base - size) && addr <= base) return 1;
     }
     return 0;
 }
@@ -1729,14 +1729,14 @@ rb_reserved_fd_p(int fd)
 {
 #if USE_SLEEPY_TIMER_THREAD
     if ((fd == timer_thread_pipe.normal[0] ||
-	 fd == timer_thread_pipe.normal[1] ||
-	 fd == timer_thread_pipe.low[0] ||
-	 fd == timer_thread_pipe.low[1]) &&
-	timer_thread_pipe.owner_process == getpid()) { /* async-signal-safe */
-	return 1;
+         fd == timer_thread_pipe.normal[1] ||
+         fd == timer_thread_pipe.low[0] ||
+         fd == timer_thread_pipe.low[1]) &&
+        timer_thread_pipe.owner_process == getpid()) { /* async-signal-safe */
+        return 1;
     }
     else {
-	return 0;
+        return 0;
     }
 #else
     return 0;

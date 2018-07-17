@@ -41,11 +41,11 @@ bug_str_cstr_term_char(VALUE str)
     len = rb_enc_mbminlen(enc);
     c = rb_enc_precise_mbclen(s, s + len, enc);
     if (!MBCLEN_CHARFOUND_P(c)) {
-	c = (unsigned char)*s;
+        c = (unsigned char)*s;
     }
     else {
-	c = rb_enc_mbc_to_codepoint(s, s + len, enc);
-	if (!c) return Qnil;
+        c = rb_enc_mbc_to_codepoint(s, s + len, enc);
+        if (!c) return Qnil;
     }
     return rb_enc_uint_chr((unsigned int)c, enc);
 }
@@ -61,13 +61,13 @@ bug_str_unterminated_substring(VALUE str, VALUE vbeg, VALUE vlen)
     if (RSTRING_LEN(str) < beg + len) rb_raise(rb_eIndexError, "end: %ld", beg + len);
     str = rb_str_new_shared(str);
     if (STR_EMBED_P(str)) {
-	RSTRING(str)->basic.flags &= ~RSTRING_EMBED_LEN_MASK;
-	RSTRING(str)->basic.flags |= len << RSTRING_EMBED_LEN_SHIFT;
-	memmove(RSTRING(str)->as.ary, RSTRING(str)->as.ary + beg, len);
+        RSTRING(str)->basic.flags &= ~RSTRING_EMBED_LEN_MASK;
+        RSTRING(str)->basic.flags |= len << RSTRING_EMBED_LEN_SHIFT;
+        memmove(RSTRING(str)->as.ary, RSTRING(str)->as.ary + beg, len);
     }
     else {
-	RSTRING(str)->as.heap.ptr += beg;
-	RSTRING(str)->as.heap.len = len;
+        RSTRING(str)->as.heap.ptr += beg;
+        RSTRING(str)->as.heap.len = len;
     }
     return str;
 }
@@ -99,7 +99,7 @@ bug_str_s_cstr_term_char(VALUE self, VALUE str)
     const int term_fill_len = (termlen);\
     *term_fill_ptr = '\0';\
     if (UNLIKELY(term_fill_len > 1))\
-	memset(term_fill_ptr, 0, term_fill_len);\
+        memset(term_fill_ptr, 0, term_fill_len);\
 } while (0)
 
 static VALUE

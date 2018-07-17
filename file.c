@@ -92,31 +92,31 @@ int flock(int, int);
 /* define system APIs */
 #ifdef _WIN32
 #include "win32/file.h"
-#define STAT(p, s)	rb_w32_ustati128((p), (s))
+#define STAT(p, s)        rb_w32_ustati128((p), (s))
 #undef lstat
-#define lstat(p, s)	rb_w32_ulstati128((p), (s))
+#define lstat(p, s)        rb_w32_ulstati128((p), (s))
 #undef access
-#define access(p, m)	rb_w32_uaccess((p), (m))
+#define access(p, m)        rb_w32_uaccess((p), (m))
 #undef truncate
-#define truncate(p, n)	rb_w32_utruncate((p), (n))
+#define truncate(p, n)        rb_w32_utruncate((p), (n))
 #undef chmod
-#define chmod(p, m)	rb_w32_uchmod((p), (m))
+#define chmod(p, m)        rb_w32_uchmod((p), (m))
 #undef chown
-#define chown(p, o, g)	rb_w32_uchown((p), (o), (g))
+#define chown(p, o, g)        rb_w32_uchown((p), (o), (g))
 #undef lchown
-#define lchown(p, o, g)	rb_w32_ulchown((p), (o), (g))
+#define lchown(p, o, g)        rb_w32_ulchown((p), (o), (g))
 #undef utimensat
-#define utimensat(s, p, t, f)	rb_w32_uutimensat((s), (p), (t), (f))
+#define utimensat(s, p, t, f)        rb_w32_uutimensat((s), (p), (t), (f))
 #undef link
-#define link(f, t)	rb_w32_ulink((f), (t))
+#define link(f, t)        rb_w32_ulink((f), (t))
 #undef unlink
-#define unlink(p)	rb_w32_uunlink(p)
+#define unlink(p)        rb_w32_uunlink(p)
 #undef rename
-#define rename(f, t)	rb_w32_urename((f), (t))
+#define rename(f, t)        rb_w32_urename((f), (t))
 #undef symlink
-#define symlink(s, l)	rb_w32_usymlink((s), (l))
+#define symlink(s, l)        rb_w32_usymlink((s), (l))
 #else
-#define STAT(p, s)	stat((p), (s))
+#define STAT(p, s)        stat((p), (s))
 #endif
 
 #if defined _WIN32 || defined __APPLE__
@@ -145,15 +145,15 @@ file_path_convert(VALUE name)
     int fname_encidx = ENCODING_GET(name);
     int fs_encidx;
     if (ENCINDEX_US_ASCII != fname_encidx &&
-	ENCINDEX_ASCII != fname_encidx &&
-	(fs_encidx = rb_filesystem_encindex()) != fname_encidx &&
-	rb_default_internal_encoding() &&
-	!rb_enc_str_asciionly_p(name)) {
-	/* Don't call rb_filesystem_encoding() before US-ASCII and ASCII-8BIT */
-	/* fs_encoding should be ascii compatible */
-	rb_encoding *fname_encoding = rb_enc_from_index(fname_encidx);
-	rb_encoding *fs_encoding = rb_enc_from_index(fs_encidx);
-	name = rb_str_conv_enc(name, fname_encoding, fs_encoding);
+        ENCINDEX_ASCII != fname_encidx &&
+        (fs_encidx = rb_filesystem_encindex()) != fname_encidx &&
+        rb_default_internal_encoding() &&
+        !rb_enc_str_asciionly_p(name)) {
+        /* Don't call rb_filesystem_encoding() before US-ASCII and ASCII-8BIT */
+        /* fs_encoding should be ascii compatible */
+        rb_encoding *fname_encoding = rb_enc_from_index(fname_encidx);
+        rb_encoding *fs_encoding = rb_enc_from_index(fs_encidx);
+        name = rb_str_conv_enc(name, fname_encoding, fs_encoding);
     }
 #endif
     return name;
@@ -164,8 +164,8 @@ check_path_encoding(VALUE str)
 {
     rb_encoding *enc = rb_enc_get(str);
     if (!rb_enc_asciicompat(enc)) {
-	rb_raise(rb_eEncCompatError, "path name must be ASCII-compatible (%s): %"PRIsVALUE,
-		 rb_enc_name(enc), rb_str_inspect(str));
+        rb_raise(rb_eEncCompatError, "path name must be ASCII-compatible (%s): %"PRIsVALUE,
+                 rb_enc_name(enc), rb_str_inspect(str));
     }
     return enc;
 }
@@ -177,11 +177,11 @@ rb_get_path_check_to_string(VALUE obj, int level)
     ID to_path;
 
     if (insecure_obj_p(obj, level)) {
-	rb_insecure_operation();
+        rb_insecure_operation();
     }
 
     if (RB_TYPE_P(obj, T_STRING)) {
-	return obj;
+        return obj;
     }
     CONST_ID(to_path, "to_path");
     tmp = rb_check_funcall_default(obj, to_path, 0, 0, obj);
@@ -194,12 +194,12 @@ rb_get_path_check_convert(VALUE obj, VALUE tmp, int level)
 {
     tmp = file_path_convert(tmp);
     if (obj != tmp && insecure_obj_p(tmp, level)) {
-	rb_insecure_operation();
+        rb_insecure_operation();
     }
 
     check_path_encoding(tmp);
     if (!rb_str_to_cstr(tmp)) {
-	rb_raise(rb_eArgError, "path name contains null byte");
+        rb_raise(rb_eArgError, "path name contains null byte");
     }
 
     return rb_str_new4(tmp);
@@ -231,13 +231,13 @@ rb_str_encode_ospath(VALUE path)
     int encidx = ENCODING_GET(path);
 #ifdef _WIN32
     if (encidx == ENCINDEX_ASCII) {
-	encidx = rb_filesystem_encindex();
+        encidx = rb_filesystem_encindex();
     }
 #endif
     if (encidx != ENCINDEX_UTF_8) {
-	rb_encoding *enc = rb_enc_from_index(encidx);
-	rb_encoding *utf8 = rb_utf8_encoding();
-	path = rb_str_conv_enc(path, enc, utf8);
+        rb_encoding *enc = rb_enc_from_index(encidx);
+        rb_encoding *utf8 = rb_utf8_encoding();
+        path = rb_str_conv_enc(path, enc, utf8);
     }
 #endif
     return path;
@@ -251,9 +251,9 @@ rb_str_append_normalized_ospath(VALUE str, const char *ptr, long len)
     CFIndex buflen = 0;
     CFRange all;
     CFStringRef s = CFStringCreateWithBytesNoCopy(kCFAllocatorDefault,
-						  (const UInt8 *)ptr, len,
-						  kCFStringEncodingUTF8, FALSE,
-						  kCFAllocatorNull);
+                                                  (const UInt8 *)ptr, len,
+                                                  kCFStringEncodingUTF8, FALSE,
+                                                  kCFAllocatorNull);
     CFMutableStringRef m = CFStringCreateMutableCopy(kCFAllocatorDefault, len, s);
     long oldlen = RSTRING_LEN(str);
 
@@ -262,7 +262,7 @@ rb_str_append_normalized_ospath(VALUE str, const char *ptr, long len)
     CFStringGetBytes(m, all, kCFStringEncodingUTF8, '?', FALSE, NULL, 0, &buflen);
     rb_str_modify_expand(str, buflen);
     CFStringGetBytes(m, all, kCFStringEncodingUTF8, '?', FALSE,
-		     (UInt8 *)(RSTRING_PTR(str) + oldlen), buflen, &buflen);
+                     (UInt8 *)(RSTRING_PTR(str) + oldlen), buflen, &buflen);
     rb_str_set_len(str, oldlen + buflen);
     CFRelease(m);
     CFRelease(s);
@@ -280,34 +280,34 @@ rb_str_normalize_ospath(const char *ptr, long len)
     rb_enc_associate(str, enc);
 
     while (p < e) {
-	int l, c;
-	int r = rb_enc_precise_mbclen(p, e, enc);
-	if (!MBCLEN_CHARFOUND_P(r)) {
-	    /* invalid byte shall not happen but */
-	    static const char invalid[3] = "\xEF\xBF\xBD";
-	    rb_str_append_normalized_ospath(str, p1, p-p1);
-	    rb_str_cat(str, invalid, sizeof(invalid));
-	    p += 1;
-	    p1 = p;
-	    continue;
-	}
-	l = MBCLEN_CHARFOUND_LEN(r);
-	c = rb_enc_mbc_to_codepoint(p, e, enc);
-	if ((0x2000 <= c && c <= 0x2FFF) || (0xF900 <= c && c <= 0xFAFF) ||
-		(0x2F800 <= c && c <= 0x2FAFF)) {
-	    if (p - p1 > 0) {
-		rb_str_append_normalized_ospath(str, p1, p-p1);
-	    }
-	    rb_str_cat(str, p, l);
-	    p += l;
-	    p1 = p;
-	}
-	else {
-	    p += l;
-	}
+        int l, c;
+        int r = rb_enc_precise_mbclen(p, e, enc);
+        if (!MBCLEN_CHARFOUND_P(r)) {
+            /* invalid byte shall not happen but */
+            static const char invalid[3] = "\xEF\xBF\xBD";
+            rb_str_append_normalized_ospath(str, p1, p-p1);
+            rb_str_cat(str, invalid, sizeof(invalid));
+            p += 1;
+            p1 = p;
+            continue;
+        }
+        l = MBCLEN_CHARFOUND_LEN(r);
+        c = rb_enc_mbc_to_codepoint(p, e, enc);
+        if ((0x2000 <= c && c <= 0x2FFF) || (0xF900 <= c && c <= 0xFAFF) ||
+                (0x2F800 <= c && c <= 0x2FAFF)) {
+            if (p - p1 > 0) {
+                rb_str_append_normalized_ospath(str, p1, p-p1);
+            }
+            rb_str_cat(str, p, l);
+            p += l;
+            p1 = p;
+        }
+        else {
+            p += l;
+        }
     }
     if (p - p1 > 0) {
-	rb_str_append_normalized_ospath(str, p1, p-p1);
+        rb_str_append_normalized_ospath(str, p1, p-p1);
     }
 
     return str;
@@ -320,27 +320,27 @@ ignored_char_p(const char *p, const char *e, rb_encoding *enc)
     if (p+3 > e) return 0;
     switch ((unsigned char)*p) {
       case 0xe2:
-	switch ((unsigned char)p[1]) {
-	  case 0x80:
-	    c = (unsigned char)p[2];
-	    /* c >= 0x200c && c <= 0x200f */
-	    if (c >= 0x8c && c <= 0x8f) return 3;
-	    /* c >= 0x202a && c <= 0x202e */
-	    if (c >= 0xaa && c <= 0xae) return 3;
-	    return 0;
-	  case 0x81:
-	    c = (unsigned char)p[2];
-	    /* c >= 0x206a && c <= 0x206f */
-	    if (c >= 0xaa && c <= 0xaf) return 3;
-	    return 0;
-	}
-	break;
+        switch ((unsigned char)p[1]) {
+          case 0x80:
+            c = (unsigned char)p[2];
+            /* c >= 0x200c && c <= 0x200f */
+            if (c >= 0x8c && c <= 0x8f) return 3;
+            /* c >= 0x202a && c <= 0x202e */
+            if (c >= 0xaa && c <= 0xae) return 3;
+            return 0;
+          case 0x81:
+            c = (unsigned char)p[2];
+            /* c >= 0x206a && c <= 0x206f */
+            if (c >= 0xaa && c <= 0xaf) return 3;
+            return 0;
+        }
+        break;
       case 0xef:
-	/* c == 0xfeff */
-	if ((unsigned char)p[1] == 0xbb &&
-	    (unsigned char)p[2] == 0xbf)
-	    return 3;
-	break;
+        /* c == 0xfeff */
+        if ((unsigned char)p[1] == 0xbb &&
+            (unsigned char)p[2] == 0xbf)
+            return 3;
+        break;
     }
     return 0;
 }
@@ -370,10 +370,10 @@ no_gvl_apply2files(void *ptr)
     struct apply_arg *aa = ptr;
 
     for (aa->i = 0; aa->i < aa->argc; aa->i++) {
-	if (aa->func(aa->fn[aa->i].ptr, aa->arg) < 0) {
-	    aa->errnum = errno;
-	    break;
-	}
+        if (aa->func(aa->fn[aa->i].ptr, aa->arg) < 0) {
+            aa->errnum = errno;
+            break;
+        }
     }
     return 0;
 }
@@ -397,24 +397,24 @@ apply2files(int (*func)(const char *, void *), int argc, VALUE *argv, void *arg)
     aa->func = func;
 
     for (aa->i = 0; aa->i < argc; aa->i++) {
-	VALUE path = rb_get_path(argv[aa->i]);
+        VALUE path = rb_get_path(argv[aa->i]);
 
-	path = rb_str_encode_ospath(path);
-	aa->fn[aa->i].ptr = RSTRING_PTR(path);
-	aa->fn[aa->i].path = path;
+        path = rb_str_encode_ospath(path);
+        aa->fn[aa->i].ptr = RSTRING_PTR(path);
+        aa->fn[aa->i].path = path;
     }
 
     rb_thread_call_without_gvl(no_gvl_apply2files, aa, RUBY_UBF_IO, 0);
     if (aa->errnum) {
 #ifdef UTIME_EINVAL
-	if (func == utime_internal) {
-	    utime_failed(aa);
-	}
+        if (func == utime_internal) {
+            utime_failed(aa);
+        }
 #endif
-	rb_syserr_fail_path(aa->errnum, aa->fn[aa->i].path);
+        rb_syserr_fail_path(aa->errnum, aa->fn[aa->i].path);
     }
     if (v) {
-	ALLOCV_END(v);
+        ALLOCV_END(v);
     }
     return LONG2FIX(argc);
 }
@@ -473,9 +473,9 @@ stat_new_0(VALUE klass, const struct stat *st)
     VALUE obj = TypedData_Wrap_Struct(klass, &stat_data_type, 0);
 
     if (st) {
-	nst = ALLOC(struct stat);
-	*nst = *st;
-	RTYPEDDATA_DATA(obj) = nst;
+        nst = ALLOC(struct stat);
+        *nst = *st;
+        RTYPEDDATA_DATA(obj) = nst;
     }
     return obj;
 }
@@ -1011,24 +1011,24 @@ rb_stat_inspect(VALUE self)
     VALUE str;
     size_t i;
     static const struct {
-	const char *name;
-	VALUE (*func)(VALUE);
+        const char *name;
+        VALUE (*func)(VALUE);
     } member[] = {
-	{"dev",	    rb_stat_dev},
-	{"ino",	    rb_stat_ino},
-	{"mode",    rb_stat_mode},
-	{"nlink",   rb_stat_nlink},
-	{"uid",	    rb_stat_uid},
-	{"gid",	    rb_stat_gid},
-	{"rdev",    rb_stat_rdev},
-	{"size",    rb_stat_size},
-	{"blksize", rb_stat_blksize},
-	{"blocks",  rb_stat_blocks},
-	{"atime",   rb_stat_atime},
-	{"mtime",   rb_stat_mtime},
-	{"ctime",   rb_stat_ctime},
+        {"dev",            rb_stat_dev},
+        {"ino",            rb_stat_ino},
+        {"mode",    rb_stat_mode},
+        {"nlink",   rb_stat_nlink},
+        {"uid",            rb_stat_uid},
+        {"gid",            rb_stat_gid},
+        {"rdev",    rb_stat_rdev},
+        {"size",    rb_stat_size},
+        {"blksize", rb_stat_blksize},
+        {"blocks",  rb_stat_blocks},
+        {"atime",   rb_stat_atime},
+        {"mtime",   rb_stat_mtime},
+        {"ctime",   rb_stat_ctime},
 #if defined(HAVE_STRUCT_STAT_ST_BIRTHTIMESPEC)
-	{"birthtime",   rb_stat_birthtime},
+        {"birthtime",   rb_stat_birthtime},
 #endif
     };
 
@@ -1043,23 +1043,23 @@ rb_stat_inspect(VALUE self)
     rb_str_buf_cat2(str, " ");
 
     for (i = 0; i < sizeof(member)/sizeof(member[0]); i++) {
-	VALUE v;
+        VALUE v;
 
-	if (i > 0) {
-	    rb_str_buf_cat2(str, ", ");
-	}
-	rb_str_buf_cat2(str, member[i].name);
-	rb_str_buf_cat2(str, "=");
-	v = (*member[i].func)(self);
-	if (i == 2) {		/* mode */
-	    rb_str_catf(str, "0%lo", (unsigned long)NUM2ULONG(v));
-	}
-	else if (i == 0 || i == 6) { /* dev/rdev */
-	    rb_str_catf(str, "0x%"PRI_DEVT_PREFIX"x", NUM2DEVT(v));
-	}
-	else {
-	    rb_str_append(str, rb_inspect(v));
-	}
+        if (i > 0) {
+            rb_str_buf_cat2(str, ", ");
+        }
+        rb_str_buf_cat2(str, member[i].name);
+        rb_str_buf_cat2(str, "=");
+        v = (*member[i].func)(self);
+        if (i == 2) {                /* mode */
+            rb_str_catf(str, "0%lo", (unsigned long)NUM2ULONG(v));
+        }
+        else if (i == 0 || i == 6) { /* dev/rdev */
+            rb_str_catf(str, "0x%"PRI_DEVT_PREFIX"x", NUM2DEVT(v));
+        }
+        else {
+            rb_str_append(str, rb_inspect(v));
+        }
     }
     rb_str_buf_cat2(str, ">");
     OBJ_INFECT(str, self);
@@ -1070,8 +1070,8 @@ rb_stat_inspect(VALUE self)
 typedef struct no_gvl_stat_data {
     struct stat *st;
     union {
-	const char *path;
-	int fd;
+        const char *path;
+        int fd;
     } file;
 } no_gvl_stat_data;
 
@@ -1109,7 +1109,7 @@ stat_without_gvl(const char *path, struct stat *st)
     data.st = st;
 
     return (int)(VALUE)rb_thread_call_without_gvl(no_gvl_stat, &data,
-						  RUBY_UBF_IO, NULL);
+                                                  RUBY_UBF_IO, NULL);
 }
 
 static int
@@ -1120,16 +1120,16 @@ rb_stat(VALUE file, struct stat *st)
 
     tmp = rb_check_convert_type_with_id(file, T_FILE, "IO", idTo_io);
     if (!NIL_P(tmp)) {
-	rb_io_t *fptr;
+        rb_io_t *fptr;
 
-	GetOpenFile(tmp, fptr);
-	result = fstat_without_gvl(fptr->fd, st);
-	file = tmp;
+        GetOpenFile(tmp, fptr);
+        result = fstat_without_gvl(fptr->fd, st);
+        file = tmp;
     }
     else {
-	FilePathValue(file);
-	file = rb_str_encode_ospath(file);
-	result = stat_without_gvl(RSTRING_PTR(file), st);
+        FilePathValue(file);
+        file = rb_str_encode_ospath(file);
+        result = stat_without_gvl(RSTRING_PTR(file), st);
     }
     RB_GC_GUARD(file);
     return result;
@@ -1154,7 +1154,7 @@ rb_file_s_stat(VALUE klass, VALUE fname)
     FilePathValue(fname);
     fname = rb_str_encode_ospath(fname);
     if (stat_without_gvl(RSTRING_PTR(fname), &st) < 0) {
-	rb_sys_fail_path(fname);
+        rb_sys_fail_path(fname);
     }
     return rb_stat_new(&st);
 }
@@ -1182,7 +1182,7 @@ rb_io_stat(VALUE obj)
 
     GetOpenFile(obj, fptr);
     if (fstat(fptr->fd, &st) == -1) {
-	rb_sys_fail_path(fptr->pathv);
+        rb_sys_fail_path(fptr->pathv);
     }
     return rb_stat_new(&st);
 }
@@ -1204,7 +1204,7 @@ lstat_without_gvl(const char *path, struct stat *st)
     data.st = st;
 
     return (int)(VALUE)rb_thread_call_without_gvl(no_gvl_lstat, &data,
-						    RUBY_UBF_IO, NULL);
+                                                    RUBY_UBF_IO, NULL);
 }
 #endif /* HAVE_LSTAT */
 
@@ -1231,7 +1231,7 @@ rb_file_s_lstat(VALUE klass, VALUE fname)
     FilePathValue(fname);
     fname = rb_str_encode_ospath(fname);
     if (lstat_without_gvl(StringValueCStr(fname), &st) == -1) {
-	rb_sys_fail_path(fname);
+        rb_sys_fail_path(fname);
     }
     return rb_stat_new(&st);
 #else
@@ -1265,7 +1265,7 @@ rb_file_lstat(VALUE obj)
     if (NIL_P(fptr->pathv)) return Qnil;
     path = rb_str_encode_ospath(fptr->pathv);
     if (lstat_without_gvl(RSTRING_PTR(path), &st) == -1) {
-	rb_sys_fail_path(fptr->pathv);
+        rb_sys_fail_path(fptr->pathv);
     }
     return rb_stat_new(&st);
 #else
@@ -1286,7 +1286,7 @@ rb_group_member(GETGROUPS_T gid)
     int anum = -1;
 
     if (getgid() == gid || getegid() == gid)
-	return TRUE;
+        return TRUE;
 
     /*
      * On Mac OS X (Mountain Lion), NGROUPS is 16. But libc and kernel
@@ -1294,34 +1294,34 @@ rb_group_member(GETGROUPS_T gid)
      * So we don't trunk NGROUPS anymore.
      */
     while (groups <= RB_MAX_GROUPS) {
-	gary = ALLOCV_N(GETGROUPS_T, v, groups);
-	anum = getgroups(groups, gary);
-	if (anum != -1 && anum != groups)
-	    break;
-	groups *= 2;
-	if (v) {
-	    ALLOCV_END(v);
-	    v = 0;
-	}
+        gary = ALLOCV_N(GETGROUPS_T, v, groups);
+        anum = getgroups(groups, gary);
+        if (anum != -1 && anum != groups)
+            break;
+        groups *= 2;
+        if (v) {
+            ALLOCV_END(v);
+            v = 0;
+        }
     }
     if (anum == -1)
-	return FALSE;
+        return FALSE;
 
     while (--anum >= 0) {
-	if (gary[anum] == gid) {
-	    rv = TRUE;
-	    break;
-	}
+        if (gary[anum] == gid) {
+            rv = TRUE;
+            break;
+        }
     }
     if (v)
-	ALLOCV_END(v);
+        ALLOCV_END(v);
 
     return rv;
 #endif
 }
 
 #ifndef S_IXUGO
-#  define S_IXUGO		(S_IXUSR | S_IXGRP | S_IXOTH)
+#  define S_IXUGO                (S_IXUSR | S_IXGRP | S_IXOTH)
 #endif
 
 #if defined(S_IXGRP) && !defined(_WIN32) && !defined(__CYGWIN__)
@@ -1340,28 +1340,28 @@ eaccess(const char *path, int mode)
 
     /* no setuid nor setgid. run shortcut. */
     if (getuid() == euid && getgid() == getegid())
-	return access(path, mode);
+        return access(path, mode);
 
     if (STAT(path, &st) < 0)
-	return -1;
+        return -1;
 
     if (euid == 0) {
-	/* Root can read or write any file. */
-	if (!(mode & X_OK))
-	    return 0;
+        /* Root can read or write any file. */
+        if (!(mode & X_OK))
+            return 0;
 
-	/* Root can execute any file that has any one of the execute
-	   bits set. */
-	if (st.st_mode & S_IXUGO)
-	    return 0;
+        /* Root can execute any file that has any one of the execute
+           bits set. */
+        if (st.st_mode & S_IXUGO)
+            return 0;
 
-	return -1;
+        return -1;
     }
 
     if (st.st_uid == euid)        /* owner */
-	mode <<= 6;
+        mode <<= 6;
     else if (rb_group_member(st.st_gid))
-	mode <<= 3;
+        mode <<= 3;
 
     if ((int)(st.st_mode & mode) == mode) return 0;
 
@@ -1396,7 +1396,7 @@ rb_eaccess(VALUE fname, int mode)
     aa.mode = mode;
 
     return (int)(VALUE)rb_thread_call_without_gvl(nogvl_eaccess, &aa,
-						RUBY_UBF_IO, 0);
+                                                RUBY_UBF_IO, 0);
 }
 
 static void *
@@ -1418,7 +1418,7 @@ rb_access(VALUE fname, int mode)
     aa.mode = mode;
 
     return (int)(VALUE)rb_thread_call_without_gvl(nogvl_access, &aa,
-						RUBY_UBF_IO, 0);
+                                                RUBY_UBF_IO, 0);
 }
 
 /*
@@ -1504,7 +1504,7 @@ rb_file_symlink_p(VALUE obj, VALUE fname)
 #      define S_ISLNK(m) (((m) & S_IFMT) == _S_IFLNK)
 #    else
 #      ifdef S_IFLNK
-#	 define S_ISLNK(m) (((m) & S_IFMT) == S_IFLNK)
+#         define S_ISLNK(m) (((m) & S_IFMT) == S_IFLNK)
 #      endif
 #    endif
 #  endif
@@ -1542,7 +1542,7 @@ rb_file_socket_p(VALUE obj, VALUE fname)
 #      define S_ISSOCK(m) (((m) & S_IFMT) == _S_IFSOCK)
 #    else
 #      ifdef S_IFSOCK
-#	 define S_ISSOCK(m) (((m) & S_IFMT) == S_IFSOCK)
+#         define S_ISSOCK(m) (((m) & S_IFMT) == S_IFSOCK)
 #      endif
 #    endif
 #  endif
@@ -1572,9 +1572,9 @@ rb_file_blockdev_p(VALUE obj, VALUE fname)
 {
 #ifndef S_ISBLK
 #   ifdef S_IFBLK
-#	define S_ISBLK(m) (((m) & S_IFMT) == S_IFBLK)
+#        define S_ISBLK(m) (((m) & S_IFMT) == S_IFBLK)
 #   else
-#	define S_ISBLK(m) (0)  /* anytime false */
+#        define S_ISBLK(m) (0)  /* anytime false */
 #   endif
 #endif
 
@@ -1642,12 +1642,12 @@ rb_file_exists_p(VALUE obj, VALUE fname)
 {
     const char *s = "FileTest#";
     if (obj == rb_mFileTest) {
-	s = "FileTest.";
+        s = "FileTest.";
     }
     else if (obj == rb_cFile ||
-	     (RB_TYPE_P(obj, T_CLASS) &&
-	      RTEST(rb_class_inherited_p(obj, rb_cFile)))) {
-	s = "File.";
+             (RB_TYPE_P(obj, T_CLASS) &&
+              RTEST(rb_class_inherited_p(obj, rb_cFile)))) {
+        s = "File.";
     }
     rb_warning("%sexists? is a deprecated name, use %sexist? instead", s, s);
     return rb_file_exist_p(obj, fname);
@@ -1684,11 +1684,11 @@ rb_file_readable_real_p(VALUE obj, VALUE fname)
 }
 
 #ifndef S_IRUGO
-#  define S_IRUGO		(S_IRUSR | S_IRGRP | S_IROTH)
+#  define S_IRUGO                (S_IRUSR | S_IRGRP | S_IROTH)
 #endif
 
 #ifndef S_IWUGO
-#  define S_IWUGO		(S_IWUSR | S_IWGRP | S_IWOTH)
+#  define S_IWUGO                (S_IWUSR | S_IWGRP | S_IWOTH)
 #endif
 
 /*
@@ -1702,9 +1702,9 @@ rb_file_readable_real_p(VALUE obj, VALUE fname)
  *
  * _file_name_ can be an IO object.
  *
- *    File.world_readable?("/etc/passwd")	    #=> 420
+ *    File.world_readable?("/etc/passwd")            #=> 420
  *    m = File.world_readable?("/etc/passwd")
- *    sprintf("%o", m)				    #=> "644"
+ *    sprintf("%o", m)                                    #=> "644"
  */
 
 static VALUE
@@ -1715,7 +1715,7 @@ rb_file_world_readable_p(VALUE obj, VALUE fname)
 
     if (rb_stat(fname, &st) < 0) return Qnil;
     if ((st.st_mode & (S_IROTH)) == S_IROTH) {
-	return UINT2NUM(st.st_mode & (S_IRUGO|S_IWUGO|S_IXUGO));
+        return UINT2NUM(st.st_mode & (S_IRUGO|S_IWUGO|S_IXUGO));
     }
 #endif
     return Qnil;
@@ -1762,9 +1762,9 @@ rb_file_writable_real_p(VALUE obj, VALUE fname)
  *
  * _file_name_ can be an IO object.
  *
- *    File.world_writable?("/tmp")		    #=> 511
+ *    File.world_writable?("/tmp")                    #=> 511
  *    m = File.world_writable?("/tmp")
- *    sprintf("%o", m)				    #=> "777"
+ *    sprintf("%o", m)                                    #=> "777"
  */
 
 static VALUE
@@ -1775,7 +1775,7 @@ rb_file_world_writable_p(VALUE obj, VALUE fname)
 
     if (rb_stat(fname, &st) < 0) return Qnil;
     if ((st.st_mode & (S_IWOTH)) == S_IWOTH) {
-	return UINT2NUM(st.st_mode & (S_IRUGO|S_IWUGO|S_IXUGO));
+        return UINT2NUM(st.st_mode & (S_IRUGO|S_IWUGO|S_IXUGO));
     }
 #endif
     return Qnil;
@@ -2045,9 +2045,9 @@ rb_file_s_size(VALUE klass, VALUE fname)
     struct stat st;
 
     if (rb_stat(fname, &st) < 0) {
-	int e = errno;
-	FilePathValue(fname);
-	rb_syserr_fail_path(e, fname);
+        int e = errno;
+        FilePathValue(fname);
+        rb_syserr_fail_path(e, fname);
     }
     return OFFT2NUM(st.st_size);
 }
@@ -2058,36 +2058,36 @@ rb_file_ftype(const struct stat *st)
     const char *t;
 
     if (S_ISREG(st->st_mode)) {
-	t = "file";
+        t = "file";
     }
     else if (S_ISDIR(st->st_mode)) {
-	t = "directory";
+        t = "directory";
     }
     else if (S_ISCHR(st->st_mode)) {
-	t = "characterSpecial";
+        t = "characterSpecial";
     }
 #ifdef S_ISBLK
     else if (S_ISBLK(st->st_mode)) {
-	t = "blockSpecial";
+        t = "blockSpecial";
     }
 #endif
 #ifdef S_ISFIFO
     else if (S_ISFIFO(st->st_mode)) {
-	t = "fifo";
+        t = "fifo";
     }
 #endif
 #ifdef S_ISLNK
     else if (S_ISLNK(st->st_mode)) {
-	t = "link";
+        t = "link";
     }
 #endif
 #ifdef S_ISSOCK
     else if (S_ISSOCK(st->st_mode)) {
-	t = "socket";
+        t = "socket";
     }
 #endif
     else {
-	t = "unknown";
+        t = "unknown";
     }
 
     return rb_usascii_str_new2(t);
@@ -2116,7 +2116,7 @@ rb_file_s_ftype(VALUE klass, VALUE fname)
     FilePathValue(fname);
     fname = rb_str_encode_ospath(fname);
     if (lstat_without_gvl(StringValueCStr(fname), &st) == -1) {
-	rb_sys_fail_path(fname);
+        rb_sys_fail_path(fname);
     }
 
     return rb_file_ftype(&st);
@@ -2140,9 +2140,9 @@ rb_file_s_atime(VALUE klass, VALUE fname)
     struct stat st;
 
     if (rb_stat(fname, &st) < 0) {
-	int e = errno;
-	FilePathValue(fname);
-	rb_syserr_fail_path(e, fname);
+        int e = errno;
+        FilePathValue(fname);
+        rb_syserr_fail_path(e, fname);
     }
     return stat_atime(&st);
 }
@@ -2166,7 +2166,7 @@ rb_file_atime(VALUE obj)
 
     GetOpenFile(obj, fptr);
     if (fstat(fptr->fd, &st) == -1) {
-	rb_sys_fail_path(fptr->pathv);
+        rb_sys_fail_path(fptr->pathv);
     }
     return stat_atime(&st);
 }
@@ -2189,9 +2189,9 @@ rb_file_s_mtime(VALUE klass, VALUE fname)
     struct stat st;
 
     if (rb_stat(fname, &st) < 0) {
-	int e = errno;
-	FilePathValue(fname);
-	rb_syserr_fail_path(e, fname);
+        int e = errno;
+        FilePathValue(fname);
+        rb_syserr_fail_path(e, fname);
     }
     return stat_mtime(&st);
 }
@@ -2214,7 +2214,7 @@ rb_file_mtime(VALUE obj)
 
     GetOpenFile(obj, fptr);
     if (fstat(fptr->fd, &st) == -1) {
-	rb_sys_fail_path(fptr->pathv);
+        rb_sys_fail_path(fptr->pathv);
     }
     return stat_mtime(&st);
 }
@@ -2241,9 +2241,9 @@ rb_file_s_ctime(VALUE klass, VALUE fname)
     struct stat st;
 
     if (rb_stat(fname, &st) < 0) {
-	int e = errno;
-	FilePathValue(fname);
-	rb_syserr_fail_path(e, fname);
+        int e = errno;
+        FilePathValue(fname);
+        rb_syserr_fail_path(e, fname);
     }
     return stat_ctime(&st);
 }
@@ -2269,7 +2269,7 @@ rb_file_ctime(VALUE obj)
 
     GetOpenFile(obj, fptr);
     if (fstat(fptr->fd, &st) == -1) {
-	rb_sys_fail_path(fptr->pathv);
+        rb_sys_fail_path(fptr->pathv);
     }
     return stat_ctime(&st);
 }
@@ -2295,9 +2295,9 @@ rb_file_s_birthtime(VALUE klass, VALUE fname)
     struct stat st;
 
     if (rb_stat(fname, &st) < 0) {
-	int e = errno;
-	FilePathValue(fname);
-	rb_syserr_fail_path(e, fname);
+        int e = errno;
+        FilePathValue(fname);
+        rb_syserr_fail_path(e, fname);
     }
     return stat_birthtime(&st);
 }
@@ -2326,7 +2326,7 @@ rb_file_birthtime(VALUE obj)
 
     GetOpenFile(obj, fptr);
     if (fstat(fptr->fd, &st) == -1) {
-	rb_sys_fail_path(fptr->pathv);
+        rb_sys_fail_path(fptr->pathv);
     }
     return stat_birthtime(&st);
 }
@@ -2352,10 +2352,10 @@ rb_file_size(VALUE obj)
 
     GetOpenFile(obj, fptr);
     if (fptr->mode & FMODE_WRITABLE) {
-	rb_io_flush_raw(obj, 0);
+        rb_io_flush_raw(obj, 0);
     }
     if (fstat(fptr->fd, &st) == -1) {
-	rb_sys_fail_path(fptr->pathv);
+        rb_sys_fail_path(fptr->pathv);
     }
     return OFFT2NUM(st.st_size);
 }
@@ -2417,18 +2417,18 @@ rb_file_chmod(VALUE obj, VALUE vmode)
     GetOpenFile(obj, fptr);
 #ifdef HAVE_FCHMOD
     if (fchmod(fptr->fd, mode) == -1) {
-	if (HAVE_FCHMOD || errno != ENOSYS)
-	    rb_sys_fail_path(fptr->pathv);
+        if (HAVE_FCHMOD || errno != ENOSYS)
+            rb_sys_fail_path(fptr->pathv);
     }
     else {
-	if (!HAVE_FCHMOD) return INT2FIX(0);
+        if (!HAVE_FCHMOD) return INT2FIX(0);
     }
 #endif
 #if !defined HAVE_FCHMOD || !HAVE_FCHMOD
     if (NIL_P(fptr->pathv)) return Qnil;
     path = rb_str_encode_ospath(fptr->pathv);
     if (chmod(RSTRING_PTR(path), mode) == -1)
-	rb_sys_fail_path(fptr->pathv);
+        rb_sys_fail_path(fptr->pathv);
 #endif
 
     return INT2FIX(0);
@@ -2469,7 +2469,7 @@ static inline rb_uid_t
 to_uid(VALUE u)
 {
     if (NIL_P(u)) {
-	return (rb_uid_t)-1;
+        return (rb_uid_t)-1;
     }
     return NUM2UIDT(u);
 }
@@ -2478,7 +2478,7 @@ static inline rb_gid_t
 to_gid(VALUE g)
 {
     if (NIL_P(g)) {
-	return (rb_gid_t)-1;
+        return (rb_gid_t)-1;
     }
     return NUM2GIDT(g);
 }
@@ -2554,10 +2554,10 @@ rb_file_chown(VALUE obj, VALUE owner, VALUE group)
     if (NIL_P(fptr->pathv)) return Qnil;
     path = rb_str_encode_ospath(fptr->pathv);
     if (chown(RSTRING_PTR(path), o, g) == -1)
-	rb_sys_fail_path(fptr->pathv);
+        rb_sys_fail_path(fptr->pathv);
 #else
     if (fchown(fptr->fd, o, g) == -1)
-	rb_sys_fail_path(fptr->pathv);
+        rb_sys_fail_path(fptr->pathv);
 #endif
 
     return INT2FIX(0);
@@ -2614,32 +2614,32 @@ utime_failed(struct apply_arg *aa)
     struct utime_args *ua = aa->arg;
 
     if (ua->tsp && e == EINVAL) {
-	VALUE e[2], a = Qnil, m = Qnil;
-	int d = 0;
-	VALUE atime = ua->atime;
-	VALUE mtime = ua->mtime;
+        VALUE e[2], a = Qnil, m = Qnil;
+        int d = 0;
+        VALUE atime = ua->atime;
+        VALUE mtime = ua->mtime;
 
-	if (!NIL_P(atime)) {
-	    a = rb_inspect(atime);
-	}
-	if (!NIL_P(mtime) && mtime != atime && !rb_equal(atime, mtime)) {
-	    m = rb_inspect(mtime);
-	}
-	if (NIL_P(a)) e[0] = m;
-	else if (NIL_P(m) || rb_str_cmp(a, m) == 0) e[0] = a;
-	else {
-	    e[0] = rb_str_plus(a, rb_str_new_cstr(" or "));
-	    rb_str_append(e[0], m);
-	    d = 1;
-	}
-	if (!NIL_P(e[0])) {
-	    if (path) {
-		if (!d) e[0] = rb_str_dup(e[0]);
-		rb_str_append(rb_str_cat2(e[0], " for "), path);
-	    }
-	    e[1] = INT2FIX(EINVAL);
-	    rb_exc_raise(rb_class_new_instance(2, e, rb_eSystemCallError));
-	}
+        if (!NIL_P(atime)) {
+            a = rb_inspect(atime);
+        }
+        if (!NIL_P(mtime) && mtime != atime && !rb_equal(atime, mtime)) {
+            m = rb_inspect(mtime);
+        }
+        if (NIL_P(a)) e[0] = m;
+        else if (NIL_P(m) || rb_str_cmp(a, m) == 0) e[0] = a;
+        else {
+            e[0] = rb_str_plus(a, rb_str_new_cstr(" or "));
+            rb_str_append(e[0], m);
+            d = 1;
+        }
+        if (!NIL_P(e[0])) {
+            if (path) {
+                if (!d) e[0] = rb_str_dup(e[0]);
+                rb_str_append(rb_str_cat2(e[0], " for "), path);
+            }
+            e[1] = INT2FIX(EINVAL);
+            rb_exc_raise(rb_class_new_instance(2, e, rb_eSystemCallError));
+        }
     }
     rb_syserr_fail_path(e, path);
 }
@@ -2665,18 +2665,18 @@ utime_internal(const char *path, void *arg)
 
     if (v->follow ? try_utimensat_follow : try_utimensat) {
 # ifdef AT_SYMLINK_NOFOLLOW
-	if (v->follow) {
-	    flags = AT_SYMLINK_NOFOLLOW;
-	}
+        if (v->follow) {
+            flags = AT_SYMLINK_NOFOLLOW;
+        }
 # endif
 
-	if (utimensat(AT_FDCWD, path, tsp, flags) < 0) {
+        if (utimensat(AT_FDCWD, path, tsp, flags) < 0) {
             if (errno == ENOSYS) {
 # ifdef AT_SYMLINK_NOFOLLOW
-		try_utimensat_follow = 0;
+                try_utimensat_follow = 0;
 # endif
-		if (!v->follow)
-		    try_utimensat = 0;
+                if (!v->follow)
+                    try_utimensat = 0;
                 goto no_utimensat;
             }
             return -1; /* calls utime_failed */
@@ -2737,12 +2737,12 @@ utime_internal_i(int argc, VALUE *argv, int follow)
     args.follow = follow;
 
     if (!NIL_P(args.atime) || !NIL_P(args.mtime)) {
-	tsp = tss;
-	tsp[0] = rb_time_timespec(args.atime);
-	if (args.atime == args.mtime)
-	    tsp[1] = tsp[0];
-	else
-	    tsp[1] = rb_time_timespec(args.mtime);
+        tsp = tss;
+        tsp[0] = rb_time_timespec(args.atime);
+        if (args.atime == args.mtime)
+            tsp[1] = tsp[0];
+        else
+            tsp[1] = rb_time_timespec(args.mtime);
     }
     args.tsp = tsp;
 
@@ -2806,7 +2806,7 @@ syserr_fail2_in(const char *func, int e, VALUE s1, VALUE s2)
 #endif
 
     if (e == EEXIST) {
-	rb_syserr_fail_path(e, rb_str_ellipsize(s2, max_pathlen));
+        rb_syserr_fail_path(e, rb_str_ellipsize(s2, max_pathlen));
     }
     str = rb_str_new_cstr("(");
     rb_str_append(str, rb_str_ellipsize(s1, max_pathlen));
@@ -2842,7 +2842,7 @@ rb_file_s_link(VALUE klass, VALUE from, VALUE to)
     to = rb_str_encode_ospath(to);
 
     if (link(StringValueCStr(from), StringValueCStr(to)) < 0) {
-	sys_fail2(from, to);
+        sys_fail2(from, to);
     }
     return INT2FIX(0);
 }
@@ -2872,7 +2872,7 @@ rb_file_s_symlink(VALUE klass, VALUE from, VALUE to)
     to = rb_str_encode_ospath(to);
 
     if (symlink(StringValueCStr(from), StringValueCStr(to)) < 0) {
-	sys_fail2(from, to);
+        sys_fail2(from, to);
     }
     return INT2FIX(0);
 }
@@ -2923,7 +2923,7 @@ readlink_without_gvl(VALUE path, VALUE buf, size_t size)
     ra.size = size;
 
     return (ssize_t)rb_thread_call_without_gvl(nogvl_readlink, &ra,
-						RUBY_UBF_IO, 0);
+                                                RUBY_UBF_IO, 0);
 }
 
 VALUE
@@ -2938,17 +2938,17 @@ rb_readlink(VALUE path, rb_encoding *enc)
     v = rb_enc_str_new(0, size, enc);
     while ((rv = readlink_without_gvl(path, v, size)) == size
 #ifdef _AIX
-	    || (rv < 0 && errno == ERANGE) /* quirky behavior of GPFS */
+            || (rv < 0 && errno == ERANGE) /* quirky behavior of GPFS */
 #endif
-	) {
-	rb_str_modify_expand(v, size);
-	size *= 2;
-	rb_str_set_len(v, size);
+        ) {
+        rb_str_modify_expand(v, size);
+        size *= 2;
+        rb_str_set_len(v, size);
     }
     if (rv < 0) {
-	int e = errno;
-	rb_str_resize(v, 0);
-	rb_syserr_fail_path(e, path);
+        int e = errno;
+        rb_str_resize(v, 0);
+        rb_syserr_fail_path(e, path);
     }
     rb_str_resize(v, rv);
 
@@ -3026,18 +3026,18 @@ rb_file_s_rename(VALUE klass, VALUE from, VALUE to)
     errno = 0;
 #endif
     if ((int)(VALUE)rb_thread_call_without_gvl(no_gvl_rename, &ra,
-					 RUBY_UBF_IO, 0) < 0) {
-	int e = errno;
+                                         RUBY_UBF_IO, 0) < 0) {
+        int e = errno;
 #if defined DOSISH
-	switch (e) {
-	  case EEXIST:
-	    if (chmod(ra.dst, 0666) == 0 &&
-		unlink(ra.dst) == 0 &&
-		rename(ra.src, ra.dst) == 0)
-		return INT2FIX(0);
-	}
+        switch (e) {
+          case EEXIST:
+            if (chmod(ra.dst, 0666) == 0 &&
+                unlink(ra.dst) == 0 &&
+                rename(ra.src, ra.dst) == 0)
+                return INT2FIX(0);
+        }
 #endif
-	syserr_fail2(e, from, to);
+        syserr_fail2(e, from, to);
     }
 
     return INT2FIX(0);
@@ -3064,14 +3064,14 @@ rb_file_s_umask(int argc, VALUE *argv)
     mode_t omask = 0;
 
     if (argc == 0) {
-	omask = umask(0);
-	umask(omask);
+        omask = umask(0);
+        umask(omask);
     }
     else if (argc == 1) {
-	omask = umask(NUM2MODET(argv[0]));
+        omask = umask(NUM2MODET(argv[0]));
     }
     else {
-	rb_check_arity(argc, 0, 1);
+        rb_check_arity(argc, 0, 1);
     }
     return MODET2NUM(omask);
 }
@@ -3133,10 +3133,10 @@ static inline int
 has_drive_letter(const char *buf)
 {
     if (ISALPHA(buf[0]) && buf[1] == ':') {
-	return 1;
+        return 1;
     }
     else {
-	return 0;
+        return 0;
     }
 }
 
@@ -3157,13 +3157,13 @@ getcwdofdrv(int drv)
     */
     oldcwd = ruby_getcwd();
     if (chdir(drive) == 0) {
-	drvcwd = ruby_getcwd();
-	chdir(oldcwd);
-	xfree(oldcwd);
+        drvcwd = ruby_getcwd();
+        chdir(oldcwd);
+        xfree(oldcwd);
     }
     else {
-	/* perhaps the drive is not exist. we return only drive letter */
-	drvcwd = strdup(drive);
+        /* perhaps the drive is not exist. we return only drive letter */
+        drvcwd = strdup(drive);
     }
     return drvcwd;
 }
@@ -3175,10 +3175,10 @@ not_same_drive(VALUE path, int drive)
     const char *p = RSTRING_PTR(path);
     if (RSTRING_LEN(path) < 2) return 0;
     if (has_drive_letter(p)) {
-	return TOLOWER(p[0]) != TOLOWER(drive);
+        return TOLOWER(p[0]) != TOLOWER(drive);
     }
     else {
-	return has_unc(p);
+        return has_unc(p);
     }
 }
 #endif
@@ -3198,7 +3198,7 @@ char *
 rb_enc_path_next(const char *s, const char *e, rb_encoding *enc)
 {
     while (s < e && !isdirsep(*s)) {
-	Inc(s, e, enc);
+        Inc(s, e, enc);
     }
     return (char *)s;
 }
@@ -3214,16 +3214,16 @@ rb_enc_path_skip_prefix(const char *path, const char *end, rb_encoding *enc)
 #if defined(DOSISH_UNC) || defined(DOSISH_DRIVE_LETTER)
 #ifdef DOSISH_UNC
     if (path + 2 <= end && isdirsep(path[0]) && isdirsep(path[1])) {
-	path += 2;
-	while (path < end && isdirsep(*path)) path++;
-	if ((path = rb_enc_path_next(path, end, enc)) < end && path[0] && path[1] && !isdirsep(path[1]))
-	    path = rb_enc_path_next(path + 1, end, enc);
-	return (char *)path;
+        path += 2;
+        while (path < end && isdirsep(*path)) path++;
+        if ((path = rb_enc_path_next(path, end, enc)) < end && path[0] && path[1] && !isdirsep(path[1]))
+            path = rb_enc_path_next(path + 1, end, enc);
+        return (char *)path;
     }
 #endif
 #ifdef DOSISH_DRIVE_LETTER
     if (has_drive_letter(path))
-	return (char *)(path + 2);
+        return (char *)(path + 2);
 #endif
 #endif
     return (char *)path;
@@ -3247,15 +3247,15 @@ rb_enc_path_last_separator(const char *path, const char *end, rb_encoding *enc)
 {
     char *last = NULL;
     while (path < end) {
-	if (isdirsep(*path)) {
-	    const char *tmp = path++;
-	    while (path < end && isdirsep(*path)) path++;
-	    if (path >= end) break;
-	    last = (char *)tmp;
-	}
-	else {
-	    Inc(path, end, enc);
-	}
+        if (isdirsep(*path)) {
+            const char *tmp = path++;
+            while (path < end && isdirsep(*path)) path++;
+            if (path >= end) break;
+            last = (char *)tmp;
+        }
+        else {
+            Inc(path, end, enc);
+        }
     }
     return last;
 }
@@ -3264,14 +3264,14 @@ static char *
 chompdirsep(const char *path, const char *end, rb_encoding *enc)
 {
     while (path < end) {
-	if (isdirsep(*path)) {
-	    const char *last = path++;
-	    while (path < end && isdirsep(*path)) path++;
-	    if (path >= end) return (char *)last;
-	}
-	else {
-	    Inc(path, end, enc);
-	}
+        if (isdirsep(*path)) {
+            const char *last = path++;
+            while (path < end && isdirsep(*path)) path++;
+            if (path >= end) return (char *)last;
+        }
+        else {
+            Inc(path, end, enc);
+        }
     }
     return (char *)path;
 }
@@ -3289,20 +3289,20 @@ ntfs_tail(const char *path, const char *end, rb_encoding *enc)
 {
     while (path < end && *path == '.') path++;
     while (path < end && !isADS(*path)) {
-	if (istrailinggarbage(*path)) {
-	    const char *last = path++;
-	    while (path < end && istrailinggarbage(*path)) path++;
-	    if (path >= end || isADS(*path)) return (char *)last;
-	}
-	else if (isdirsep(*path)) {
-	    const char *last = path++;
-	    while (path < end && isdirsep(*path)) path++;
-	    if (path >= end) return (char *)last;
-	    if (isADS(*path)) path++;
-	}
-	else {
-	    Inc(path, end, enc);
-	}
+        if (istrailinggarbage(*path)) {
+            const char *last = path++;
+            while (path < end && istrailinggarbage(*path)) path++;
+            if (path >= end || isADS(*path)) return (char *)last;
+        }
+        else if (isdirsep(*path)) {
+            const char *last = path++;
+            while (path < end && isdirsep(*path)) path++;
+            if (path >= end) return (char *)last;
+            if (isADS(*path)) path++;
+        }
+        else {
+            Inc(path, end, enc);
+        }
     }
     return (char *)path;
 }
@@ -3311,11 +3311,11 @@ ntfs_tail(const char *path, const char *end, rb_encoding *enc)
 #define BUFCHECK(cond) do {\
     bdiff = p - buf;\
     if (cond) {\
-	do {buflen *= 2;} while (cond);\
-	rb_str_resize(result, buflen);\
-	buf = RSTRING_PTR(result);\
-	p = buf + bdiff;\
-	pend = buf + buflen;\
+        do {buflen *= 2;} while (cond);\
+        rb_str_resize(result, buflen);\
+        buf = RSTRING_PTR(result);\
+        p = buf + bdiff;\
+        pend = buf + buflen;\
     }\
 } while (0)
 
@@ -3364,9 +3364,9 @@ copy_home_path(VALUE result, const char *dir)
 #if defined DOSISH || defined __CYGWIN__
     enc = rb_enc_from_index(encidx);
     for (bend = (p = buf) + dirlen; p < bend; Inc(p, bend, enc)) {
-	if (*p == '\\') {
-	    *p = '/';
-	}
+        if (*p == '\\') {
+            *p = '/';
+        }
     }
 #endif
     return result;
@@ -3397,11 +3397,11 @@ rb_home_dir_of(VALUE user, VALUE result)
     pwPtr = getpwnam(username);
 #else
     if (strcasecmp(username, getlogin()) == 0)
-	dir = pwPtr = getenv("HOME");
+        dir = pwPtr = getenv("HOME");
 #endif
     if (!pwPtr) {
-	endpwent();
-	rb_raise(rb_eArgError, "user %"PRIsVALUE" doesn't exist", user);
+        endpwent();
+        rb_raise(rb_eArgError, "user %"PRIsVALUE" doesn't exist", user);
     }
 #ifdef HAVE_PWD_H
     dir = pwPtr->pw_dir;
@@ -3419,25 +3419,25 @@ rb_default_home_dir(VALUE result)
 
 #if defined HAVE_PWD_H
     if (!dir) {
-	const char *login = getlogin();
-	if (login) {
-	    struct passwd *pw = getpwnam(login);
-	    if (pw) {
-		copy_home_path(result, pw->pw_dir);
-		endpwent();
-		return result;
-	    }
-	    endpwent();
-	    rb_raise(rb_eArgError, "couldn't find HOME for login `%s' -- expanding `~'",
-		     login);
-	}
-	else {
-	    rb_raise(rb_eArgError, "couldn't find login name -- expanding `~'");
-	}
+        const char *login = getlogin();
+        if (login) {
+            struct passwd *pw = getpwnam(login);
+            if (pw) {
+                copy_home_path(result, pw->pw_dir);
+                endpwent();
+                return result;
+            }
+            endpwent();
+            rb_raise(rb_eArgError, "couldn't find HOME for login `%s' -- expanding `~'",
+                     login);
+        }
+        else {
+            rb_raise(rb_eArgError, "couldn't find login name -- expanding `~'");
+        }
     }
 #endif
     if (!dir) {
-	rb_raise(rb_eArgError, "couldn't find HOME environment -- expanding `~'");
+        rb_raise(rb_eArgError, "couldn't find HOME environment -- expanding `~'");
     }
     return copy_home_path(result, dir);
 }
@@ -3462,15 +3462,15 @@ append_fspath(VALUE result, VALUE fname, char *dir, rb_encoding **enc, rb_encodi
     size_t dirlen = strlen(dir), buflen = rb_str_capacity(result);
 
     if (NORMALIZE_UTF8PATH || *enc != fsenc) {
-	rb_encoding *direnc = rb_enc_check(fname, dirname = ospath_new(dir, dirlen, fsenc));
-	if (direnc != fsenc) {
-	    dirname = rb_str_conv_enc(dirname, fsenc, direnc);
-	    RSTRING_GETMEM(dirname, cwdp, dirlen);
-	}
-	else if (NORMALIZE_UTF8PATH) {
-	    RSTRING_GETMEM(dirname, cwdp, dirlen);
-	}
-	*enc = direnc;
+        rb_encoding *direnc = rb_enc_check(fname, dirname = ospath_new(dir, dirlen, fsenc));
+        if (direnc != fsenc) {
+            dirname = rb_str_conv_enc(dirname, fsenc, direnc);
+            RSTRING_GETMEM(dirname, cwdp, dirlen);
+        }
+        else if (NORMALIZE_UTF8PATH) {
+            RSTRING_GETMEM(dirname, cwdp, dirlen);
+        }
+        *enc = direnc;
     }
     do {buflen *= 2;} while (dirlen > buflen);
     rb_str_resize(result, buflen);
@@ -3498,118 +3498,118 @@ rb_file_expand_path_internal(VALUE fname, VALUE dname, int abs_mode, int long_na
     tainted = OBJ_TAINTED(fname);
 
     if (s[0] == '~' && abs_mode == 0) {      /* execute only if NOT absolute_path() */
-	long userlen = 0;
-	tainted = 1;
-	if (isdirsep(s[1]) || s[1] == '\0') {
-	    buf = 0;
-	    b = 0;
-	    rb_str_set_len(result, 0);
-	    if (*++s) ++s;
-	    rb_default_home_dir(result);
-	}
-	else {
-	    s = nextdirsep(b = s, fend, enc);
-	    b++; /* b[0] is '~' */
-	    userlen = s - b;
-	    BUFCHECK(bdiff + userlen >= buflen);
-	    memcpy(p, b, userlen);
-	    ENC_CODERANGE_CLEAR(result);
-	    rb_str_set_len(result, userlen);
-	    rb_enc_associate(result, enc);
-	    rb_home_dir_of(result, result);
-	    buf = p + 1;
-	    p += userlen;
-	}
-	if (!rb_is_absolute_path(RSTRING_PTR(result))) {
-	    if (userlen) {
-		rb_enc_raise(enc, rb_eArgError, "non-absolute home of %.*s%.0"PRIsVALUE,
-			     (int)userlen, b, fname);
-	    }
-	    else {
-		rb_raise(rb_eArgError, "non-absolute home");
-	    }
-	}
-	BUFINIT();
-	p = pend;
+        long userlen = 0;
+        tainted = 1;
+        if (isdirsep(s[1]) || s[1] == '\0') {
+            buf = 0;
+            b = 0;
+            rb_str_set_len(result, 0);
+            if (*++s) ++s;
+            rb_default_home_dir(result);
+        }
+        else {
+            s = nextdirsep(b = s, fend, enc);
+            b++; /* b[0] is '~' */
+            userlen = s - b;
+            BUFCHECK(bdiff + userlen >= buflen);
+            memcpy(p, b, userlen);
+            ENC_CODERANGE_CLEAR(result);
+            rb_str_set_len(result, userlen);
+            rb_enc_associate(result, enc);
+            rb_home_dir_of(result, result);
+            buf = p + 1;
+            p += userlen;
+        }
+        if (!rb_is_absolute_path(RSTRING_PTR(result))) {
+            if (userlen) {
+                rb_enc_raise(enc, rb_eArgError, "non-absolute home of %.*s%.0"PRIsVALUE,
+                             (int)userlen, b, fname);
+            }
+            else {
+                rb_raise(rb_eArgError, "non-absolute home");
+            }
+        }
+        BUFINIT();
+        p = pend;
     }
 #ifdef DOSISH_DRIVE_LETTER
     /* skip drive letter */
     else if (has_drive_letter(s)) {
-	if (isdirsep(s[2])) {
-	    /* specified drive letter, and full path */
-	    /* skip drive letter */
-	    BUFCHECK(bdiff + 2 >= buflen);
-	    memcpy(p, s, 2);
-	    p += 2;
-	    s += 2;
-	    rb_enc_copy(result, fname);
-	}
-	else {
-	    /* specified drive, but not full path */
-	    int same = 0;
-	    if (!NIL_P(dname) && !not_same_drive(dname, s[0])) {
-		rb_file_expand_path_internal(dname, Qnil, abs_mode, long_name, result);
-		BUFINIT();
-		if (has_drive_letter(p) && TOLOWER(p[0]) == TOLOWER(s[0])) {
-		    /* ok, same drive */
-		    same = 1;
-		}
-	    }
-	    if (!same) {
-		char *e = append_fspath(result, fname, getcwdofdrv(*s), &enc, fsenc);
-		tainted = 1;
-		BUFINIT();
-		p = e;
-	    }
-	    else {
-		rb_enc_associate(result, enc = rb_enc_check(result, fname));
-		p = pend;
-	    }
-	    p = chompdirsep(skiproot(buf, p, enc), p, enc);
-	    s += 2;
-	}
+        if (isdirsep(s[2])) {
+            /* specified drive letter, and full path */
+            /* skip drive letter */
+            BUFCHECK(bdiff + 2 >= buflen);
+            memcpy(p, s, 2);
+            p += 2;
+            s += 2;
+            rb_enc_copy(result, fname);
+        }
+        else {
+            /* specified drive, but not full path */
+            int same = 0;
+            if (!NIL_P(dname) && !not_same_drive(dname, s[0])) {
+                rb_file_expand_path_internal(dname, Qnil, abs_mode, long_name, result);
+                BUFINIT();
+                if (has_drive_letter(p) && TOLOWER(p[0]) == TOLOWER(s[0])) {
+                    /* ok, same drive */
+                    same = 1;
+                }
+            }
+            if (!same) {
+                char *e = append_fspath(result, fname, getcwdofdrv(*s), &enc, fsenc);
+                tainted = 1;
+                BUFINIT();
+                p = e;
+            }
+            else {
+                rb_enc_associate(result, enc = rb_enc_check(result, fname));
+                p = pend;
+            }
+            p = chompdirsep(skiproot(buf, p, enc), p, enc);
+            s += 2;
+        }
     }
 #endif
     else if (!rb_is_absolute_path(s)) {
-	if (!NIL_P(dname)) {
-	    rb_file_expand_path_internal(dname, Qnil, abs_mode, long_name, result);
-	    rb_enc_associate(result, rb_enc_check(result, fname));
-	    BUFINIT();
-	    p = pend;
-	}
-	else {
-	    char *e = append_fspath(result, fname, ruby_getcwd(), &enc, fsenc);
-	    tainted = 1;
-	    BUFINIT();
-	    p = e;
-	}
+        if (!NIL_P(dname)) {
+            rb_file_expand_path_internal(dname, Qnil, abs_mode, long_name, result);
+            rb_enc_associate(result, rb_enc_check(result, fname));
+            BUFINIT();
+            p = pend;
+        }
+        else {
+            char *e = append_fspath(result, fname, ruby_getcwd(), &enc, fsenc);
+            tainted = 1;
+            BUFINIT();
+            p = e;
+        }
 #if defined DOSISH || defined __CYGWIN__
-	if (isdirsep(*s)) {
-	    /* specified full path, but not drive letter nor UNC */
-	    /* we need to get the drive letter or UNC share name */
-	    p = skipprefix(buf, p, enc);
-	}
-	else
+        if (isdirsep(*s)) {
+            /* specified full path, but not drive letter nor UNC */
+            /* we need to get the drive letter or UNC share name */
+            p = skipprefix(buf, p, enc);
+        }
+        else
 #endif
-	    p = chompdirsep(skiproot(buf, p, enc), p, enc);
+            p = chompdirsep(skiproot(buf, p, enc), p, enc);
     }
     else {
-	size_t len;
-	b = s;
-	do s++; while (isdirsep(*s));
-	len = s - b;
-	p = buf + len;
-	BUFCHECK(bdiff >= buflen);
-	memset(buf, '/', len);
-	rb_str_set_len(result, len);
-	rb_enc_associate(result, rb_enc_check(result, fname));
+        size_t len;
+        b = s;
+        do s++; while (isdirsep(*s));
+        len = s - b;
+        p = buf + len;
+        BUFCHECK(bdiff >= buflen);
+        memset(buf, '/', len);
+        rb_str_set_len(result, len);
+        rb_enc_associate(result, rb_enc_check(result, fname));
     }
     if (p > buf && p[-1] == '/')
-	--p;
+        --p;
     else {
-	rb_str_set_len(result, p-buf);
-	BUFCHECK(bdiff + 1 >= buflen);
-	*p = '/';
+        rb_str_set_len(result, p-buf);
+        BUFCHECK(bdiff + 1 >= buflen);
+        *p = '/';
     }
 
     rb_str_set_len(result, p-buf+1);
@@ -3619,213 +3619,213 @@ rb_file_expand_path_internal(VALUE fname, VALUE dname, int abs_mode, int long_na
 
     b = s;
     while (*s) {
-	switch (*s) {
-	  case '.':
-	    if (b == s++) {	/* beginning of path element */
-		switch (*s) {
-		  case '\0':
-		    b = s;
-		    break;
-		  case '.':
-		    if (*(s+1) == '\0' || isdirsep(*(s+1))) {
-			/* We must go back to the parent */
-			char *n;
-			*p = '\0';
-			if (!(n = strrdirsep(root, p, enc))) {
-			    *p = '/';
-			}
-			else {
-			    p = n;
-			}
-			b = ++s;
-		    }
+        switch (*s) {
+          case '.':
+            if (b == s++) {        /* beginning of path element */
+                switch (*s) {
+                  case '\0':
+                    b = s;
+                    break;
+                  case '.':
+                    if (*(s+1) == '\0' || isdirsep(*(s+1))) {
+                        /* We must go back to the parent */
+                        char *n;
+                        *p = '\0';
+                        if (!(n = strrdirsep(root, p, enc))) {
+                            *p = '/';
+                        }
+                        else {
+                            p = n;
+                        }
+                        b = ++s;
+                    }
 #if USE_NTFS
-		    else {
-			do ++s; while (istrailinggarbage(*s));
-		    }
+                    else {
+                        do ++s; while (istrailinggarbage(*s));
+                    }
 #endif
-		    break;
-		  case '/':
+                    break;
+                  case '/':
 #if defined DOSISH || defined __CYGWIN__
-		  case '\\':
+                  case '\\':
 #endif
-		    b = ++s;
-		    break;
-		  default:
-		    /* ordinary path element, beginning don't move */
-		    break;
-		}
-	    }
+                    b = ++s;
+                    break;
+                  default:
+                    /* ordinary path element, beginning don't move */
+                    break;
+                }
+            }
 #if USE_NTFS
-	    else {
-		--s;
-	      case ' ': {
-		const char *e = s;
-		while (s < fend && istrailinggarbage(*s)) s++;
-		if (s >= fend) {
-		    s = e;
-		    goto endpath;
-		}
-	      }
-	    }
+            else {
+                --s;
+              case ' ': {
+                const char *e = s;
+                while (s < fend && istrailinggarbage(*s)) s++;
+                if (s >= fend) {
+                    s = e;
+                    goto endpath;
+                }
+              }
+            }
 #endif
-	    break;
-	  case '/':
+            break;
+          case '/':
 #if defined DOSISH || defined __CYGWIN__
-	  case '\\':
+          case '\\':
 #endif
-	    if (s > b) {
-		WITH_ROOTDIFF(BUFCOPY(b, s-b));
-		*p = '/';
-	    }
-	    b = ++s;
-	    break;
-	  default:
+            if (s > b) {
+                WITH_ROOTDIFF(BUFCOPY(b, s-b));
+                *p = '/';
+            }
+            b = ++s;
+            break;
+          default:
 #ifdef __APPLE__
-	    {
-		int n = ignored_char_p(s, fend, enc);
-		if (n) {
-		    if (s > b) {
-			WITH_ROOTDIFF(BUFCOPY(b, s-b));
-			*p = '\0';
-		    }
-		    b = s += n;
-		    break;
-		}
-	    }
+            {
+                int n = ignored_char_p(s, fend, enc);
+                if (n) {
+                    if (s > b) {
+                        WITH_ROOTDIFF(BUFCOPY(b, s-b));
+                        *p = '\0';
+                    }
+                    b = s += n;
+                    break;
+                }
+            }
 #endif
-	    Inc(s, fend, enc);
-	    break;
-	}
+            Inc(s, fend, enc);
+            break;
+        }
     }
 
     if (s > b) {
 #if USE_NTFS
 # if USE_NTFS_ADS
-	static const char prime[] = ":$DATA";
-	enum {prime_len = sizeof(prime) -1};
+        static const char prime[] = ":$DATA";
+        enum {prime_len = sizeof(prime) -1};
 # endif
       endpath:
 # if USE_NTFS_ADS
-	if (s > b + prime_len && strncasecmp(s - prime_len, prime, prime_len) == 0) {
-	    /* alias of stream */
-	    /* get rid of a bug of x64 VC++ */
-	    if (isADS(*(s - (prime_len+1)))) {
-		s -= prime_len + 1; /* prime */
-	    }
-	    else if (memchr(b, ':', s - prime_len - b)) {
-		s -= prime_len;	/* alternative */
-	    }
-	}
+        if (s > b + prime_len && strncasecmp(s - prime_len, prime, prime_len) == 0) {
+            /* alias of stream */
+            /* get rid of a bug of x64 VC++ */
+            if (isADS(*(s - (prime_len+1)))) {
+                s -= prime_len + 1; /* prime */
+            }
+            else if (memchr(b, ':', s - prime_len - b)) {
+                s -= prime_len;        /* alternative */
+            }
+        }
 # endif
 #endif
-	BUFCOPY(b, s-b);
-	rb_str_set_len(result, p-buf);
+        BUFCOPY(b, s-b);
+        rb_str_set_len(result, p-buf);
     }
     if (p == skiproot(buf, p + !!*p, enc) - 1) p++;
 
 #if USE_NTFS
     *p = '\0';
     if ((s = strrdirsep(b = buf, p, enc)) != 0 && !strpbrk(s, "*?")) {
-	VALUE tmp, v;
-	size_t len;
-	int encidx;
-	WCHAR *wstr;
-	WIN32_FIND_DATAW wfd;
-	HANDLE h;
+        VALUE tmp, v;
+        size_t len;
+        int encidx;
+        WCHAR *wstr;
+        WIN32_FIND_DATAW wfd;
+        HANDLE h;
 #ifdef __CYGWIN__
 #ifdef HAVE_CYGWIN_CONV_PATH
-	char *w32buf = NULL;
-	const int flags = CCP_POSIX_TO_WIN_A | CCP_RELATIVE;
+        char *w32buf = NULL;
+        const int flags = CCP_POSIX_TO_WIN_A | CCP_RELATIVE;
 #else
-	char w32buf[MAXPATHLEN];
+        char w32buf[MAXPATHLEN];
 #endif
-	const char *path;
-	ssize_t bufsize;
-	int lnk_added = 0, is_symlink = 0;
-	struct stat st;
-	p = (char *)s;
-	len = strlen(p);
-	if (lstat_without_gvl(buf, &st) == 0 && S_ISLNK(st.st_mode)) {
-	    is_symlink = 1;
-	    if (len > 4 && STRCASECMP(p + len - 4, ".lnk") != 0) {
-		lnk_added = 1;
-	    }
-	}
-	path = *buf ? buf : "/";
+        const char *path;
+        ssize_t bufsize;
+        int lnk_added = 0, is_symlink = 0;
+        struct stat st;
+        p = (char *)s;
+        len = strlen(p);
+        if (lstat_without_gvl(buf, &st) == 0 && S_ISLNK(st.st_mode)) {
+            is_symlink = 1;
+            if (len > 4 && STRCASECMP(p + len - 4, ".lnk") != 0) {
+                lnk_added = 1;
+            }
+        }
+        path = *buf ? buf : "/";
 #ifdef HAVE_CYGWIN_CONV_PATH
-	bufsize = cygwin_conv_path(flags, path, NULL, 0);
-	if (bufsize > 0) {
-	    bufsize += len;
-	    if (lnk_added) bufsize += 4;
-	    w32buf = ALLOCA_N(char, bufsize);
-	    if (cygwin_conv_path(flags, path, w32buf, bufsize) == 0) {
-		b = w32buf;
-	    }
-	}
+        bufsize = cygwin_conv_path(flags, path, NULL, 0);
+        if (bufsize > 0) {
+            bufsize += len;
+            if (lnk_added) bufsize += 4;
+            w32buf = ALLOCA_N(char, bufsize);
+            if (cygwin_conv_path(flags, path, w32buf, bufsize) == 0) {
+                b = w32buf;
+            }
+        }
 #else
-	bufsize = MAXPATHLEN;
-	if (cygwin_conv_to_win32_path(path, w32buf) == 0) {
-	    b = w32buf;
-	}
+        bufsize = MAXPATHLEN;
+        if (cygwin_conv_to_win32_path(path, w32buf) == 0) {
+            b = w32buf;
+        }
 #endif
-	if (is_symlink && b == w32buf) {
-	    *p = '\\';
-	    strlcat(w32buf, p, bufsize);
-	    if (lnk_added) {
-		strlcat(w32buf, ".lnk", bufsize);
-	    }
-	}
-	else {
-	    lnk_added = 0;
-	}
-	*p = '/';
+        if (is_symlink && b == w32buf) {
+            *p = '\\';
+            strlcat(w32buf, p, bufsize);
+            if (lnk_added) {
+                strlcat(w32buf, ".lnk", bufsize);
+            }
+        }
+        else {
+            lnk_added = 0;
+        }
+        *p = '/';
 #endif
-	rb_str_set_len(result, p - buf + strlen(p));
-	encidx = ENCODING_GET(result);
-	tmp = result;
-	if (encidx != ENCINDEX_UTF_8 && rb_enc_str_coderange(result) != ENC_CODERANGE_7BIT) {
-	    tmp = rb_str_encode_ospath(result);
-	}
-	len = MultiByteToWideChar(CP_UTF8, 0, RSTRING_PTR(tmp), -1, NULL, 0);
-	wstr = ALLOCV_N(WCHAR, v, len);
-	MultiByteToWideChar(CP_UTF8, 0, RSTRING_PTR(tmp), -1, wstr, len);
-	if (tmp != result) rb_str_set_len(tmp, 0);
-	h = FindFirstFileW(wstr, &wfd);
-	ALLOCV_END(v);
-	if (h != INVALID_HANDLE_VALUE) {
-	    size_t wlen;
-	    FindClose(h);
-	    len = lstrlenW(wfd.cFileName);
+        rb_str_set_len(result, p - buf + strlen(p));
+        encidx = ENCODING_GET(result);
+        tmp = result;
+        if (encidx != ENCINDEX_UTF_8 && rb_enc_str_coderange(result) != ENC_CODERANGE_7BIT) {
+            tmp = rb_str_encode_ospath(result);
+        }
+        len = MultiByteToWideChar(CP_UTF8, 0, RSTRING_PTR(tmp), -1, NULL, 0);
+        wstr = ALLOCV_N(WCHAR, v, len);
+        MultiByteToWideChar(CP_UTF8, 0, RSTRING_PTR(tmp), -1, wstr, len);
+        if (tmp != result) rb_str_set_len(tmp, 0);
+        h = FindFirstFileW(wstr, &wfd);
+        ALLOCV_END(v);
+        if (h != INVALID_HANDLE_VALUE) {
+            size_t wlen;
+            FindClose(h);
+            len = lstrlenW(wfd.cFileName);
 #ifdef __CYGWIN__
-	    if (lnk_added && len > 4 &&
-		wcscasecmp(wfd.cFileName + len - 4, L".lnk") == 0) {
-		wfd.cFileName[len -= 4] = L'\0';
-	    }
+            if (lnk_added && len > 4 &&
+                wcscasecmp(wfd.cFileName + len - 4, L".lnk") == 0) {
+                wfd.cFileName[len -= 4] = L'\0';
+            }
 #else
-	    p = (char *)s;
+            p = (char *)s;
 #endif
-	    ++p;
-	    wlen = (int)len;
-	    len = WideCharToMultiByte(CP_UTF8, 0, wfd.cFileName, wlen, NULL, 0, NULL, NULL);
-	    if (tmp == result) {
-		BUFCHECK(bdiff + len >= buflen);
-		WideCharToMultiByte(CP_UTF8, 0, wfd.cFileName, wlen, p, len + 1, NULL, NULL);
-	    }
-	    else {
-		rb_str_modify_expand(tmp, len);
-		WideCharToMultiByte(CP_UTF8, 0, wfd.cFileName, wlen, RSTRING_PTR(tmp), len + 1, NULL, NULL);
-		rb_str_cat_conv_enc_opts(result, bdiff, RSTRING_PTR(tmp), len,
-					 rb_utf8_encoding(), 0, Qnil);
-		BUFINIT();
-		rb_str_resize(tmp, 0);
-	    }
-	    p += len;
-	}
+            ++p;
+            wlen = (int)len;
+            len = WideCharToMultiByte(CP_UTF8, 0, wfd.cFileName, wlen, NULL, 0, NULL, NULL);
+            if (tmp == result) {
+                BUFCHECK(bdiff + len >= buflen);
+                WideCharToMultiByte(CP_UTF8, 0, wfd.cFileName, wlen, p, len + 1, NULL, NULL);
+            }
+            else {
+                rb_str_modify_expand(tmp, len);
+                WideCharToMultiByte(CP_UTF8, 0, wfd.cFileName, wlen, RSTRING_PTR(tmp), len + 1, NULL, NULL);
+                rb_str_cat_conv_enc_opts(result, bdiff, RSTRING_PTR(tmp), len,
+                                         rb_utf8_encoding(), 0, Qnil);
+                BUFINIT();
+                rb_str_resize(tmp, 0);
+            }
+            p += len;
+        }
 #ifdef __CYGWIN__
-	else {
-	    p += strlen(p);
-	}
+        else {
+            p += strlen(p);
+        }
 #endif
     }
 #endif
@@ -3944,27 +3944,27 @@ enum rb_realpath_mode {
 
 static int
 realpath_rec(long *prefixlenp, VALUE *resolvedp, const char *unresolved, VALUE fallback,
-	     VALUE loopcheck, enum rb_realpath_mode mode, int last)
+             VALUE loopcheck, enum rb_realpath_mode mode, int last)
 {
     const char *pend = unresolved + strlen(unresolved);
     rb_encoding *enc = rb_enc_get(*resolvedp);
     ID resolving;
     CONST_ID(resolving, "resolving");
     while (unresolved < pend) {
-	const char *testname = unresolved;
-	const char *unresolved_firstsep = rb_enc_path_next(unresolved, pend, enc);
-	long testnamelen = unresolved_firstsep - unresolved;
-	const char *unresolved_nextname = unresolved_firstsep;
+        const char *testname = unresolved;
+        const char *unresolved_firstsep = rb_enc_path_next(unresolved, pend, enc);
+        long testnamelen = unresolved_firstsep - unresolved;
+        const char *unresolved_nextname = unresolved_firstsep;
         while (unresolved_nextname < pend && isdirsep(*unresolved_nextname))
-	    unresolved_nextname++;
+            unresolved_nextname++;
         unresolved = unresolved_nextname;
         if (testnamelen == 1 && testname[0] == '.') {
         }
         else if (testnamelen == 2 && testname[0] == '.' && testname[1] == '.') {
             if (*prefixlenp < RSTRING_LEN(*resolvedp)) {
-		const char *resolved_str = RSTRING_PTR(*resolvedp);
-		const char *resolved_names = resolved_str + *prefixlenp;
-		const char *lastsep = strrdirsep(resolved_names, resolved_str + RSTRING_LEN(*resolvedp), enc);
+                const char *resolved_str = RSTRING_PTR(*resolvedp);
+                const char *resolved_names = resolved_str + *prefixlenp;
+                const char *lastsep = strrdirsep(resolved_names, resolved_str + RSTRING_LEN(*resolvedp), enc);
                 long len = lastsep ? lastsep - resolved_names : 0;
                 rb_str_resize(*resolvedp, *prefixlenp + len);
             }
@@ -3975,20 +3975,20 @@ realpath_rec(long *prefixlenp, VALUE *resolvedp, const char *unresolved, VALUE f
             if (*prefixlenp < RSTRING_LEN(testpath))
                 rb_str_cat2(testpath, "/");
 #if defined(DOSISH_UNC) || defined(DOSISH_DRIVE_LETTER)
-	    if (*prefixlenp > 1 && *prefixlenp == RSTRING_LEN(testpath)) {
-		const char *prefix = RSTRING_PTR(testpath);
-		const char *last = rb_enc_left_char_head(prefix, prefix + *prefixlenp - 1, prefix + *prefixlenp, enc);
-		if (!isdirsep(*last)) rb_str_cat2(testpath, "/");
-	    }
+            if (*prefixlenp > 1 && *prefixlenp == RSTRING_LEN(testpath)) {
+                const char *prefix = RSTRING_PTR(testpath);
+                const char *last = rb_enc_left_char_head(prefix, prefix + *prefixlenp - 1, prefix + *prefixlenp, enc);
+                if (!isdirsep(*last)) rb_str_cat2(testpath, "/");
+            }
 #endif
             rb_str_cat(testpath, testname, testnamelen);
             checkval = rb_hash_aref(loopcheck, testpath);
             if (!NIL_P(checkval)) {
                 if (checkval == ID2SYM(resolving)) {
-		    if (mode == RB_REALPATH_CHECK) {
-			errno = ELOOP;
-			return -1;
-		    }
+                    if (mode == RB_REALPATH_CHECK) {
+                        errno = ELOOP;
+                        return -1;
+                    }
                     rb_syserr_fail_path(ELOOP, testpath);
                 }
                 else {
@@ -4000,49 +4000,49 @@ realpath_rec(long *prefixlenp, VALUE *resolvedp, const char *unresolved, VALUE f
                 int ret;
                 ret = lstat_without_gvl(RSTRING_PTR(testpath), &sbuf);
                 if (ret == -1) {
-		    int e = errno;
-		    if (e == ENOENT && !NIL_P(fallback)) {
-			if (stat_without_gvl(RSTRING_PTR(fallback), &sbuf) == 0) {
-			    rb_str_replace(*resolvedp, fallback);
-			    return 0;
-			}
-		    }
-		    if (mode == RB_REALPATH_CHECK) return -1;
-		    if (e == ENOENT) {
-			if (mode == RB_REALPATH_STRICT || !last || *unresolved_firstsep)
-			    rb_syserr_fail_path(e, testpath);
+                    int e = errno;
+                    if (e == ENOENT && !NIL_P(fallback)) {
+                        if (stat_without_gvl(RSTRING_PTR(fallback), &sbuf) == 0) {
+                            rb_str_replace(*resolvedp, fallback);
+                            return 0;
+                        }
+                    }
+                    if (mode == RB_REALPATH_CHECK) return -1;
+                    if (e == ENOENT) {
+                        if (mode == RB_REALPATH_STRICT || !last || *unresolved_firstsep)
+                            rb_syserr_fail_path(e, testpath);
                         *resolvedp = testpath;
                         break;
                     }
                     else {
-			rb_syserr_fail_path(e, testpath);
+                        rb_syserr_fail_path(e, testpath);
                     }
                 }
 #ifdef HAVE_READLINK
                 if (S_ISLNK(sbuf.st_mode)) {
-		    VALUE link;
-		    VALUE link_orig = Qnil;
-		    const char *link_prefix, *link_names;
+                    VALUE link;
+                    VALUE link_orig = Qnil;
+                    const char *link_prefix, *link_names;
                     long link_prefixlen;
                     rb_hash_aset(loopcheck, testpath, ID2SYM(resolving));
-		    link = rb_readlink(testpath, enc);
+                    link = rb_readlink(testpath, enc);
                     link_prefix = RSTRING_PTR(link);
-		    link_names = skipprefixroot(link_prefix, link_prefix + RSTRING_LEN(link), rb_enc_get(link));
-		    link_prefixlen = link_names - link_prefix;
-		    if (link_prefixlen > 0) {
-			rb_encoding *tmpenc, *linkenc = rb_enc_get(link);
-			link_orig = link;
-			link = rb_str_subseq(link, 0, link_prefixlen);
-			tmpenc = rb_enc_check(*resolvedp, link);
-			if (tmpenc != linkenc) link = rb_str_conv_enc(link, linkenc, tmpenc);
-			*resolvedp = link;
-			*prefixlenp = link_prefixlen;
-		    }
-		    if (realpath_rec(prefixlenp, resolvedp, link_names, testpath,
-				     loopcheck, mode, !*unresolved_firstsep))
-			return -1;
-		    RB_GC_GUARD(link_orig);
-		    rb_hash_aset(loopcheck, testpath, rb_str_dup_frozen(*resolvedp));
+                    link_names = skipprefixroot(link_prefix, link_prefix + RSTRING_LEN(link), rb_enc_get(link));
+                    link_prefixlen = link_names - link_prefix;
+                    if (link_prefixlen > 0) {
+                        rb_encoding *tmpenc, *linkenc = rb_enc_get(link);
+                        link_orig = link;
+                        link = rb_str_subseq(link, 0, link_prefixlen);
+                        tmpenc = rb_enc_check(*resolvedp, link);
+                        if (tmpenc != linkenc) link = rb_str_conv_enc(link, linkenc, tmpenc);
+                        *resolvedp = link;
+                        *prefixlenp = link_prefixlen;
+                    }
+                    if (realpath_rec(prefixlenp, resolvedp, link_names, testpath,
+                                     loopcheck, mode, !*unresolved_firstsep))
+                        return -1;
+                    RB_GC_GUARD(link_orig);
+                    rb_hash_aset(loopcheck, testpath, rb_str_dup_frozen(*resolvedp));
                 }
                 else
 #endif
@@ -4089,11 +4089,11 @@ rb_check_realpath_internal(VALUE basedir, VALUE path, enum rb_realpath_mode mode
     }
 
     if (!NIL_P(basedir)) {
-	RSTRING_GETMEM(basedir, ptr, len);
-	basedir_names = skipprefixroot(ptr, ptr + len, rb_enc_get(basedir));
+        RSTRING_GETMEM(basedir, ptr, len);
+        basedir_names = skipprefixroot(ptr, ptr + len, rb_enc_get(basedir));
         if (ptr != basedir_names) {
-	    resolved = rb_str_subseq(basedir, 0, basedir_names - ptr);
-	    goto root_found;
+            resolved = rb_str_subseq(basedir, 0, basedir_names - ptr);
+            goto root_found;
         }
     }
 
@@ -4112,38 +4112,38 @@ rb_check_realpath_internal(VALUE basedir, VALUE path, enum rb_realpath_mode mode
     }
 #ifdef FILE_ALT_SEPARATOR
     while (prefixptr < ptr) {
-	if (*prefixptr == FILE_ALT_SEPARATOR) {
-	    *prefixptr = '/';
-	}
-	Inc(prefixptr, pend, enc);
+        if (*prefixptr == FILE_ALT_SEPARATOR) {
+            *prefixptr = '/';
+        }
+        Inc(prefixptr, pend, enc);
     }
 #endif
 
     switch (rb_enc_to_index(enc)) {
       case ENCINDEX_ASCII:
       case ENCINDEX_US_ASCII:
-	rb_enc_associate_index(resolved, rb_filesystem_encindex());
+        rb_enc_associate_index(resolved, rb_filesystem_encindex());
     }
 
     loopcheck = rb_hash_new();
     if (curdir_names) {
-	if (realpath_rec(&prefixlen, &resolved, curdir_names, Qnil, loopcheck, mode, 0))
-	    return Qnil;
+        if (realpath_rec(&prefixlen, &resolved, curdir_names, Qnil, loopcheck, mode, 0))
+            return Qnil;
     }
     if (basedir_names) {
-	if (realpath_rec(&prefixlen, &resolved, basedir_names, Qnil, loopcheck, mode, 0))
-	    return Qnil;
+        if (realpath_rec(&prefixlen, &resolved, basedir_names, Qnil, loopcheck, mode, 0))
+            return Qnil;
     }
     if (realpath_rec(&prefixlen, &resolved, path_names, Qnil, loopcheck, mode, 1))
-	return Qnil;
+        return Qnil;
 
     if (origenc != rb_enc_get(resolved)) {
-	if (rb_enc_str_asciionly_p(resolved)) {
-	    rb_enc_associate(resolved, origenc);
-	}
-	else {
-	    resolved = rb_str_conv_enc(resolved, NULL, origenc);
-	}
+        if (rb_enc_str_asciionly_p(resolved)) {
+            rb_enc_associate(resolved, origenc);
+        }
+        else {
+            resolved = rb_str_conv_enc(resolved, NULL, origenc);
+        }
     }
 
     OBJ_INFECT(resolved, unresolved_path);
@@ -4156,7 +4156,7 @@ VALUE
 rb_realpath_internal(VALUE basedir, VALUE path, int strict)
 {
     const enum rb_realpath_mode mode =
-	strict ? RB_REALPATH_STRICT : RB_REALPATH_DIR;
+        strict ? RB_REALPATH_STRICT : RB_REALPATH_DIR;
     return rb_check_realpath_internal(basedir, path, mode);
 }
 
@@ -4220,15 +4220,15 @@ rmext(const char *p, long l0, long l1, const char *e, long l2, rb_encoding *enc)
 
     c = rb_enc_codepoint_len(e, e + l2, &len1, enc);
     if (rb_enc_ascget(e + len1, e + l2, &len2, enc) == '*' && len1 + len2 == l2) {
-	if (c == '.') return l0;
-	s = p;
-	e = p + l1;
-	last = e;
-	while (s < e) {
-	    if (rb_enc_codepoint_len(s, e, &len1, enc) == c) last = s;
-	    s += len1;
-	}
-	return last - p;
+        if (c == '.') return l0;
+        s = p;
+        e = p + l1;
+        last = e;
+        while (s < e) {
+            if (rb_enc_codepoint_len(s, e, &len1, enc) == c) last = s;
+            s += len1;
+        }
+        return last - p;
     }
     if (l1 < l2) return l1;
 
@@ -4240,7 +4240,7 @@ rmext(const char *p, long l0, long l1, const char *e, long l2, rb_encoding *enc)
 #define fncomp strncmp
 #endif
     if (fncomp(s, e, l2) == 0) {
-	return l1-l2;
+        return l1-l2;
     }
     return 0;
 }
@@ -4260,51 +4260,51 @@ ruby_enc_find_basename(const char *name, long *baselen, long *alllen, rb_encodin
     root = name;
 #endif
     while (isdirsep(*name))
-	name++;
+        name++;
     if (!*name) {
-	p = name - 1;
-	f = 1;
+        p = name - 1;
+        f = 1;
 #if defined DOSISH_DRIVE_LETTER || defined DOSISH_UNC
-	if (name != root) {
-	    /* has slashes */
-	}
+        if (name != root) {
+            /* has slashes */
+        }
 #ifdef DOSISH_DRIVE_LETTER
-	else if (*p == ':') {
-	    p++;
-	    f = 0;
-	}
+        else if (*p == ':') {
+            p++;
+            f = 0;
+        }
 #endif
 #ifdef DOSISH_UNC
-	else {
-	    p = "/";
-	}
+        else {
+            p = "/";
+        }
 #endif
 #endif
     }
     else {
-	if (!(p = strrdirsep(name, end, enc))) {
-	    p = name;
-	}
-	else {
-	    while (isdirsep(*p)) p++; /* skip last / */
-	}
+        if (!(p = strrdirsep(name, end, enc))) {
+            p = name;
+        }
+        else {
+            while (isdirsep(*p)) p++; /* skip last / */
+        }
 #if USE_NTFS
-	n = ntfs_tail(p, end, enc) - p;
+        n = ntfs_tail(p, end, enc) - p;
 #else
-	n = chompdirsep(p, end, enc) - p;
+        n = chompdirsep(p, end, enc) - p;
 #endif
-	for (q = p; q - p < n && *q == '.'; q++);
-	for (e = 0; q - p < n; Inc(q, end, enc)) {
-	    if (*q == '.') e = q;
-	}
-	if (e) f = e - p;
-	else f = n;
+        for (q = p; q - p < n && *q == '.'; q++);
+        for (e = 0; q - p < n; Inc(q, end, enc)) {
+            if (*q == '.') e = q;
+        }
+        if (e) f = e - p;
+        else f = n;
     }
 
     if (baselen)
-	*baselen = f;
+        *baselen = f;
     if (alllen)
-	*alllen = n;
+        *alllen = n;
     return p;
 }
 
@@ -4336,33 +4336,33 @@ rb_file_s_basename(int argc, VALUE *argv)
 
     fext = Qnil;
     if (rb_check_arity(argc, 1, 2) == 2) {
-	fext = argv[1];
-	StringValue(fext);
-	enc = check_path_encoding(fext);
+        fext = argv[1];
+        StringValue(fext);
+        enc = check_path_encoding(fext);
     }
     fname = argv[0];
     FilePathStringValue(fname);
     if (NIL_P(fext) || !(enc = rb_enc_compatible(fname, fext))) {
-	enc = rb_enc_get(fname);
-	fext = Qnil;
+        enc = rb_enc_get(fname);
+        fext = Qnil;
     }
     if ((n = RSTRING_LEN(fname)) == 0 || !*(name = RSTRING_PTR(fname)))
-	return rb_str_new_shared(fname);
+        return rb_str_new_shared(fname);
 
     p = ruby_enc_find_basename(name, &f, &n, enc);
     if (n >= 0) {
-	if (NIL_P(fext)) {
-	    f = n;
-	}
-	else {
-	    const char *fp;
-	    fp = StringValueCStr(fext);
-	    if (!(f = rmext(p, f, n, fp, RSTRING_LEN(fext), enc))) {
-		f = n;
-	    }
-	    RB_GC_GUARD(fext);
-	}
-	if (f == RSTRING_LEN(fname)) return rb_str_new_shared(fname);
+        if (NIL_P(fext)) {
+            f = n;
+        }
+        else {
+            const char *fp;
+            fp = StringValueCStr(fext);
+            if (!(f = rmext(p, f, n, fp, RSTRING_LEN(fext), enc))) {
+                f = n;
+            }
+            RB_GC_GUARD(fext);
+        }
+        if (f == RSTRING_LEN(fname)) return rb_str_new_shared(fname);
     }
 
     basename = rb_str_new(p, f);
@@ -4404,29 +4404,29 @@ rb_file_dirname(VALUE fname)
     root = skiproot(name, end, enc);
 #ifdef DOSISH_UNC
     if (root > name + 1 && isdirsep(*name))
-	root = skipprefix(name = root - 2, end, enc);
+        root = skipprefix(name = root - 2, end, enc);
 #else
     if (root > name + 1)
-	name = root - 1;
+        name = root - 1;
 #endif
     p = strrdirsep(root, end, enc);
     if (!p) {
-	p = root;
+        p = root;
     }
     if (p == name)
-	return rb_usascii_str_new2(".");
+        return rb_usascii_str_new2(".");
 #ifdef DOSISH_DRIVE_LETTER
     if (has_drive_letter(name) && isdirsep(*(name + 2))) {
-	const char *top = skiproot(name + 2, end, enc);
-	dirname = rb_str_new(name, 3);
-	rb_str_cat(dirname, top, p - top);
+        const char *top = skiproot(name + 2, end, enc);
+        dirname = rb_str_new(name, 3);
+        rb_str_cat(dirname, top, p - top);
     }
     else
 #endif
     dirname = rb_str_new(name, p - name);
 #ifdef DOSISH_DRIVE_LETTER
     if (has_drive_letter(name) && root == name + 2 && p - name == 2)
-	rb_str_cat(dirname, ".", 1);
+        rb_str_cat(dirname, ".", 1);
 #endif
     rb_enc_copy(dirname, fname);
     OBJ_INFECT(dirname, fname);
@@ -4450,50 +4450,50 @@ ruby_enc_find_extname(const char *name, long *len, rb_encoding *enc)
 {
     const char *p, *e, *end = name + (len ? *len : (long)strlen(name));
 
-    p = strrdirsep(name, end, enc);	/* get the last path component */
+    p = strrdirsep(name, end, enc);        /* get the last path component */
     if (!p)
-	p = name;
+        p = name;
     else
-	do name = ++p; while (isdirsep(*p));
+        do name = ++p; while (isdirsep(*p));
 
     e = 0;
     while (*p && *p == '.') p++;
     while (*p) {
-	if (*p == '.' || istrailinggarbage(*p)) {
+        if (*p == '.' || istrailinggarbage(*p)) {
 #if USE_NTFS
-	    const char *last = p++, *dot = last;
-	    while (istrailinggarbage(*p)) {
-		if (*p == '.') dot = p;
-		p++;
-	    }
-	    if (!*p || isADS(*p)) {
-		p = last;
-		break;
-	    }
-	    if (*last == '.' || dot > last) e = dot;
-	    continue;
+            const char *last = p++, *dot = last;
+            while (istrailinggarbage(*p)) {
+                if (*p == '.') dot = p;
+                p++;
+            }
+            if (!*p || isADS(*p)) {
+                p = last;
+                break;
+            }
+            if (*last == '.' || dot > last) e = dot;
+            continue;
 #else
-	    e = p;	  /* get the last dot of the last component */
+            e = p;          /* get the last dot of the last component */
 #endif
-	}
+        }
 #if USE_NTFS
-	else if (isADS(*p)) {
-	    break;
-	}
+        else if (isADS(*p)) {
+            break;
+        }
 #endif
-	else if (isdirsep(*p))
-	    break;
-	Inc(p, end, enc);
+        else if (isdirsep(*p))
+            break;
+        Inc(p, end, enc);
     }
 
     if (len) {
-	/* no dot, or the only dot is first or end? */
-	if (!e || e == name)
-	    *len = 0;
-	else if (e+1 == p)
-	    *len = 1;
-	else
-	    *len = p - e;
+        /* no dot, or the only dot is first or end? */
+        if (!e || e == name)
+            *len = 0;
+        else if (e+1 == p)
+            *len = 1;
+        else
+            *len = p - e;
     }
     return e;
 }
@@ -4533,7 +4533,7 @@ rb_file_s_extname(VALUE klass, VALUE fname)
     len = RSTRING_LEN(fname);
     e = ruby_enc_find_extname(name, &len, rb_enc_get(fname));
     if (len <= 1)
-	return rb_str_new(0, 0);
+        return rb_str_new(0, 0);
     extname = rb_str_subseq(fname, e - name, len); /* keep the dot, too! */
     OBJ_INFECT(extname, fname);
     return extname;
@@ -4570,7 +4570,7 @@ rb_file_s_path(VALUE klass, VALUE fname)
 static VALUE
 rb_file_s_split(VALUE klass, VALUE path)
 {
-    FilePathStringValue(path);		/* get rid of converting twice */
+    FilePathStringValue(path);                /* get rid of converting twice */
     return rb_assoc_new(rb_file_dirname(path), rb_file_s_basename(1,&path));
 }
 
@@ -4596,54 +4596,54 @@ rb_file_join(VALUE ary)
 
     len = 1;
     for (i=0; i<RARRAY_LEN(ary); i++) {
-	tmp = RARRAY_AREF(ary, i);
-	if (RB_TYPE_P(tmp, T_STRING)) {
-	    check_path_encoding(tmp);
-	    len += RSTRING_LEN(tmp);
-	}
-	else {
-	    len += 10;
-	}
+        tmp = RARRAY_AREF(ary, i);
+        if (RB_TYPE_P(tmp, T_STRING)) {
+            check_path_encoding(tmp);
+            len += RSTRING_LEN(tmp);
+        }
+        else {
+            len += 10;
+        }
     }
     len += RARRAY_LEN(ary) - 1;
     result = rb_str_buf_new(len);
     RBASIC_CLEAR_CLASS(result);
     OBJ_INFECT(result, ary);
     for (i=0; i<RARRAY_LEN(ary); i++) {
-	tmp = RARRAY_AREF(ary, i);
-	switch (OBJ_BUILTIN_TYPE(tmp)) {
-	  case T_STRING:
-	    if (!checked) check_path_encoding(tmp);
-	    StringValueCStr(tmp);
-	    break;
-	  case T_ARRAY:
-	    if (ary == tmp) {
-		rb_raise(rb_eArgError, "recursive array");
-	    }
-	    else {
-		tmp = rb_exec_recursive(file_inspect_join, ary, tmp);
-	    }
-	    break;
-	  default:
-	    FilePathStringValue(tmp);
-	    checked = FALSE;
-	}
-	RSTRING_GETMEM(result, name, len);
-	if (i == 0) {
-	    rb_enc_copy(result, tmp);
-	}
-	else {
-	    tail = chompdirsep(name, name + len, rb_enc_get(result));
-	    if (RSTRING_PTR(tmp) && isdirsep(RSTRING_PTR(tmp)[0])) {
-		rb_str_set_len(result, tail - name);
-	    }
-	    else if (!*tail) {
-		rb_str_cat(result, "/", 1);
-	    }
-	}
-	enc = rb_enc_check(result, tmp);
-	rb_str_buf_append(result, tmp);
-	rb_enc_associate(result, enc);
+        tmp = RARRAY_AREF(ary, i);
+        switch (OBJ_BUILTIN_TYPE(tmp)) {
+          case T_STRING:
+            if (!checked) check_path_encoding(tmp);
+            StringValueCStr(tmp);
+            break;
+          case T_ARRAY:
+            if (ary == tmp) {
+                rb_raise(rb_eArgError, "recursive array");
+            }
+            else {
+                tmp = rb_exec_recursive(file_inspect_join, ary, tmp);
+            }
+            break;
+          default:
+            FilePathStringValue(tmp);
+            checked = FALSE;
+        }
+        RSTRING_GETMEM(result, name, len);
+        if (i == 0) {
+            rb_enc_copy(result, tmp);
+        }
+        else {
+            tail = chompdirsep(name, name + len, rb_enc_get(result));
+            if (RSTRING_PTR(tmp) && isdirsep(RSTRING_PTR(tmp)[0])) {
+                rb_str_set_len(result, tail - name);
+            }
+            else if (!*tail) {
+                rb_str_cat(result, "/", 1);
+            }
+        }
+        enc = rb_enc_check(result, tmp);
+        rb_str_buf_append(result, tmp);
+        rb_enc_associate(result, enc);
     }
     RBASIC_SET_CLASS_RAW(result, rb_cString);
 
@@ -4687,19 +4687,19 @@ nogvl_truncate(void *ptr)
     return (void *)(VALUE)truncate(ta->path, ta->pos);
 #else /* defined(HAVE_CHSIZE) */
     {
-	int tmpfd = rb_cloexec_open(ta->path, 0, 0);
+        int tmpfd = rb_cloexec_open(ta->path, 0, 0);
 
-	if (tmpfd < 0)
-	    return (void *)-1;
-	rb_update_max_fd(tmpfd);
-	if (chsize(tmpfd, ta->pos) < 0) {
-	    int e = errno;
-	    close(tmpfd);
-	    errno = e;
-	    return (void *)-1;
-	}
-	close(tmpfd);
-	return 0;
+        if (tmpfd < 0)
+            return (void *)-1;
+        rb_update_max_fd(tmpfd);
+        if (chsize(tmpfd, ta->pos) < 0) {
+            int e = errno;
+            close(tmpfd);
+            errno = e;
+            return (void *)-1;
+        }
+        close(tmpfd);
+        return 0;
     }
 #endif
 }
@@ -4731,9 +4731,9 @@ rb_file_s_truncate(VALUE klass, VALUE path, VALUE len)
     ta.path = StringValueCStr(path);
 
     r = (int)(VALUE)rb_thread_call_without_gvl(nogvl_truncate, &ta,
-						RUBY_UBF_IO, NULL);
+                                                RUBY_UBF_IO, NULL);
     if (r < 0)
-	rb_sys_fail_path(path);
+        rb_sys_fail_path(path);
     return INT2FIX(0);
 #undef NUM2POS
 }
@@ -4788,12 +4788,12 @@ rb_file_truncate(VALUE obj, VALUE len)
     fa.pos = NUM2POS(len);
     GetOpenFile(obj, fptr);
     if (!(fptr->mode & FMODE_WRITABLE)) {
-	rb_raise(rb_eIOError, "not opened for writing");
+        rb_raise(rb_eIOError, "not opened for writing");
     }
     rb_io_flush_raw(obj, 0);
     fa.fd = fptr->fd;
     if ((int)rb_thread_io_blocking_region(nogvl_ftruncate, &fa, fa.fd) < 0) {
-	rb_sys_fail_path(fptr->pathv);
+        rb_sys_fail_path(fptr->pathv);
     }
     return INT2FIX(0);
 #undef NUM2POS
@@ -4829,8 +4829,8 @@ rb_thread_flock(void *data)
 
 #ifdef __CYGWIN__
     if (GetLastError() == ERROR_NOT_LOCKED) {
-	ret = 0;
-	errno = old_errno;
+        ret = 0;
+        errno = old_errno;
     }
 #endif
     return (VALUE)ret;
@@ -4892,33 +4892,33 @@ rb_file_flock(VALUE obj, VALUE operation)
     op[0] = fptr->fd;
 
     if (fptr->mode & FMODE_WRITABLE) {
-	rb_io_flush_raw(obj, 0);
+        rb_io_flush_raw(obj, 0);
     }
     while ((int)rb_thread_io_blocking_region(rb_thread_flock, op, fptr->fd) < 0) {
-	int e = errno;
-	switch (e) {
-	  case EAGAIN:
-	  case EACCES:
+        int e = errno;
+        switch (e) {
+          case EAGAIN:
+          case EACCES:
 #if defined(EWOULDBLOCK) && EWOULDBLOCK != EAGAIN
-	  case EWOULDBLOCK:
+          case EWOULDBLOCK:
 #endif
-	    if (op1 & LOCK_NB) return Qfalse;
+            if (op1 & LOCK_NB) return Qfalse;
 
-	    time.tv_sec = 0;
-	    time.tv_usec = 100 * 1000;	/* 0.1 sec */
-	    rb_thread_wait_for(time);
-	    rb_io_check_closed(fptr);
-	    continue;
+            time.tv_sec = 0;
+            time.tv_usec = 100 * 1000;        /* 0.1 sec */
+            rb_thread_wait_for(time);
+            rb_io_check_closed(fptr);
+            continue;
 
-	  case EINTR:
+          case EINTR:
 #if defined(ERESTART)
-	  case ERESTART:
+          case ERESTART:
 #endif
-	    break;
+            break;
 
-	  default:
-	    rb_syserr_fail_path(e, fptr->pathv);
-	}
+          default:
+            rb_syserr_fail_path(e, fptr->pathv);
+        }
     }
     return INT2FIX(0);
 }
@@ -4931,9 +4931,9 @@ test_check(int n, int argc, VALUE *argv)
     n+=1;
     rb_check_arity(argc, n, n);
     for (i=1; i<n; i++) {
-	if (!RB_TYPE_P(argv[i], T_FILE)) {
-	    FilePathValue(argv[i]);
-	}
+        if (!RB_TYPE_P(argv[i], T_FILE)) {
+            FilePathValue(argv[i]);
+        }
     }
 }
 
@@ -5006,137 +5006,137 @@ rb_f_test(int argc, VALUE *argv)
     cmd = NUM2CHR(argv[0]);
     if (cmd == 0) {
       unknown:
-	/* unknown command */
-	if (ISPRINT(cmd)) {
-	    rb_raise(rb_eArgError, "unknown command '%s%c'", cmd == '\'' || cmd == '\\' ? "\\" : "", cmd);
-	}
-	else {
-	    rb_raise(rb_eArgError, "unknown command \"\\x%02X\"", cmd);
-	}
+        /* unknown command */
+        if (ISPRINT(cmd)) {
+            rb_raise(rb_eArgError, "unknown command '%s%c'", cmd == '\'' || cmd == '\\' ? "\\" : "", cmd);
+        }
+        else {
+            rb_raise(rb_eArgError, "unknown command \"\\x%02X\"", cmd);
+        }
     }
     if (strchr("bcdefgGkloOprRsSuwWxXz", cmd)) {
-	CHECK(1);
-	switch (cmd) {
-	  case 'b':
-	    return rb_file_blockdev_p(0, argv[1]);
+        CHECK(1);
+        switch (cmd) {
+          case 'b':
+            return rb_file_blockdev_p(0, argv[1]);
 
-	  case 'c':
-	    return rb_file_chardev_p(0, argv[1]);
+          case 'c':
+            return rb_file_chardev_p(0, argv[1]);
 
-	  case 'd':
-	    return rb_file_directory_p(0, argv[1]);
+          case 'd':
+            return rb_file_directory_p(0, argv[1]);
 
-	  case 'e':
-	    return rb_file_exist_p(0, argv[1]);
+          case 'e':
+            return rb_file_exist_p(0, argv[1]);
 
-	  case 'f':
-	    return rb_file_file_p(0, argv[1]);
+          case 'f':
+            return rb_file_file_p(0, argv[1]);
 
-	  case 'g':
-	    return rb_file_sgid_p(0, argv[1]);
+          case 'g':
+            return rb_file_sgid_p(0, argv[1]);
 
-	  case 'G':
-	    return rb_file_grpowned_p(0, argv[1]);
+          case 'G':
+            return rb_file_grpowned_p(0, argv[1]);
 
-	  case 'k':
-	    return rb_file_sticky_p(0, argv[1]);
+          case 'k':
+            return rb_file_sticky_p(0, argv[1]);
 
-	  case 'l':
-	    return rb_file_symlink_p(0, argv[1]);
+          case 'l':
+            return rb_file_symlink_p(0, argv[1]);
 
-	  case 'o':
-	    return rb_file_owned_p(0, argv[1]);
+          case 'o':
+            return rb_file_owned_p(0, argv[1]);
 
-	  case 'O':
-	    return rb_file_rowned_p(0, argv[1]);
+          case 'O':
+            return rb_file_rowned_p(0, argv[1]);
 
-	  case 'p':
-	    return rb_file_pipe_p(0, argv[1]);
+          case 'p':
+            return rb_file_pipe_p(0, argv[1]);
 
-	  case 'r':
-	    return rb_file_readable_p(0, argv[1]);
+          case 'r':
+            return rb_file_readable_p(0, argv[1]);
 
-	  case 'R':
-	    return rb_file_readable_real_p(0, argv[1]);
+          case 'R':
+            return rb_file_readable_real_p(0, argv[1]);
 
-	  case 's':
-	    return rb_file_size_p(0, argv[1]);
+          case 's':
+            return rb_file_size_p(0, argv[1]);
 
-	  case 'S':
-	    return rb_file_socket_p(0, argv[1]);
+          case 'S':
+            return rb_file_socket_p(0, argv[1]);
 
-	  case 'u':
-	    return rb_file_suid_p(0, argv[1]);
+          case 'u':
+            return rb_file_suid_p(0, argv[1]);
 
-	  case 'w':
-	    return rb_file_writable_p(0, argv[1]);
+          case 'w':
+            return rb_file_writable_p(0, argv[1]);
 
-	  case 'W':
-	    return rb_file_writable_real_p(0, argv[1]);
+          case 'W':
+            return rb_file_writable_real_p(0, argv[1]);
 
-	  case 'x':
-	    return rb_file_executable_p(0, argv[1]);
+          case 'x':
+            return rb_file_executable_p(0, argv[1]);
 
-	  case 'X':
-	    return rb_file_executable_real_p(0, argv[1]);
+          case 'X':
+            return rb_file_executable_real_p(0, argv[1]);
 
-	  case 'z':
-	    return rb_file_zero_p(0, argv[1]);
-	}
+          case 'z':
+            return rb_file_zero_p(0, argv[1]);
+        }
     }
 
     if (strchr("MAC", cmd)) {
-	struct stat st;
-	VALUE fname = argv[1];
+        struct stat st;
+        VALUE fname = argv[1];
 
-	CHECK(1);
-	if (rb_stat(fname, &st) == -1) {
-	    int e = errno;
-	    FilePathValue(fname);
-	    rb_syserr_fail_path(e, fname);
-	}
+        CHECK(1);
+        if (rb_stat(fname, &st) == -1) {
+            int e = errno;
+            FilePathValue(fname);
+            rb_syserr_fail_path(e, fname);
+        }
 
-	switch (cmd) {
-	  case 'A':
-	    return stat_atime(&st);
-	  case 'M':
-	    return stat_mtime(&st);
-	  case 'C':
-	    return stat_ctime(&st);
-	}
+        switch (cmd) {
+          case 'A':
+            return stat_atime(&st);
+          case 'M':
+            return stat_mtime(&st);
+          case 'C':
+            return stat_ctime(&st);
+        }
     }
 
     if (cmd == '-') {
-	CHECK(2);
-	return rb_file_identical_p(0, argv[1], argv[2]);
+        CHECK(2);
+        return rb_file_identical_p(0, argv[1], argv[2]);
     }
 
     if (strchr("=<>", cmd)) {
-	struct stat st1, st2;
+        struct stat st1, st2;
         struct timespec t1, t2;
 
-	CHECK(2);
-	if (rb_stat(argv[1], &st1) < 0) return Qfalse;
-	if (rb_stat(argv[2], &st2) < 0) return Qfalse;
+        CHECK(2);
+        if (rb_stat(argv[1], &st1) < 0) return Qfalse;
+        if (rb_stat(argv[2], &st2) < 0) return Qfalse;
 
         t1 = stat_mtimespec(&st1);
         t2 = stat_mtimespec(&st2);
 
-	switch (cmd) {
-	  case '=':
-	    if (t1.tv_sec == t2.tv_sec && t1.tv_nsec == t2.tv_nsec) return Qtrue;
-	    return Qfalse;
+        switch (cmd) {
+          case '=':
+            if (t1.tv_sec == t2.tv_sec && t1.tv_nsec == t2.tv_nsec) return Qtrue;
+            return Qfalse;
 
-	  case '>':
-	    if (t1.tv_sec > t2.tv_sec) return Qtrue;
-	    if (t1.tv_sec == t2.tv_sec && t1.tv_nsec > t2.tv_nsec) return Qtrue;
-	    return Qfalse;
+          case '>':
+            if (t1.tv_sec > t2.tv_sec) return Qtrue;
+            if (t1.tv_sec == t2.tv_sec && t1.tv_nsec > t2.tv_nsec) return Qtrue;
+            return Qfalse;
 
-	  case '<':
-	    if (t1.tv_sec < t2.tv_sec) return Qtrue;
-	    if (t1.tv_sec == t2.tv_sec && t1.tv_nsec < t2.tv_nsec) return Qtrue;
-	    return Qfalse;
-	}
+          case '<':
+            if (t1.tv_sec < t2.tv_sec) return Qtrue;
+            if (t1.tv_sec == t2.tv_sec && t1.tv_nsec < t2.tv_nsec) return Qtrue;
+            return Qfalse;
+        }
     }
     goto unknown;
 }
@@ -5179,11 +5179,11 @@ rb_stat_init(VALUE obj, VALUE fname)
     FilePathValue(fname);
     fname = rb_str_encode_ospath(fname);
     if (STAT(StringValueCStr(fname), &st) == -1) {
-	rb_sys_fail_path(fname);
+        rb_sys_fail_path(fname);
     }
     if (DATA_PTR(obj)) {
-	xfree(DATA_PTR(obj));
-	DATA_PTR(obj) = NULL;
+        xfree(DATA_PTR(obj));
+        DATA_PTR(obj) = NULL;
     }
     nst = ALLOC(struct stat);
     *nst = st;
@@ -5200,13 +5200,13 @@ rb_stat_init_copy(VALUE copy, VALUE orig)
 
     if (!OBJ_INIT_COPY(copy, orig)) return copy;
     if (DATA_PTR(copy)) {
-	xfree(DATA_PTR(copy));
-	DATA_PTR(copy) = 0;
+        xfree(DATA_PTR(copy));
+        DATA_PTR(copy) = 0;
     }
     if (DATA_PTR(orig)) {
-	nst = ALLOC(struct stat);
-	*nst = *(struct stat*)DATA_PTR(orig);
-	DATA_PTR(copy) = nst;
+        nst = ALLOC(struct stat);
+        *nst = *(struct stat*)DATA_PTR(orig);
+        DATA_PTR(copy) = nst;
     }
 
     return copy;
@@ -5427,11 +5427,11 @@ rb_stat_r(VALUE obj)
 #endif
 #ifdef S_IRUSR
     if (rb_stat_owned(obj))
-	return st->st_mode & S_IRUSR ? Qtrue : Qfalse;
+        return st->st_mode & S_IRUSR ? Qtrue : Qfalse;
 #endif
 #ifdef S_IRGRP
     if (rb_stat_grpowned(obj))
-	return st->st_mode & S_IRGRP ? Qtrue : Qfalse;
+        return st->st_mode & S_IRGRP ? Qtrue : Qfalse;
 #endif
 #ifdef S_IROTH
     if (!(st->st_mode & S_IROTH)) return Qfalse;
@@ -5460,11 +5460,11 @@ rb_stat_R(VALUE obj)
 #endif
 #ifdef S_IRUSR
     if (rb_stat_rowned(obj))
-	return st->st_mode & S_IRUSR ? Qtrue : Qfalse;
+        return st->st_mode & S_IRUSR ? Qtrue : Qfalse;
 #endif
 #ifdef S_IRGRP
     if (rb_group_member(get_stat(obj)->st_gid))
-	return st->st_mode & S_IRGRP ? Qtrue : Qfalse;
+        return st->st_mode & S_IRGRP ? Qtrue : Qfalse;
 #endif
 #ifdef S_IROTH
     if (!(st->st_mode & S_IROTH)) return Qfalse;
@@ -5482,7 +5482,7 @@ rb_stat_R(VALUE obj)
  * dependent; on Unix systems, see <code>stat(2)</code>.
  *
  *    m = File.stat("/etc/passwd").world_readable?  #=> 420
- *    sprintf("%o", m)				    #=> "644"
+ *    sprintf("%o", m)                                    #=> "644"
  */
 
 static VALUE
@@ -5491,10 +5491,10 @@ rb_stat_wr(VALUE obj)
 #ifdef S_IROTH
     struct stat *st = get_stat(obj);
     if ((st->st_mode & (S_IROTH)) == S_IROTH) {
-	return UINT2NUM(st->st_mode & (S_IRUGO|S_IWUGO|S_IXUGO));
+        return UINT2NUM(st->st_mode & (S_IRUGO|S_IWUGO|S_IXUGO));
     }
     else {
-	return Qnil;
+        return Qnil;
     }
 #endif
 }
@@ -5520,11 +5520,11 @@ rb_stat_w(VALUE obj)
 #endif
 #ifdef S_IWUSR
     if (rb_stat_owned(obj))
-	return st->st_mode & S_IWUSR ? Qtrue : Qfalse;
+        return st->st_mode & S_IWUSR ? Qtrue : Qfalse;
 #endif
 #ifdef S_IWGRP
     if (rb_stat_grpowned(obj))
-	return st->st_mode & S_IWGRP ? Qtrue : Qfalse;
+        return st->st_mode & S_IWGRP ? Qtrue : Qfalse;
 #endif
 #ifdef S_IWOTH
     if (!(st->st_mode & S_IWOTH)) return Qfalse;
@@ -5553,11 +5553,11 @@ rb_stat_W(VALUE obj)
 #endif
 #ifdef S_IWUSR
     if (rb_stat_rowned(obj))
-	return st->st_mode & S_IWUSR ? Qtrue : Qfalse;
+        return st->st_mode & S_IWUSR ? Qtrue : Qfalse;
 #endif
 #ifdef S_IWGRP
     if (rb_group_member(get_stat(obj)->st_gid))
-	return st->st_mode & S_IWGRP ? Qtrue : Qfalse;
+        return st->st_mode & S_IWGRP ? Qtrue : Qfalse;
 #endif
 #ifdef S_IWOTH
     if (!(st->st_mode & S_IWOTH)) return Qfalse;
@@ -5574,8 +5574,8 @@ rb_stat_W(VALUE obj)
  * <code>nil</code> otherwise. The meaning of the bits is platform
  * dependent; on Unix systems, see <code>stat(2)</code>.
  *
- *    m = File.stat("/tmp").world_writable?	    #=> 511
- *    sprintf("%o", m)				    #=> "777"
+ *    m = File.stat("/tmp").world_writable?            #=> 511
+ *    sprintf("%o", m)                                    #=> "777"
  */
 
 static VALUE
@@ -5584,10 +5584,10 @@ rb_stat_ww(VALUE obj)
 #ifdef S_IROTH
     struct stat *st = get_stat(obj);
     if ((st->st_mode & (S_IWOTH)) == S_IWOTH) {
-	return UINT2NUM(st->st_mode & (S_IRUGO|S_IWUGO|S_IXUGO));
+        return UINT2NUM(st->st_mode & (S_IRUGO|S_IWUGO|S_IXUGO));
     }
     else {
-	return Qnil;
+        return Qnil;
     }
 #endif
 }
@@ -5612,16 +5612,16 @@ rb_stat_x(VALUE obj)
 
 #ifdef USE_GETEUID
     if (geteuid() == 0) {
-	return st->st_mode & S_IXUGO ? Qtrue : Qfalse;
+        return st->st_mode & S_IXUGO ? Qtrue : Qfalse;
     }
 #endif
 #ifdef S_IXUSR
     if (rb_stat_owned(obj))
-	return st->st_mode & S_IXUSR ? Qtrue : Qfalse;
+        return st->st_mode & S_IXUSR ? Qtrue : Qfalse;
 #endif
 #ifdef S_IXGRP
     if (rb_stat_grpowned(obj))
-	return st->st_mode & S_IXGRP ? Qtrue : Qfalse;
+        return st->st_mode & S_IXGRP ? Qtrue : Qfalse;
 #endif
 #ifdef S_IXOTH
     if (!(st->st_mode & S_IXOTH)) return Qfalse;
@@ -5644,16 +5644,16 @@ rb_stat_X(VALUE obj)
 
 #ifdef USE_GETEUID
     if (getuid() == 0) {
-	return st->st_mode & S_IXUGO ? Qtrue : Qfalse;
+        return st->st_mode & S_IXUGO ? Qtrue : Qfalse;
     }
 #endif
 #ifdef S_IXUSR
     if (rb_stat_rowned(obj))
-	return st->st_mode & S_IXUSR ? Qtrue : Qfalse;
+        return st->st_mode & S_IXUSR ? Qtrue : Qfalse;
 #endif
 #ifdef S_IXGRP
     if (rb_group_member(get_stat(obj)->st_gid))
-	return st->st_mode & S_IXGRP ? Qtrue : Qfalse;
+        return st->st_mode & S_IXGRP ? Qtrue : Qfalse;
 #endif
 #ifdef S_IXOTH
     if (!(st->st_mode & S_IXOTH)) return Qfalse;
@@ -5816,14 +5816,14 @@ rb_file_s_mkfifo(int argc, VALUE *argv)
     ma.mode = 0666;
     rb_check_arity(argc, 1, 2);
     if (argc > 1) {
-	ma.mode = NUM2MODET(argv[1]);
+        ma.mode = NUM2MODET(argv[1]);
     }
     path = argv[0];
     FilePathValue(path);
     path = rb_str_encode_ospath(path);
     ma.path = RSTRING_PTR(path);
     if (rb_thread_call_without_gvl(nogvl_mkfifo, &ma, RUBY_UBF_IO, 0)) {
-	rb_sys_fail_path(path);
+        rb_sys_fail_path(path);
     }
     return INT2FIX(0);
 }
@@ -5873,16 +5873,16 @@ path_check_0(VALUE path, int execpath)
     char *p = 0, *s;
 
     if (!rb_is_absolute_path(p0)) {
-	char *buf = ruby_getcwd();
-	VALUE newpath;
+        char *buf = ruby_getcwd();
+        VALUE newpath;
 
-	newpath = rb_str_new2(buf);
-	xfree(buf);
+        newpath = rb_str_new2(buf);
+        xfree(buf);
 
-	rb_str_cat2(newpath, "/");
-	rb_str_cat2(newpath, p0);
-	path = newpath;
-	p0 = RSTRING_PTR(path);
+        rb_str_cat2(newpath, "/");
+        rb_str_cat2(newpath, p0);
+        path = newpath;
+        p0 = RSTRING_PTR(path);
     }
     e0 = p0 + RSTRING_LEN(path);
     enc = rb_enc_get(path);
@@ -5890,24 +5890,24 @@ path_check_0(VALUE path, int execpath)
 #ifndef S_IWOTH
 # define S_IWOTH 002
 #endif
-	if (STAT(p0, &st) == 0 && S_ISDIR(st.st_mode) && (st.st_mode & S_IWOTH)
+        if (STAT(p0, &st) == 0 && S_ISDIR(st.st_mode) && (st.st_mode & S_IWOTH)
 #ifdef S_ISVTX
-	    && !(p && execpath && (st.st_mode & S_ISVTX))
+            && !(p && execpath && (st.st_mode & S_ISVTX))
 #endif
-	    && !access(p0, W_OK)) {
-	    rb_enc_warn(enc, "Insecure world writable dir %s in %sPATH, mode 0%"
-			PRI_MODET_PREFIX"o",
-			p0, (execpath ? "" : "LOAD_"), st.st_mode);
-	    if (p) *p = '/';
-	    RB_GC_GUARD(path);
-	    return 0;
-	}
-	s = strrdirsep(p0, e0, enc);
-	if (p) *p = '/';
-	if (!s || s == p0) return 1;
-	p = s;
-	e0 = p;
-	*p = '\0';
+            && !access(p0, W_OK)) {
+            rb_enc_warn(enc, "Insecure world writable dir %s in %sPATH, mode 0%"
+                        PRI_MODET_PREFIX"o",
+                        p0, (execpath ? "" : "LOAD_"), st.st_mode);
+            if (p) *p = '/';
+            RB_GC_GUARD(path);
+            return 0;
+        }
+        s = strrdirsep(p0, e0, enc);
+        if (p) *p = '/';
+        if (!s || s == p0) return 1;
+        p = s;
+        e0 = p;
+        *p = '\0';
     }
 }
 #endif
@@ -5933,13 +5933,13 @@ rb_path_check(const char *path)
     if (!p) p = pend;
 
     for (;;) {
-	if (!path_check_0(rb_str_new(p0, p - p0), TRUE)) {
-	    return 0;		/* not safe */
-	}
-	p0 = p + 1;
-	if (p0 > pend) break;
-	p = strchr(p0, sep);
-	if (!p) p = pend;
+        if (!path_check_0(rb_str_new(p0, p - p0), TRUE)) {
+            return 0;                /* not safe */
+        }
+        p0 = p + 1;
+        if (p0 > pend) break;
+        p = strchr(p0, sep);
+        if (!p) p = pend;
     }
 #endif
     return 1;
@@ -5954,18 +5954,18 @@ ruby_is_fd_loadable(int fd)
     struct stat st;
 
     if (fstat(fd, &st) < 0)
-	return 0;
+        return 0;
 
     if (S_ISREG(st.st_mode))
-	return 1;
+        return 1;
 
     if (S_ISFIFO(st.st_mode) || S_ISCHR(st.st_mode))
-	return -1;
+        return -1;
 
     if (S_ISDIR(st.st_mode))
-	errno = EISDIR;
+        errno = EISDIR;
     else
-	errno = ENXIO;
+        errno = ENXIO;
 
     return 0;
 #endif
@@ -5982,11 +5982,11 @@ rb_file_load_ok(const char *path)
     */
     int mode = (O_RDONLY |
 #if defined O_NONBLOCK
-		O_NONBLOCK |
+                O_NONBLOCK |
 #elif defined O_NDELAY
-		O_NDELAY |
+                O_NDELAY |
 #endif
-		0);
+                0);
     int fd = rb_cloexec_open(path, mode, 0);
     if (fd == -1) return 0;
     rb_update_max_fd(fd);
@@ -6030,30 +6030,30 @@ rb_find_file_ext_safe(VALUE *filep, const char *const *ext, int safe_level)
     if (!ext[0]) return 0;
 
     if (f[0] == '~') {
-	fname = file_expand_path_1(fname);
-	if (safe_level >= 1 && OBJ_TAINTED(fname)) {
-	    rb_raise(rb_eSecurityError, "loading from unsafe file %s", f);
-	}
-	f = RSTRING_PTR(fname);
-	*filep = fname;
-	expanded = 1;
+        fname = file_expand_path_1(fname);
+        if (safe_level >= 1 && OBJ_TAINTED(fname)) {
+            rb_raise(rb_eSecurityError, "loading from unsafe file %s", f);
+        }
+        f = RSTRING_PTR(fname);
+        *filep = fname;
+        expanded = 1;
     }
 
     if (expanded || rb_is_absolute_path(f) || is_explicit_relative(f)) {
-	if (safe_level >= 1 && !fpath_check(fname)) {
-	    rb_raise(rb_eSecurityError, "loading from unsafe path %s", f);
-	}
-	if (!expanded) fname = file_expand_path_1(fname);
-	fnlen = RSTRING_LEN(fname);
-	for (i=0; ext[i]; i++) {
-	    rb_str_cat2(fname, ext[i]);
-	    if (rb_file_load_ok(RSTRING_PTR(fname))) {
-		*filep = copy_path_class(fname, *filep);
-		return (int)(i+1);
-	    }
-	    rb_str_set_len(fname, fnlen);
-	}
-	return 0;
+        if (safe_level >= 1 && !fpath_check(fname)) {
+            rb_raise(rb_eSecurityError, "loading from unsafe path %s", f);
+        }
+        if (!expanded) fname = file_expand_path_1(fname);
+        fnlen = RSTRING_LEN(fname);
+        for (i=0; ext[i]; i++) {
+            rb_str_cat2(fname, ext[i]);
+            if (rb_file_load_ok(RSTRING_PTR(fname))) {
+                *filep = copy_path_class(fname, *filep);
+                return (int)(i+1);
+            }
+            rb_str_set_len(fname, fnlen);
+        }
+        return 0;
     }
 
     RB_GC_GUARD(load_path) = rb_get_expanded_load_path();
@@ -6065,20 +6065,20 @@ rb_find_file_ext_safe(VALUE *filep, const char *const *ext, int safe_level)
     tmp = rb_str_tmp_new(MAXPATHLEN + 2);
     rb_enc_associate_index(tmp, rb_usascii_encindex());
     for (j=0; ext[j]; j++) {
-	rb_str_cat2(fname, ext[j]);
-	for (i = 0; i < RARRAY_LEN(load_path); i++) {
-	    VALUE str = RARRAY_AREF(load_path, i);
+        rb_str_cat2(fname, ext[j]);
+        for (i = 0; i < RARRAY_LEN(load_path); i++) {
+            VALUE str = RARRAY_AREF(load_path, i);
 
-	    RB_GC_GUARD(str) = rb_get_path_check(str, safe_level);
-	    if (RSTRING_LEN(str) == 0) continue;
-	    rb_file_expand_path_internal(fname, str, 0, 0, tmp);
-	    if (rb_file_load_ok(RSTRING_PTR(tmp))) {
-		*filep = copy_path_class(tmp, *filep);
-		return (int)(j+1);
-	    }
-	    FL_UNSET(tmp, FL_TAINT);
-	}
-	rb_str_set_len(fname, fnlen);
+            RB_GC_GUARD(str) = rb_get_path_check(str, safe_level);
+            if (RSTRING_LEN(str) == 0) continue;
+            rb_file_expand_path_internal(fname, str, 0, 0, tmp);
+            if (rb_file_load_ok(RSTRING_PTR(tmp))) {
+                *filep = copy_path_class(tmp, *filep);
+                return (int)(j+1);
+            }
+            FL_UNSET(tmp, FL_TAINT);
+        }
+        rb_str_set_len(fname, fnlen);
     }
     rb_str_resize(tmp, 0);
     RB_GC_GUARD(load_path);
@@ -6099,50 +6099,50 @@ rb_find_file_safe(VALUE path, int safe_level)
     int expanded = 0;
 
     if (f[0] == '~') {
-	tmp = file_expand_path_1(path);
-	if (safe_level >= 1 && OBJ_TAINTED(tmp)) {
-	    rb_raise(rb_eSecurityError, "loading from unsafe file %"PRIsVALUE, tmp);
-	}
-	path = copy_path_class(tmp, path);
-	f = RSTRING_PTR(path);
-	expanded = 1;
+        tmp = file_expand_path_1(path);
+        if (safe_level >= 1 && OBJ_TAINTED(tmp)) {
+            rb_raise(rb_eSecurityError, "loading from unsafe file %"PRIsVALUE, tmp);
+        }
+        path = copy_path_class(tmp, path);
+        f = RSTRING_PTR(path);
+        expanded = 1;
     }
 
     if (expanded || rb_is_absolute_path(f) || is_explicit_relative(f)) {
-	if (safe_level >= 1 && !fpath_check(path)) {
-	    rb_raise(rb_eSecurityError, "loading from unsafe path %"PRIsVALUE, path);
-	}
-	if (!rb_file_load_ok(f)) return 0;
-	if (!expanded)
-	    path = copy_path_class(file_expand_path_1(path), path);
-	return path;
+        if (safe_level >= 1 && !fpath_check(path)) {
+            rb_raise(rb_eSecurityError, "loading from unsafe path %"PRIsVALUE, path);
+        }
+        if (!rb_file_load_ok(f)) return 0;
+        if (!expanded)
+            path = copy_path_class(file_expand_path_1(path), path);
+        return path;
     }
 
     RB_GC_GUARD(load_path) = rb_get_expanded_load_path();
     if (load_path) {
-	long i;
+        long i;
 
-	tmp = rb_str_tmp_new(MAXPATHLEN + 2);
-	rb_enc_associate_index(tmp, rb_usascii_encindex());
-	for (i = 0; i < RARRAY_LEN(load_path); i++) {
-	    VALUE str = RARRAY_AREF(load_path, i);
-	    RB_GC_GUARD(str) = rb_get_path_check(str, safe_level);
-	    if (RSTRING_LEN(str) > 0) {
-		rb_file_expand_path_internal(path, str, 0, 0, tmp);
-		f = RSTRING_PTR(tmp);
-		if (rb_file_load_ok(f)) goto found;
-	    }
-	}
-	rb_str_resize(tmp, 0);
-	return 0;
+        tmp = rb_str_tmp_new(MAXPATHLEN + 2);
+        rb_enc_associate_index(tmp, rb_usascii_encindex());
+        for (i = 0; i < RARRAY_LEN(load_path); i++) {
+            VALUE str = RARRAY_AREF(load_path, i);
+            RB_GC_GUARD(str) = rb_get_path_check(str, safe_level);
+            if (RSTRING_LEN(str) > 0) {
+                rb_file_expand_path_internal(path, str, 0, 0, tmp);
+                f = RSTRING_PTR(tmp);
+                if (rb_file_load_ok(f)) goto found;
+            }
+        }
+        rb_str_resize(tmp, 0);
+        return 0;
     }
     else {
-	return 0;		/* no path, no load */
+        return 0;                /* no path, no load */
     }
 
   found:
     if (safe_level >= 1 && !fpath_check(tmp)) {
-	rb_raise(rb_eSecurityError, "loading from unsafe file %"PRIsVALUE, tmp);
+        rb_raise(rb_eSecurityError, "loading from unsafe file %"PRIsVALUE, tmp);
     }
 
     return copy_path_class(tmp, path);

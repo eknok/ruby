@@ -67,12 +67,12 @@ ISEQ_ORIGINAL_ISEQ_ALLOC(const rb_iseq_t *iseq, long size)
 }
 
 #define ISEQ_TRACE_EVENTS (RUBY_EVENT_LINE  | \
-			   RUBY_EVENT_CLASS | \
-			   RUBY_EVENT_END   | \
-			   RUBY_EVENT_CALL  | \
-			   RUBY_EVENT_RETURN| \
-			   RUBY_EVENT_B_CALL| \
-			   RUBY_EVENT_B_RETURN)
+                           RUBY_EVENT_CLASS | \
+                           RUBY_EVENT_END   | \
+                           RUBY_EVENT_CALL  | \
+                           RUBY_EVENT_RETURN| \
+                           RUBY_EVENT_B_CALL| \
+                           RUBY_EVENT_B_RETURN)
 
 #define ISEQ_NOT_LOADED_YET   IMEMO_FL_USER1
 #define ISEQ_USE_COMPILE_DATA IMEMO_FL_USER2
@@ -83,7 +83,7 @@ struct iseq_compile_data {
     /* GC is needed */
     const VALUE err_info;
     VALUE mark_ary;
-    const VALUE catch_table_ary;	/* Array */
+    const VALUE catch_table_ary;        /* Array */
 
     /* GC is not needed */
     struct iseq_label_data *start_label;
@@ -93,7 +93,7 @@ struct iseq_compile_data {
     VALUE ensure_node;
     VALUE for_iseq;
     struct iseq_compile_data_ensure_node_stack *ensure_node_stack;
-    int loopval_popped;	/* used by NODE_BREAK */
+    int loopval_popped;        /* used by NODE_BREAK */
     struct iseq_compile_data_storage *storage_head;
     struct iseq_compile_data_storage *storage_current;
     int last_line;
@@ -112,10 +112,10 @@ static inline struct iseq_compile_data *
 ISEQ_COMPILE_DATA(const rb_iseq_t *iseq)
 {
     if (iseq->flags & ISEQ_USE_COMPILE_DATA) {
-	return iseq->aux.compile_data;
+        return iseq->aux.compile_data;
     }
     else {
-	return NULL;
+        return NULL;
     }
 }
 
@@ -155,8 +155,8 @@ VALUE rb_iseq_compile_ifunc(rb_iseq_t *iseq, const struct vm_ifunc *ifunc);
 int rb_iseq_translate_threaded_code(rb_iseq_t *iseq);
 VALUE *rb_iseq_original_iseq(const rb_iseq_t *iseq);
 void rb_iseq_build_from_ary(rb_iseq_t *iseq, VALUE misc,
-			    VALUE locals, VALUE args,
-			    VALUE exception, VALUE body);
+                            VALUE locals, VALUE args,
+                            VALUE exception, VALUE body);
 
 /* iseq.c */
 VALUE rb_iseq_load(VALUE data, VALUE parent, VALUE opt);
@@ -203,12 +203,12 @@ struct iseq_insn_info_entry {
 
 struct iseq_catch_table_entry {
     enum catch_type {
-	CATCH_TYPE_RESCUE = INT2FIX(1),
-	CATCH_TYPE_ENSURE = INT2FIX(2),
-	CATCH_TYPE_RETRY  = INT2FIX(3),
-	CATCH_TYPE_BREAK  = INT2FIX(4),
-	CATCH_TYPE_REDO   = INT2FIX(5),
-	CATCH_TYPE_NEXT   = INT2FIX(6)
+        CATCH_TYPE_RESCUE = INT2FIX(1),
+        CATCH_TYPE_ENSURE = INT2FIX(2),
+        CATCH_TYPE_RETRY  = INT2FIX(3),
+        CATCH_TYPE_BREAK  = INT2FIX(4),
+        CATCH_TYPE_REDO   = INT2FIX(5),
+        CATCH_TYPE_NEXT   = INT2FIX(6)
     } type;
 
     /*
@@ -240,12 +240,12 @@ static inline int
 iseq_catch_table_bytes(int n)
 {
     enum {
-	catch_table_entry_size = sizeof(struct iseq_catch_table_entry),
-	catch_table_entries_max = (INT_MAX - offsetof(struct iseq_catch_table, entries)) / catch_table_entry_size
+        catch_table_entry_size = sizeof(struct iseq_catch_table_entry),
+        catch_table_entries_max = (INT_MAX - offsetof(struct iseq_catch_table, entries)) / catch_table_entry_size
     };
     if (n > catch_table_entries_max) rb_fatal("too large iseq_catch_table - %d", n);
     return (int)(offsetof(struct iseq_catch_table, entries) +
-		 n * catch_table_entry_size);
+                 n * catch_table_entry_size);
 }
 
 #define INITIAL_ISEQ_COMPILE_DATA_STORAGE_BUFF_SIZE (512)

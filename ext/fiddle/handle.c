@@ -40,7 +40,7 @@ fiddle_handle_free(void *ptr)
 {
     struct dl_handle *fiddle_handle = ptr;
     if( fiddle_handle->ptr && fiddle_handle->open && fiddle_handle->enable_close ){
-	dlclose(fiddle_handle->ptr);
+        dlclose(fiddle_handle->ptr);
     }
     xfree(ptr);
 }
@@ -70,18 +70,18 @@ rb_fiddle_handle_close(VALUE self)
 
     TypedData_Get_Struct(self, struct dl_handle, &fiddle_handle_data_type, fiddle_handle);
     if(fiddle_handle->open) {
-	int ret = dlclose(fiddle_handle->ptr);
-	fiddle_handle->open = 0;
+        int ret = dlclose(fiddle_handle->ptr);
+        fiddle_handle->open = 0;
 
-	/* Check dlclose for successful return value */
-	if(ret) {
+        /* Check dlclose for successful return value */
+        if(ret) {
 #if defined(HAVE_DLERROR)
-	    rb_raise(rb_eFiddleError, "%s", dlerror());
+            rb_raise(rb_eFiddleError, "%s", dlerror());
 #else
-	    rb_raise(rb_eFiddleError, "could not close handle");
+            rb_raise(rb_eFiddleError, "could not close handle");
 #endif
-	}
-	return INT2NUM(ret);
+        }
+        return INT2NUM(ret);
     }
     rb_raise(rb_eFiddleError, "dlclose() called too many times");
 
@@ -123,7 +123,7 @@ predefined_fiddle_handle(void *handle)
  * If no +library+ is specified or +nil+ is given, DEFAULT is used, which is
  * the equivalent to RTLD_DEFAULT. See <code>man 3 dlopen</code> for more.
  *
- *	lib = Fiddle::Handle.new
+ *        lib = Fiddle::Handle.new
  *
  * The default is dependent on OS, and provide a handle for all libraries
  * already loaded. For example, in most cases you can use this to access +libc+
@@ -141,62 +141,62 @@ rb_fiddle_handle_initialize(int argc, VALUE argv[], VALUE self)
 
     switch( rb_scan_args(argc, argv, "02", &lib, &flag) ){
       case 0:
-	clib = NULL;
-	cflag = RTLD_LAZY | RTLD_GLOBAL;
-	break;
+        clib = NULL;
+        cflag = RTLD_LAZY | RTLD_GLOBAL;
+        break;
       case 1:
-	clib = NIL_P(lib) ? NULL : SafeStringValueCStr(lib);
-	cflag = RTLD_LAZY | RTLD_GLOBAL;
-	break;
+        clib = NIL_P(lib) ? NULL : SafeStringValueCStr(lib);
+        cflag = RTLD_LAZY | RTLD_GLOBAL;
+        break;
       case 2:
-	clib = NIL_P(lib) ? NULL : SafeStringValueCStr(lib);
-	cflag = NUM2INT(flag);
-	break;
+        clib = NIL_P(lib) ? NULL : SafeStringValueCStr(lib);
+        cflag = NUM2INT(flag);
+        break;
       default:
-	rb_bug("rb_fiddle_handle_new");
+        rb_bug("rb_fiddle_handle_new");
     }
 
 #if defined(_WIN32)
     if( !clib ){
-	HANDLE rb_libruby_handle(void);
-	ptr = rb_libruby_handle();
+        HANDLE rb_libruby_handle(void);
+        ptr = rb_libruby_handle();
     }
     else if( STRCASECMP(clib, "libc") == 0
 # ifdef RUBY_COREDLL
-	     || STRCASECMP(clib, RUBY_COREDLL) == 0
-	     || STRCASECMP(clib, RUBY_COREDLL".dll") == 0
+             || STRCASECMP(clib, RUBY_COREDLL) == 0
+             || STRCASECMP(clib, RUBY_COREDLL".dll") == 0
 # endif
-	){
+        ){
 # ifdef _WIN32_WCE
-	ptr = dlopen("coredll.dll", cflag);
+        ptr = dlopen("coredll.dll", cflag);
 # else
-	(void)cflag;
-	ptr = w32_coredll();
+        (void)cflag;
+        ptr = w32_coredll();
 # endif
     }
     else
 #endif
-	ptr = dlopen(clib, cflag);
+        ptr = dlopen(clib, cflag);
 #if defined(HAVE_DLERROR)
     if( !ptr && (err = dlerror()) ){
-	rb_raise(rb_eFiddleError, "%s", err);
+        rb_raise(rb_eFiddleError, "%s", err);
     }
 #else
     if( !ptr ){
-	err = dlerror();
-	rb_raise(rb_eFiddleError, "%s", err);
+        err = dlerror();
+        rb_raise(rb_eFiddleError, "%s", err);
     }
 #endif
     TypedData_Get_Struct(self, struct dl_handle, &fiddle_handle_data_type, fiddle_handle);
     if( fiddle_handle->ptr && fiddle_handle->open && fiddle_handle->enable_close ){
-	dlclose(fiddle_handle->ptr);
+        dlclose(fiddle_handle->ptr);
     }
     fiddle_handle->ptr = ptr;
     fiddle_handle->open = 1;
     fiddle_handle->enable_close = 0;
 
     if( rb_block_given_p() ){
-	rb_ensure(rb_yield, self, rb_fiddle_handle_close, self);
+        rb_ensure(rb_yield, self, rb_fiddle_handle_close, self);
     }
 
     return Qnil;
@@ -280,7 +280,7 @@ rb_fiddle_handle_sym(VALUE self, VALUE sym)
 
     TypedData_Get_Struct(self, struct dl_handle, &fiddle_handle_data_type, fiddle_handle);
     if( ! fiddle_handle->open ){
-	rb_raise(rb_eFiddleError, "closed handle");
+        rb_raise(rb_eFiddleError, "closed handle");
     }
 
     return fiddle_handle_sym(fiddle_handle->ptr, sym);
@@ -328,47 +328,47 @@ fiddle_handle_sym(void *handle, VALUE symbol)
     CHECK_DLERROR;
 #if defined(FUNC_STDCALL)
     if( !func ){
-	int  i;
-	int  len = (int)strlen(name);
-	char *name_n;
+        int  i;
+        int  len = (int)strlen(name);
+        char *name_n;
 #if defined(__CYGWIN__) || defined(_WIN32) || defined(__MINGW32__)
-	{
-	    char *name_a = (char*)xmalloc(len+2);
-	    strcpy(name_a, name);
-	    name_n = name_a;
-	    name_a[len]   = 'A';
-	    name_a[len+1] = '\0';
-	    func = dlsym(handle, name_a);
-	    CHECK_DLERROR;
-	    if( func ) goto found;
-	    name_n = xrealloc(name_a, len+6);
-	}
+        {
+            char *name_a = (char*)xmalloc(len+2);
+            strcpy(name_a, name);
+            name_n = name_a;
+            name_a[len]   = 'A';
+            name_a[len+1] = '\0';
+            func = dlsym(handle, name_a);
+            CHECK_DLERROR;
+            if( func ) goto found;
+            name_n = xrealloc(name_a, len+6);
+        }
 #else
-	name_n = (char*)xmalloc(len+6);
+        name_n = (char*)xmalloc(len+6);
 #endif
-	memcpy(name_n, name, len);
-	name_n[len++] = '@';
-	for( i = 0; i < 256; i += 4 ){
-	    sprintf(name_n + len, "%d", i);
-	    func = dlsym(handle, name_n);
-	    CHECK_DLERROR;
-	    if( func ) break;
-	}
-	if( func ) goto found;
-	name_n[len-1] = 'A';
-	name_n[len++] = '@';
-	for( i = 0; i < 256; i += 4 ){
-	    sprintf(name_n + len, "%d", i);
-	    func = dlsym(handle, name_n);
-	    CHECK_DLERROR;
-	    if( func ) break;
-	}
+        memcpy(name_n, name, len);
+        name_n[len++] = '@';
+        for( i = 0; i < 256; i += 4 ){
+            sprintf(name_n + len, "%d", i);
+            func = dlsym(handle, name_n);
+            CHECK_DLERROR;
+            if( func ) break;
+        }
+        if( func ) goto found;
+        name_n[len-1] = 'A';
+        name_n[len++] = '@';
+        for( i = 0; i < 256; i += 4 ){
+            sprintf(name_n + len, "%d", i);
+            func = dlsym(handle, name_n);
+            CHECK_DLERROR;
+            if( func ) break;
+        }
       found:
-	xfree(name_n);
+        xfree(name_n);
     }
 #endif
     if( !func ){
-	rb_raise(rb_eFiddleError, "unknown symbol \"%"PRIsVALUE"\"", symbol);
+        rb_raise(rb_eFiddleError, "unknown symbol \"%"PRIsVALUE"\"", symbol);
     }
 
     return PTR2NUM(func);

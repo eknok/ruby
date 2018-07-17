@@ -1188,7 +1188,7 @@ yaml_parser_decrease_flow_level(yaml_parser_t *parser)
 {
     if (parser->flow_level) {
         parser->flow_level --;
-	(void)POP(parser, parser->simple_keys);
+        (void)POP(parser, parser->simple_keys);
     }
 
     return 1;

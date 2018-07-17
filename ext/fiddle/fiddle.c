@@ -147,17 +147,17 @@ Init_fiddle(void)
      * Here we will use Fiddle::Function to wrap {floor(3) from
      * libm}[http://linux.die.net/man/3/floor]
      *
-     *	    require 'fiddle'
+     *            require 'fiddle'
      *
-     *	    libm = Fiddle.dlopen('/lib/libm.so.6')
+     *            libm = Fiddle.dlopen('/lib/libm.so.6')
      *
-     *	    floor = Fiddle::Function.new(
-     *	      libm['floor'],
-     *	      [Fiddle::TYPE_DOUBLE],
-     *	      Fiddle::TYPE_DOUBLE
-     *	    )
+     *            floor = Fiddle::Function.new(
+     *              libm['floor'],
+     *              [Fiddle::TYPE_DOUBLE],
+     *              Fiddle::TYPE_DOUBLE
+     *            )
      *
-     *	    puts floor.call(3.14159) #=> 3.0
+     *            puts floor.call(3.14159) #=> 3.0
      *
      *
      */

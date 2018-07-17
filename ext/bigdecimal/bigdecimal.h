@@ -23,7 +23,7 @@
 #endif
 
 #ifndef UNREACHABLE
-# define UNREACHABLE		/* unreachable */
+# define UNREACHABLE                /* unreachable */
 #endif
 
 #undef BDIGIT
@@ -122,7 +122,7 @@ static inline const VALUE *
 rb_array_const_ptr(VALUE a)
 {
     return FIX_CONST_VALUE_PTR((RBASIC(a)->flags & RARRAY_EMBED_FLAG) ?
-	RARRAY(a)->as.ary : RARRAY(a)->as.heap.ptr);
+        RARRAY(a)->as.ary : RARRAY(a)->as.heap.ptr);
 }
 #endif
 
@@ -228,11 +228,11 @@ extern VALUE rb_cBigDecimal;
 #define VP_SIGN_NEGATIVE_INFINITE -3 /* Negative infinite number */
 
 #if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
-#define	FLEXIBLE_ARRAY_SIZE /* */
+#define        FLEXIBLE_ARRAY_SIZE /* */
 #elif defined(__GNUC__) && !defined(__STRICT_ANSI__)
-#define	FLEXIBLE_ARRAY_SIZE 0
+#define        FLEXIBLE_ARRAY_SIZE 0
 #else
-#define	FLEXIBLE_ARRAY_SIZE 1
+#define        FLEXIBLE_ARRAY_SIZE 1
 #endif
 
 /*

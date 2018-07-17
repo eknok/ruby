@@ -7,8 +7,8 @@
 
 #ifndef L_SET
 # define L_SET  0       /* seek from beginning.  */
-# define L_CURR	1       /* seek from current position.  */
-# define L_INCR	1       /* ditto.  */
+# define L_CURR        1       /* seek from current position.  */
+# define L_INCR        1       /* ditto.  */
 # define L_XTND 2       /* seek from end.  */
 #endif
 
