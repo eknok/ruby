@@ -87,6 +87,8 @@
 %     num = Regexp.last_match[:num]
         fprintf(f, <%= to_cstr.call(line.sub(/\bTOPN\(([^)]+)\)/, '%s')) %>,
                 (status->local_stack_p ? "*(stack + (stack_size - (<%= num %>) - 1))" : "TOPN(<%= num %>)"));
+%   when /\A\s+POPN\([^)]+\);\s*\z/
+%     # noop
 %   else
         fprintf(f, <%= to_cstr.call(line) %>);
 %   end
