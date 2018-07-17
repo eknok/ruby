@@ -192,6 +192,9 @@ enum vm_regan_acttype {
 
 #define GET_BLOCK_HANDLER() (GET_LEP()[VM_ENV_DATA_INDEX_SPECVAL])
 
+#define WIDTH_OF_opt_send_without_block \
+    ((rb_snum_t)attr_width_opt_send_without_block(0, 0))
+
 /**********************************************************/
 /* deal with control flow 3: exception                    */
 /**********************************************************/

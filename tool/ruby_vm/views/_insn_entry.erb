@@ -29,8 +29,8 @@ INSN_ENTRY(<%= insn.name %>)
     <%= pop[:name] %> = <%= insn.cast_from_VALUE pop, "TOPN(#{i})"%>;
 % end
     DEBUG_ENTER_INSN(INSN_ATTR(name));
-% if insn.handles_frame?
     ADD_PC(INSN_ATTR(width));
+% if insn.handles_frame?
     POPN(INSN_ATTR(popn));
 % end
     COLLECT_USAGE_INSN(INSN_ATTR(bin));
@@ -48,8 +48,6 @@ INSN_ENTRY(<%= insn.name %>)
 %   insn.rets.reverse_each.with_index do |ret, i|
     TOPN(<%= i %>) = <%= insn.cast_to_VALUE ret %>;
 %   end
-    ADD_PC(INSN_ATTR(width));
-    PREFETCH(GET_PC());
 % end
     END_INSN(<%= insn.name %>);
 #   undef INSN_ATTR
