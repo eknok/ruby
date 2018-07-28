@@ -107,6 +107,7 @@ COMMONOBJS    = array.$(OBJEXT) \
 		node.$(OBJEXT) \
 		numeric.$(OBJEXT) \
 		object.$(OBJEXT) \
+		objfcn.$(OBJEXT) \
 		pack.$(OBJEXT) \
 		parse.$(OBJEXT) \
 		proc.$(OBJEXT) \
@@ -2219,6 +2220,7 @@ mjit.$(OBJEXT): {$(VPATH)}mjit.c
 mjit.$(OBJEXT): {$(VPATH)}mjit.h
 mjit.$(OBJEXT): {$(VPATH)}mjit_config.h
 mjit.$(OBJEXT): {$(VPATH)}node.h
+mjit.$(OBJEXT): {$(VPATH)}objfcn.h
 mjit.$(OBJEXT): {$(VPATH)}ruby_assert.h
 mjit.$(OBJEXT): {$(VPATH)}ruby_atomic.h
 mjit.$(OBJEXT): {$(VPATH)}st.h
@@ -2322,6 +2324,7 @@ object.$(OBJEXT): {$(VPATH)}probes.h
 object.$(OBJEXT): {$(VPATH)}st.h
 object.$(OBJEXT): {$(VPATH)}subst.h
 object.$(OBJEXT): {$(VPATH)}util.h
+objfcn.$(OBJEXT): {$(VPATH)}objfcn.h
 pack.$(OBJEXT): $(hdrdir)/ruby/ruby.h
 pack.$(OBJEXT): $(top_srcdir)/include/ruby.h
 pack.$(OBJEXT): {$(VPATH)}config.h

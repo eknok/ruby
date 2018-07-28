@@ -100,6 +100,13 @@
 # include <sys/param.h>
 #endif
 
+#include "objfcn.h"
+
+#define dlopen(name,flag) objopen(name,flag)
+#define dlerror() objerror()
+#define dlsym(handle,name) objsym(handle,name)
+#define dlclose(handle) objclose(handle)
+
 #include "dln.h"
 
 #ifndef MAXPATHLEN
@@ -1032,10 +1039,6 @@ convert_unit_to_func(struct rb_mjit_unit *unit)
         O_BINARY|
 #endif
         O_WRONLY|O_EXCL|O_CREAT;
-#ifndef _MSC_VER
-    static const char o_ext[] = ".o";
-    char *o_file;
-#endif
 
     c_file_len = sprint_uniq_filename(c_file_buff, c_file_len, unit->id, MJIT_TMP_PREFIX, c_ext);
     if (c_file_len >= (int)sizeof(c_file_buff)) {
@@ -1045,11 +1048,6 @@ convert_unit_to_func(struct rb_mjit_unit *unit)
     }
     ++c_file_len;
 
-#ifndef _MSC_VER
-    o_file = alloca(c_file_len - sizeof(c_ext) + sizeof(o_ext));
-    memcpy(o_file, c_file, c_file_len - sizeof(c_ext));
-    memcpy(&o_file[c_file_len - sizeof(c_ext)], o_ext, sizeof(o_ext));
-#endif
     so_file = alloca(c_file_len - sizeof(c_ext) + sizeof(so_ext));
     memcpy(so_file, c_file, c_file_len - sizeof(c_ext));
     memcpy(&so_file[c_file_len - sizeof(c_ext)], so_ext, sizeof(so_ext));
@@ -1131,14 +1129,7 @@ convert_unit_to_func(struct rb_mjit_unit *unit)
 #ifdef _MSC_VER
     success = compile_c_to_so(c_file, so_file);
 #else
-    /* splitting .c -> .o step and .o -> .so step, to cache .o files in the future */
-    if (success = compile_c_to_o(c_file, o_file)) {
-        const char *o_files[] = { o_file, NULL };
-        success = link_o_to_so(o_files, so_file);
-
-        if (!mjit_opts.save_temps)
-            unit->o_file = strdup(o_file); /* lazily delete on `clean_object_files()` */
-    }
+    success = compile_c_to_o(c_file, so_file);
 #endif
     end_time = real_ms_time();
 
@@ -1219,7 +1210,7 @@ worker(void)
 
 #ifndef _MSC_VER
             /* Combine .o files to one .so and reload all jit_func to improve memory locality */
-            if ((unit_queue.length == 0 && active_units.length > 1) || active_units.length == mjit_opts.max_cache_size) {
+            if (FALSE) {
                 compact_all_jit_code();
             }
 #endif
