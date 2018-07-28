@@ -873,6 +873,23 @@ link_o_to_so(const char **o_files, const char *so_file)
     return exit_code == 0;
 }
 
+#ifndef __clang__
+static const char *
+header_name_end(const char *s)
+{
+    const char *e = s + strlen(s);
+#ifdef __GNUC__
+    static const char suffix[] = ".gch";
+
+    /* chomp .gch suffix */
+    if (e > s+sizeof(suffix)-1 && strcmp(e-sizeof(suffix)+1, suffix) == 0) {
+        e -= sizeof(suffix)-1;
+    }
+#endif
+    return e;
+}
+#endif
+
 /* Link all cached .o files and build a .so file. Reload all JIT func from it. This
    allows to avoid JIT code fragmentation and improve performance to call JIT-ed code.  */
 static void
@@ -881,35 +898,73 @@ compact_all_jit_code(void)
     struct rb_mjit_unit *unit;
     struct rb_mjit_unit_node *node;
     double start_time, end_time;
+    static const char o_ext[] = ".o";
     static const char so_ext[] = DLEXT;
+    char o_file[MAXPATHLEN];
     char so_file[MAXPATHLEN];
     const char **o_files;
-    int i = 0, success;
+    int success = TRUE;
 
     /* Abnormal use case of rb_mjit_unit that doesn't have ISeq */
     unit = (struct rb_mjit_unit *)calloc(1, sizeof(struct rb_mjit_unit)); /* To prevent GC, don't use ZALLOC */
     if (unit == NULL) return;
     unit->id = current_unit_num++;
     sprint_uniq_filename(so_file, (int)sizeof(so_file), unit->id, MJIT_TMP_PREFIX, so_ext);
+    sprint_uniq_filename(o_file, (int)sizeof(o_file), unit->id, MJIT_TMP_PREFIX, o_ext);
 
     /* NULL-ending for form_args */
-    o_files = (const char **)alloca(sizeof(char *) * (active_units.length + 1));
-    o_files[active_units.length] = NULL;
-    CRITICAL_SECTION_START(3, "in compact_all_jit_code to keep .o files");
-    for (node = active_units.head; node != NULL; node = node->next) {
-        o_files[i] = node->unit->o_file;
-        i++;
+    start_time = real_ms_time();
+    o_files = (const char **)alloca(sizeof(char *) * 2);
+    o_files[0] = o_file;
+    o_files[1] = NULL;
+    {
+        FILE *f;
+        static const char c_ext[] = ".c";
+        char c_file[MAXPATHLEN];
+        sprint_uniq_filename(c_file, (int)sizeof(c_file), unit->id, MJIT_TMP_PREFIX, c_ext);
+
+        f = fopen(c_file, "w");
+
+#ifdef __clang__
+        /* -include-pch is used for Clang */
+#else
+        {
+# ifdef __GNUC__
+            const char *s = pch_file;
+# else
+            const char *s = header_file;
+# endif
+            const char *e = header_name_end(s);
+
+            fprintf(f, "#include \"");
+            /* print pch_file except .gch */
+            for (; s < e; s++) {
+                switch(*s) {
+                  case '\\': case '"':
+                    fputc('\\', f);
+                }
+                fputc(*s, f);
+            }
+            fprintf(f, "\"\n");
+        }
+#endif
+
+        CRITICAL_SECTION_START(3, "in compact_all_jit_code");
+        for (node = active_units.head; node != NULL; node = node->next) {
+            char fname[35];
+            CRITICAL_SECTION_FINISH(3, "in compact_all_jit_code");
+            sprintf(fname, "_mjit%d", node->unit->id);
+            success &= mjit_compile(f, node->unit->iseq->body, fname);
+            CRITICAL_SECTION_START(3, "in compact_all_jit_code");
+        }
+        CRITICAL_SECTION_FINISH(3, "in compact_all_jit_code");
+        fclose(f);
+
+        success &= compile_c_to_o(c_file, o_file);
     }
 
-    start_time = real_ms_time();
-    success = link_o_to_so(o_files, so_file);
+    success &= link_o_to_so(o_files, so_file);
     end_time = real_ms_time();
-
-    /* TODO: Shrink this big critical section. For now, this is needed to prevent failure by missing .o files.
-       This assumes that o -> so link doesn't take long time because the bottleneck, which is compiler optimization,
-       is already done. But actually it takes about 500ms for 5,000 methods on my Linux machine, so it's better to
-       finish this critical section before link_o_to_so by disabling unload_units. */
-    CRITICAL_SECTION_FINISH(3, "in compact_all_jit_code to keep .o files");
 
     if (success) {
         void *handle = dlopen(so_file, RTLD_NOW);
@@ -978,23 +1033,6 @@ load_func_from_so(const char *so_file, const char *funcname, struct rb_mjit_unit
     unit->handle = handle;
     return func;
 }
-
-#ifndef __clang__
-static const char *
-header_name_end(const char *s)
-{
-    const char *e = s + strlen(s);
-#ifdef __GNUC__
-    static const char suffix[] = ".gch";
-
-    /* chomp .gch suffix */
-    if (e > s+sizeof(suffix)-1 && strcmp(e-sizeof(suffix)+1, suffix) == 0) {
-        e -= sizeof(suffix)-1;
-    }
-#endif
-    return e;
-}
-#endif
 
 static void
 print_jit_result(const char *result, const struct rb_mjit_unit *unit, const double duration, const char *c_file)
